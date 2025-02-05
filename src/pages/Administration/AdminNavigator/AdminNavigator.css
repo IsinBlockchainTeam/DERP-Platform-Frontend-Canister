@@ -1,0 +1,10 @@
+
+.container {
+    display: flex;
+    flex-direction: column; /* Puoi cambiare in 'row' se preferisci */
+    align-items: center; /* Allinea i componenti orizzontalmente */
+    width: 100% !important;
+    height: 100vh; /* Altezza del viewport */
+    box-sizing: border-box;
+    padding: 30px;
+}

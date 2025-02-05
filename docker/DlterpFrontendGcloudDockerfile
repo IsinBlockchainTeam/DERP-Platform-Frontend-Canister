@@ -1,0 +1,9 @@
+FROM google/cloud-sdk:latest
+COPY build build
+RUN mv build dlterp-frontend
+ADD ci-scripts/gcloud_deploy.sh gcloud_deploy.sh
+ADD gcloud_auth.json gcloud_auth.json
+
+RUN chmod +x gcloud_deploy.sh
+
+CMD ["sh", "-c", "./gcloud_deploy.sh"]

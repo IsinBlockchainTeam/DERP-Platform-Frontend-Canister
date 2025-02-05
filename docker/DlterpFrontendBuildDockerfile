@@ -1,0 +1,8 @@
+FROM node:16.14.0-alpine
+
+COPY . .
+
+RUN mv .env.prod .env
+
+RUN npm install
+CMD ["npm", "run", "build"]
