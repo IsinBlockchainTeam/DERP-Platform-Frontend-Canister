@@ -8,7 +8,7 @@ import {
 import { OrderTransactionDto } from '../../dto/OrderTransactionDto';
 import api from '../api';
 import { auth } from '../auth';
-import { ErpOrderStatus } from '../../model/WondType';
+import { PosOrderStatus } from '../../model/PosType';
 import { OrderLine } from '../../dto/ERPOrderLineDto';
 import { OfferDto } from '../../dto/OfferDto';
 import { OrderPaymentDto } from '../../dto/OrderPaymentDto';
@@ -227,7 +227,7 @@ export const ordersService = {
         return res.data;
     },
 
-    getOrderStatus: async (): Promise<ErpOrderStatus[]> => {
+    getOrderStatus: async (): Promise<PosOrderStatus[]> => {
         const res = await api.get('/api/order-status');
         return res.data.orderStatuses;
     },

@@ -1,7 +1,12 @@
-import { WondType } from '../model/WondType';
+import { PosType } from "../model/PosType";
+
+export enum InterfaceStatus {
+    ACTIVE = 'active',
+    PENDING = 'pending'
+}
 
 export enum InterfaceType {
-    WOND = 'wond',
+    POS = 'pos',
     KUMO = 'kumo',
     EBICS = 'ebics'
 }
@@ -17,8 +22,8 @@ export interface CreateKumoInterfaceReqDto extends CreateInterfaceReqDto {
     password: string;
 }
 
-export interface CreateWondInterfaceReqDto extends CreateInterfaceReqDto {
-    wondType: WondType;
+export interface CreatePosInterfaceReqDto extends CreateInterfaceReqDto {
+    posType: PosType;
 }
 
 export interface CreateEbicsInterfaceRequestDto extends CreateInterfaceReqDto {
@@ -30,12 +35,12 @@ export interface CreateEbicsInterfaceRequestDto extends CreateInterfaceReqDto {
     passphrase: string;
 }
 
-export interface CreateTcposInterfaceReqDto extends CreateWondInterfaceReqDto {
+export interface CreateTcposInterfaceReqDto extends CreatePosInterfaceReqDto {
     username: string;
     password: string;
 }
 
-export interface CreateLightspeedInterfaceReqDto extends CreateWondInterfaceReqDto {
+export interface CreateLightspeedInterfaceReqDto extends CreatePosInterfaceReqDto {
     apiKey: string;
 }
 
@@ -47,8 +52,8 @@ export interface UpdateInterfaceReqDto {
     url: string;
 }
 
-export interface UpdateWondInterfaceReqDto extends UpdateInterfaceReqDto {
-    wondType: WondType;
+export interface UpdatePosInterfaceReqDto extends UpdateInterfaceReqDto {
+    posType: PosType;
 }
 
 export interface UpdateKumoInterfaceReqDto extends UpdateInterfaceReqDto {
@@ -61,12 +66,12 @@ export interface UpdateEbicsInterfaceReqDto extends UpdateInterfaceReqDto {
     password: string;
 }
 
-export interface UpdateTcposInterfaceReqDto extends UpdateWondInterfaceReqDto {
+export interface UpdateTcposInterfaceReqDto extends UpdatePosInterfaceReqDto {
     username: string;
     password: string;
 }
 
-export interface UpdateLightspeedInterfaceReqDto extends UpdateWondInterfaceReqDto {
+export interface UpdateLightspeedInterfaceReqDto extends UpdatePosInterfaceReqDto {
     apiKey: string;
 }
 
@@ -75,10 +80,11 @@ export interface InterfaceResponseDto {
     name: string;
     interfaceType: InterfaceType;
     url: string;
+    status: InterfaceStatus;
 }
 
-export interface WondInterfaceResponseDto extends InterfaceResponseDto {
-    wondType: WondType;
+export interface PosInterfaceResponseDto extends InterfaceResponseDto {
+    posType: PosType;
 }
 
 export interface KumoInterfaceResponseDto extends InterfaceResponseDto {
@@ -92,12 +98,12 @@ export interface EbicsInterfaceResponseDto extends InterfaceResponseDto {
 
 }
 
-export interface TcposInterfaceResponseDto extends WondInterfaceResponseDto {
+export interface TcposInterfaceResponseDto extends PosInterfaceResponseDto {
     username: string;
     password: string;
 }
 
-export interface LightspeedInterfaceResponseDto extends WondInterfaceResponseDto {
+export interface LightspeedInterfaceResponseDto extends PosInterfaceResponseDto {
     apiKey: string;
 }
 
@@ -140,15 +146,15 @@ export interface KumoAssociationResponseDto extends AssociationResponseDto {
     shopId: number;
 }
 
-export interface WondAssociationResponseDto extends AssociationResponseDto {
-    wondType: WondType;
+export interface PosAssociationResponseDto extends AssociationResponseDto {
+    posType: PosType;
 }
 
-export interface LightspeedAssociationResponseDto extends WondAssociationResponseDto {
+export interface LightspeedAssociationResponseDto extends PosAssociationResponseDto {
     key: number;
 }
 
-export interface TcposAssociationResponseDto extends WondAssociationResponseDto {
+export interface TcposAssociationResponseDto extends PosAssociationResponseDto {
     shopId: number;
 }
 

@@ -1,10 +1,10 @@
+import { CreateTcposTableDto } from '../../dto/CreateTableDto';
 import { CreateStoreDto, StoreDto } from '../../dto/stores/StoreDto';
-import { MySuppliersList, StoreList } from '../../dto/stores/StoreList';
+import { StoreList } from '../../dto/stores/StoreList';
+import { TableDto } from '../../dto/TableDto';
+import { PosType } from '../../model/PosType';
 import api from '../api';
 import { auth } from '../auth';
-import { WondType } from '../../model/WondType';
-import { TableDto } from '../../dto/TableDto';
-import { CreateTcposTableDto } from '../../dto/CreateTableDto';
 
 export const storeService = {
     createStore: async (
@@ -71,11 +71,6 @@ export const storeService = {
         );
     },
 
-    getErpTypes: async (): Promise<string[]> => {
-        const res = await api.get(`/stores/erp-types`);
-        return res.data.erpTypes;
-    },
-
     list: async (merchantId?: string): Promise<StoreDto[]> => {
         const params = merchantId ? { merchantId } : {};
         const res = await api.get<StoreList>(`/stores`, { params });
@@ -118,27 +113,6 @@ export const storeService = {
                 },
             },
         );
-
-        return res.data;
-    },
-
-    getStoreCredentials: async (
-        erpCredentialsUrl: string,
-        storeUrl: string,
-        erpType: WondType,
-    ): Promise<{ username: string; password: string; shopId: number }> => {
-        const res = await api.get<{
-            username: string;
-            password: string;
-            shopId: number;
-        }>('/stores/store-erp-credentials', {
-            headers: await auth.authenticatedHeaders(),
-            params: {
-                erpCredentialsUrl,
-                storeUrl,
-                erpType,
-            },
-        });
 
         return res.data;
     },

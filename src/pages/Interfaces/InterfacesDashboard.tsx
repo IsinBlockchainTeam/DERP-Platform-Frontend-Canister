@@ -1,23 +1,24 @@
 import Handlebars from 'handlebars';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { interfacesService } from '../../api/services/Interfaces';
-import { PencilIcon, TrashIcon } from '../../components/Icons/Icons';
+import { PencilIcon, TrashIcon, WarningIcon } from '../../components/Icons/Icons';
 import InterfaceForm from '../../components/Interfaces/InterfaceForm/InterfaceForm';
 import LoadingSpinner from '../../components/Loading/LoadingSpinner';
 import ConfirmationModal from '../../components/Modal/ConfirmationModal';
 import { Modal } from '../../components/Modal/Modal';
 import GenericTable, { GenericTableAction, GenericTableColumn } from '../../components/Table/GenericTable';
 import TabTitle from '../../components/Tabs/TabTitle';
-import { CreateInterfaceReqDto, InterfaceResponseDto, InterfaceType, UpdateInterfaceReqDto } from '../../dto/ErpInterfacesDto';
+import { CreateInterfaceReqDto, InterfaceResponseDto, InterfaceStatus, InterfaceType, UpdateInterfaceReqDto } from '../../dto/ErpInterfacesDto';
 import { AxiosError } from 'axios';
 
 export default function InterfacesDashboard() {
     const [loading, setLoading] = useState(false);
+    const [loadingFinalize, setLoadingFinalize] = useState(false);
     const [interfaces, setInterfaces] = useState<InterfaceResponseDto[]>([]);
     const [errors, setErrors] = useState<string[]>([]);
-    const [ebicsLetterModalOpen, setEbicsLetterModalOpen] = useState(false);
+    const [ebicsFinalizeModalOpen, setEbicsFinalizeModalOpen] = useState(false);
     const [addModalOpen, setAddModalOpen] = useState(false);
     const [selectedInterface, setSelectedInterface] = useState<Partial<InterfaceResponseDto>>({});
     const [updating, setUpdating] = useState(false);
@@ -65,20 +66,26 @@ export default function InterfacesDashboard() {
 
     const actions: GenericTableAction<InterfaceResponseDto>[] = [
         {
+            label: <div className='text-warning'><WarningIcon size={6} /></div>,
+            show: (row) => row.status === InterfaceStatus.PENDING,
+            onClick: (row) => onOpenFinalizeEbics(row)
+        },
+        {
+            label: <PencilIcon size={6} />,
+            show: (row) => row.interfaceType !== InterfaceType.EBICS,
+            onClick: (iface) => {
+                setSelectedInterface(iface);
+                setUpdating(true);
+                setAddModalOpen(true);
+            }
+        },
+        {
             label: <div className='text-error'><TrashIcon size={6} /></div>,
             onClick: (iface) => {
                 setToDelete(iface);
                 setDeleteModal(true);
             }
         },
-        {
-            label: <PencilIcon size={6} />,
-            onClick: (iface) => {
-                setSelectedInterface(iface);
-                setUpdating(true);
-                setAddModalOpen(true);
-            }
-        }
     ];
 
     const onCancelForm = () => {
@@ -86,7 +93,6 @@ export default function InterfacesDashboard() {
         setUpdating(false);
         setErrors([]);
         setAddModalOpen(false);
-        console.log("Resetted state")
     }
 
     const onSubmitForm = async () => {
@@ -97,9 +103,9 @@ export default function InterfacesDashboard() {
                 const response = await interfacesService.create(+merchantId!, selectedInterface as CreateInterfaceReqDto);
                 setSelectedInterface(response);
             }
-            
+
             if (selectedInterface.interfaceType === InterfaceType.EBICS) {
-                setEbicsLetterModalOpen(true);
+                setEbicsFinalizeModalOpen(true);
             } else {
                 setSelectedInterface({});
                 fetchData();
@@ -139,6 +145,24 @@ export default function InterfacesDashboard() {
         fetchData();
     }
     
+    const onOpenFinalizeEbics = async (iface: InterfaceResponseDto) => {
+        setSelectedInterface(iface);
+        setEbicsFinalizeModalOpen(true);
+    }
+
+    const onFinalizeEbics = async () => {
+        try {
+            setLoadingFinalize(true);
+            await interfacesService.finalizeEbics(selectedInterface.id!);
+            setLoadingFinalize(false);
+            setEbicsFinalizeModalOpen(false);
+            fetchData();
+        } catch (e) {
+            setErrors([t('form.bank.confirmation.error')]);
+            setLoadingFinalize(false);
+        }
+    }
+
     return loading ?
         <LoadingSpinner />
         :
@@ -198,15 +222,44 @@ export default function InterfacesDashboard() {
                 </div>
             </Modal>
 
-            {/* Modal for EBICS letter download and setup instructions */}
-            <Modal open={ebicsLetterModalOpen} onChangeOpen={setEbicsLetterModalOpen} closeButton>
-                <h1 className="text-3xl font-light">{t('form.bank.downloadLetter.title')}</h1>
-                <p className="text-lg mt-4">{t('form.bank.downloadLetter.message')}</p>
-                <div className="flex flex-row col justify-center w-full mt-5">
-                    <a className="btn btn-primary" download href={interfacesService.ebicsLetterUrl(selectedInterface.id!)}>
-                        {t('form.bank.downloadLetter.downloadBtn')}
-                    </a>
+            {/* Modal for EBICS user finalization after bank response */}
+            <Modal open={ebicsFinalizeModalOpen} onChangeOpen={setEbicsFinalizeModalOpen} closeButton>
+                <h1 className="text-3xl font-light">{t('form.bank.confirmation.title')}</h1>
+                {loadingFinalize ? <LoadingSpinner /> :
+                    <>
+                        <p className="mt-4">{t('form.bank.confirmation.message')}</p>
+                        <p >{t('form.bank.confirmation.tutorialLine1')}</p>
+                        <ol className='list-decimal list-inside ps-5'>
+                            <li className='mt-2'>
+                                {t('form.bank.confirmation.tutorialLine2')}
+                                <div className="flex flex-row col justify-center w-full mt-5">
+                                    <a className="btn btn-primary" download href={interfacesService.ebicsLetterUrl(selectedInterface.id!)}>
+                                        {t('form.bank.downloadLetter.downloadBtn')}
+                                    </a>
+                                </div>
+                            </li>
+
+                            <li className='mt-2'>
+                                {t('form.bank.confirmation.tutorialLine3')}
+                            </li>
+                            <li className='mt-2'>
+                                {t('form.bank.confirmation.tutorialLine4')}
+                            </li>
+                        </ol>
+                    </>
+                }
+                
+                <p className='text-red-600 mt-4'>{errors.join('\n')}</p>
+
+                <div className='flex flex-row col justify-between w-full mt-5'>
+                    <button className="btn" onClick={() => setEbicsFinalizeModalOpen(false)}>
+                        {t('form.bank.confirmation.cancelBtn')}
+                    </button>
+                    <button className="btn btn-primary" onClick={onFinalizeEbics}>
+                        {t('form.bank.confirmation.finalizeBtn')}
+                    </button>
                 </div>
             </Modal>
-    </div>
+
+        </div>
 }

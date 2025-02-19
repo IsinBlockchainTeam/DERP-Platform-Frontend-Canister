@@ -128,5 +128,14 @@ export const interfacesService = {
     
     ebicsLetterUrl: (interfaceId: number) => {
         return `/ebics-interfaces/${interfaceId}/bank-letter`
+    },
+
+    finalizeEbics: async (interfaceId: number) => {
+        const res = await api.post(`/ebics-interfaces/${interfaceId}/finalize`, {}, {
+            headers: await auth.authenticatedHeaders()
+        });
+
+        if (res.status !== 201)
+            throw new Error('Error finalizing EBICS interface');
     }
 }

@@ -1,4 +1,4 @@
-import { WondType } from '../../model/WondType';
+import { PosType } from "../../model/PosType";
 
 export interface WritableStoreDto {
     name: string;
@@ -8,7 +8,6 @@ export interface WritableStoreDto {
     canton?: string;
     country?: string;
     color: string;
-    erpUrl: string;
     font: string;
     bcPrivateKey: string;
     bcAddress: string;
@@ -17,9 +16,7 @@ export interface WritableStoreDto {
 export interface StoreDto extends WritableStoreDto {
     id: number;
     url: string;
-    erpType: WondType;
     imageUrl: string;
-    associationId: number;
 }
 
 export interface CreateStoreDto {

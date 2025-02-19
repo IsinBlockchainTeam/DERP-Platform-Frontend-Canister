@@ -1,4 +1,3 @@
-import {WondType} from '../../model/WondType';
 import {UserRole} from "../../model/UserRole";
 
 export interface RegisterUserResponseDto {

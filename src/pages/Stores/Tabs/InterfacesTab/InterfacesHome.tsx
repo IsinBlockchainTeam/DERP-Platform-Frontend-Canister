@@ -100,7 +100,7 @@ const InterfacesHome = () => {
         if (
             selectedAssociation.interfaceType &&
             [
-                InterfaceType.WOND,
+                InterfaceType.POS,
                 InterfaceType.KUMO
             ].includes(selectedAssociation.interfaceType),
             selectedAssociation.interfaceType
@@ -155,7 +155,7 @@ const InterfacesHome = () => {
             setAvailableInterfaces(interfaces);
             const associations = await interfacesService.getAssociations(storeUrl);
             const interfaceAssociations = associations.map(association => {
-                const iface = interfaces.find(i => i.id === association.interfaceId);
+                const iface = interfaces.find(i => i.id === association.interfaceId && i.interfaceType === association.interfaceType);
                 if (!iface)
                     throw new Error("An association references a not existing interface!")
 
@@ -213,7 +213,7 @@ const InterfacesHome = () => {
                                 storeUrl={storeUrl}
                                 merchantId={+merchantId!}
                                 association={selectedAssociation}
-                                onUpdateAssociation={setSelectedAssociation}
+                                onUpdateAssociation={(ass) => { console.log("update: ", ass); setSelectedAssociation(ass) }}
                             />
 
                             <div className="flex flex-col my-3">

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { PencilIcon, PlusIcon, CheckIcon } from '@heroicons/react/24/solid';
-import { WondType } from '../../model/WondType';
 import { interfacesService } from '../../api/services/Interfaces';
 import { LightspeedInterfaceResponseDto } from '../../dto/ErpInterfacesDto';
 

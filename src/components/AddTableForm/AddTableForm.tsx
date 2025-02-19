@@ -1,12 +1,12 @@
 import React from 'react'
-import { WondType } from '../../model/WondType';
 import {useTranslation} from "react-i18next";
+import { PosType } from '../../model/PosType';
 
 type Props = {
   label: string;
   username: string;
   password: string;
-  erpType: WondType;
+  erpType: PosType;
   onChangeUsername: (username: string) => void;
   onChangePassword: (password: string) => void;
   onChangeLabel: (label: string) => void;
@@ -20,7 +20,7 @@ export default function AddTableForm({
 }: Props) {
   const {t} = useTranslation(undefined, {keyPrefix: 'supplierTables.addTable'});
   const canConfirmAddTable = () => {
-    const credentialsOk = erpType === WondType.NONE || (username.length !== 0 && password.length !== 0);
+    const credentialsOk = erpType === PosType.INTERNAL || (username.length !== 0 && password.length !== 0);
     return label.length !== 0 && credentialsOk;
   }
 
@@ -30,7 +30,7 @@ export default function AddTableForm({
     <div className="flex flex-col grow mr-3">
       <input type="text" className="input input-bordered mb-3" placeholder={t('tableLabelPlaceholder')} value={label} onChange={e => onChangeLabel(e.target.value)}/>
       { 
-        erpType !== WondType.NONE &&
+        erpType !== PosType.INTERNAL &&
           <div>
             <input type="text" className="input input-bordered mb-3" placeholder={t('erpUsernamePlaceholder')} value={username} onChange={e => onChangeUsername(e.target.value)}/>
             <input type="password" className="input input-bordered mb-3" placeholder={t('erpPasswordPlaceholder')} value={password} onChange={e => onChangePassword(e.target.value) }/>

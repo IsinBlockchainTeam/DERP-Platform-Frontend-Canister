@@ -6,7 +6,6 @@ import { ordersService } from "../../api/services/Orders";
 import { OrderDto } from "../../dto/OrderDto";
 import { storeService } from "../../api/services/Store";
 import { StoreDto } from "../../dto/stores/StoreDto";
-import { ErpOrderStatus } from "../../model/WondType";
 import Dropdown from "../../components/Dropdown/Dropdown";
 import { ERPItemDto } from "../../dto/ERPItemDto";
 import Progress from "../../components/Loading/Progress";
@@ -31,6 +30,7 @@ import {
     selectCheckedOrderPayments,
 } from "../../store/features/checkedOrderPaymentsSlice";
 import { useTranslation } from "react-i18next";
+import { PosOrderStatus } from "../../model/PosType";
 
 function SupplierOrders() {
     const navigate = useNavigate();
@@ -40,7 +40,7 @@ function SupplierOrders() {
     const [filteredOrders, setFilteredOrders] = useState < OrderDto[] > ([]);
     const [allOrders, setAllOrders] = useState < OrderDto[] > ([]);
     const [stores, setStores] = useState < StoreDto[] > ([]);
-    const [orderStatuses, setOrderStatuses] = useState < ErpOrderStatus[] > ([]);
+    const [orderStatuses, setOrderStatuses] = useState < PosOrderStatus[] > ([]);
     const [storeSelected, setStoreSelected] = useState < string > (
         DEFAULT_STORE_NAME_DROPDOWN_VALUE
     );
@@ -87,17 +87,17 @@ function SupplierOrders() {
         setOrderStatuses(response);
     };
 
-    const getBadgeByStatus = (status: ErpOrderStatus) => {
+    const getBadgeByStatus = (status: PosOrderStatus) => {
         switch (status) {
-            case ErpOrderStatus.DRAFT:
+            case PosOrderStatus.DRAFT:
                 return <div className="badge badge-neutral h-min">{t('orderStatus.draft')}</div>;
-            case ErpOrderStatus.ORDERED:
+            case PosOrderStatus.ORDERED:
                 return <div className="badge badge-warning h-min">{t('orderStatus.ordered')}</div>;
-            case ErpOrderStatus.CONFIRMED:
+            case PosOrderStatus.CONFIRMED:
                 return <div className="badge badge-info h-min">{t('orderStatus.confirmed')}</div>;
-            case ErpOrderStatus.CLOSED:
+            case PosOrderStatus.CLOSED:
                 return <div className="badge badge-success h-min">{t('orderStatus.closed')}</div>;
-            case ErpOrderStatus.CLOSED_AND_TRANSACTION:
+            case PosOrderStatus.CLOSED_AND_TRANSACTION:
                 return <div className="badge badge-success h-min">{t('orderStatus.closedAndTransaction')}</div>;
             default:
                 return <div className="badge badge-ghost h-min">{status}</div>;
@@ -161,8 +161,8 @@ function SupplierOrders() {
         setOrderId(order.id);
 
         if (
-            order.status === ErpOrderStatus.CLOSED_AND_TRANSACTION ||
-            order.status === ErpOrderStatus.CLOSED
+            order.status === PosOrderStatus.CLOSED_AND_TRANSACTION ||
+            order.status === PosOrderStatus.CLOSED
         )
             await getOrderPayments(order.id);
 

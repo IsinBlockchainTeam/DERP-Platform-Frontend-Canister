@@ -1,8 +1,8 @@
 import { CreateInterfaceReqDto, InterfaceType } from "../../../dto/ErpInterfacesDto"
-import WondTcposInterfaceFormPart from "./WondInterfaceFormPart"
 import KumoInterfaceFormPart from "./KumoInterfaceFormPart"
 import EbicsInterfaceFormPart from "./EbicsInterfaceFormPart"
 import BaseInterfaceFormPart from "./BaseInterfaceFormPart"
+import PosInterfaceFormPart from "./PosInterfaceFormPart"
 
 interface Props {
     merchantId: number,
@@ -14,7 +14,7 @@ interface Props {
 
 
 const typesFormMap = {
-    [InterfaceType.WOND]: WondTcposInterfaceFormPart,
+    [InterfaceType.POS]: PosInterfaceFormPart,
     [InterfaceType.KUMO]: KumoInterfaceFormPart,
     [InterfaceType.EBICS]: EbicsInterfaceFormPart
 }

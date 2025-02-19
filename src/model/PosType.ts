@@ -1,10 +1,9 @@
-export enum WondType {
+export enum PosType {
   TCPOS = 'tcpos',
-  LIGHTSPEED = 'lightspeed',
-  NONE = 'none',
+  INTERNAL = 'internal',
 }
 
-export enum ErpOrderStatus {
+export enum PosOrderStatus {
   DRAFT = 'Draft',
   ORDERED = 'Ordered',
   CONFIRMED = 'Confirmed',

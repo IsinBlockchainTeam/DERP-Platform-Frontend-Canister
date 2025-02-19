@@ -2,15 +2,16 @@ import {
     CreateTcposInterfaceReqDto,
     InterfaceType,
     TcposInterfaceResponseDto,
-    WondInterfaceResponseDto
+    PosInterfaceResponseDto,
+    InterfaceStatus
 } from '../../dto/ErpInterfacesDto';
-import { WondType } from '../../model/WondType';
 import React, { useEffect, useState } from 'react';
 import { interfacesService } from '../../api/services/Interfaces';
 import { useParams } from 'react-router';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/16/solid';
 import { CheckIcon, PencilIcon, PlusIcon } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
+import { PosType } from '../../model/PosType';
 
 type EditableRow = TcposInterfaceResponseDto & { isEditing: boolean, showPassword: boolean };
 
@@ -20,8 +21,9 @@ const emptyRow: TcposInterfaceResponseDto = {
     url: '',
     username: '',
     password: '',
-    interfaceType: InterfaceType.WOND,
-    wondType: WondType.TCPOS
+    status: InterfaceStatus.ACTIVE,
+    interfaceType: InterfaceType.POS,
+    posType: PosType.TCPOS
 };
 
 export default function TableTcpos() {
@@ -48,9 +50,9 @@ export default function TableTcpos() {
                 throw new Error("Merchant ID is null!");
 
             setLoading(true);
-            const interfaces = (await interfacesService.listByCompany(+merchantId) as WondInterfaceResponseDto[])
-                .filter((i: WondInterfaceResponseDto) => i.interfaceType === InterfaceType.WOND)
-                .filter(i => i.wondType === WondType.TCPOS) as TcposInterfaceResponseDto[];
+            const interfaces = (await interfacesService.listByCompany(+merchantId) as PosInterfaceResponseDto[])
+                .filter((i: PosInterfaceResponseDto) => i.interfaceType === InterfaceType.POS)
+                .filter(i => i.posType === PosType.TCPOS) as TcposInterfaceResponseDto[];
 
             if (interfaces?.length)
                 getTableRows(interfaces);
@@ -79,8 +81,8 @@ export default function TableTcpos() {
         url: '',
         username: '',
         password: '',
-        wondType: WondType.TCPOS,
-        interfaceType: InterfaceType.WOND
+        posType: PosType.TCPOS,
+        interfaceType: InterfaceType.POS
     } as any);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -101,8 +103,8 @@ export default function TableTcpos() {
                     url: '',
                     username: '',
                     password: '',
-                    wondType: WondType.TCPOS,
-                    interfaceType: InterfaceType.WOND
+                    posType: PosType.TCPOS,
+                    interfaceType: InterfaceType.POS
                 } as any);
                 setShowNewRowPassword(false);
             } catch (e) {

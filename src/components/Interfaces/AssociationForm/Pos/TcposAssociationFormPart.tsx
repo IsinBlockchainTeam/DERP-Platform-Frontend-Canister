@@ -1,18 +1,18 @@
 import { useTranslation } from "react-i18next";
-import { KumoAssociationResponseDto, TcposAssociationResponseDto } from "../../../../dto/ErpInterfacesDto";
+import { TcposAssociationResponseDto } from "../../../../dto/ErpInterfacesDto";
+import { PosType } from "../../../../model/PosType";
 import SmartIntInput from "../../../SmartIntInput/SmartIntInput";
 import { InterfaceAssociationFormPartProps } from "../../AssociationForm/BaseInterfaceAssociationFormPart";
-import { WondType } from "../../../../model/WondType";
 
 type TcposAssociationResponseDtoLocal = TcposAssociationResponseDto & {
-    wondType: WondType
+    posType: PosType
 }
 
-type Props = InterfaceAssociationFormPartProps<KumoAssociationResponseDto> 
+type Props = InterfaceAssociationFormPartProps<TcposAssociationResponseDtoLocal> 
 
 
 const TcposAssociationFormPart = (props: Props) => {
-    const {t} = useTranslation(undefined, {keyPrefix: 'supplierInterfacesDashboard.associations.wond.tcpos'})
+    const {t} = useTranslation(undefined, {keyPrefix: 'supplierInterfacesDashboard.associations.pos.tcpos'})
     
     const onChangeShopId = (shopId: number) => { 
         const newAssociation =  { ...props.association, shopId }

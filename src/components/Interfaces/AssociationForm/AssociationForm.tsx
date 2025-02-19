@@ -2,9 +2,9 @@ import { useState } from "react";
 import { AssociationResponseDto, InterfaceType } from "../../../dto/ErpInterfacesDto"
 import BaseInterfaceAssociationFormPart from "./BaseInterfaceAssociationFormPart";
 import KumoAssociationFormPart from "./KumoAssociationFormPart"
-import WondAssociationFormPart from "./WondAssociationFormPart";
 import { useTranslation } from "react-i18next";
 import EbicsAssociationFormPart from "./EbicsAssociationFormPart";
+import PosAssociationFormPart from "./PosAssociationFormPart";
 
 interface Props {
     storeUrl: string,
@@ -14,7 +14,7 @@ interface Props {
 }
 
 const typesFormMap = {
-    [InterfaceType.WOND]: WondAssociationFormPart,
+    [InterfaceType.POS]: PosAssociationFormPart,
     [InterfaceType.KUMO]: KumoAssociationFormPart,
     [InterfaceType.EBICS]: EbicsAssociationFormPart
 }

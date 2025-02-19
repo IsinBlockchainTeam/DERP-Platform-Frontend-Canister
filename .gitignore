@@ -5,8 +5,7 @@
 /.pnp
 .pnp.js
 .dfx
-.env
-.env.prod
+
 # testing
 /coverage
 

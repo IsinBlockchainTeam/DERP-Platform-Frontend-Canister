@@ -49,7 +49,7 @@ function LoginPage() {
     const fakeLogin = async () => {
         setLoading(true);
         clearErrorMessage();
-        await auth.login('demo@grottovalletta.ch', 'demo');
+        await auth.login(username, password);
         const uData = await auth.getMe();
         setUserData(uData);
         navigate(`/merchant/${uData.companyId}/balance`);

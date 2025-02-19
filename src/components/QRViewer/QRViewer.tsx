@@ -25,8 +25,6 @@ export default function QRViewer({ store, table}: Props) {
 
             const token = await auth.generateCustomerToken({
                 storeUrl: store.url,
-                erpType: store.erpType,
-                erpUrl: store.erpUrl,
                 tableId: table.id,
             });
 

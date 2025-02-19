@@ -6,7 +6,9 @@ export type GenericTableColumn<T> = {
 };
 
 export type GenericTableAction<T> = {
-    label: string | JSX.Element;
+    label: string | JSX.Element | ((row: T) => string | JSX.Element);
+    disable?: boolean | ((row: T) => boolean);
+    show?: boolean | ((row: T) => boolean);
     onClick: (row: T) => void;
 }
 
@@ -67,9 +69,20 @@ const GenericTable = <T extends object>(props: TableProps<T>) => {
                             ))}
 
                             {props.actions && props.actions.length > 0 && <td className="text-right">
-                                {props.actions.map((action, actionIndex) => (
-                                    <button key={actionIndex} className="btn btn-ghost btn-sm" onClick={() => action.onClick(row)}>{action.label}</button>
-                                ))}
+                                {
+                                    props.actions
+                                        .filter(action => !action.show || (typeof action.show === "function" ? action.show(row) : action.show))
+                                        .map((action, actionIndex) => (
+                                            <button
+                                                key={actionIndex}
+                                                className={`btn btn-ghost btn-sm ${action.disable && (typeof action.disable === "function" ? action.disable(row) : action.disable) ? "btn-disabled" : ""}`}
+                                                onClick={() => action.onClick(row)}
+                                            >
+                                                {
+                                                    typeof action.label === "function" ? action.label(row) : action.label
+                                                }
+                                            </button>
+                                        ))}
                             </td>}
                         </tr>
                     )) : null

@@ -570,9 +570,9 @@ export default {
     },
     supplierInterfacesDashboard: {
         title: "Interfacce",
-        wond: "Wond",
-        wondCaption: "Gestisci le interfacce Wond.",
-        wondButton: "Gestisci",
+        pos: "POS",
+        posCaption: "Gestisci le interfacce POS.",
+        posButton: "Gestisci",
         kumo: "Kumo",
         kumoCaption: "Gestisci le interfacce Kumo.",
         kumoButton: "Gestisci",
@@ -599,8 +599,10 @@ export default {
             updateTitle: 'Aggiorna interfaccia',
             interfaceType: 'Tipo di interfaccia',
             interfaceTypeLabel: 'Scegli un tipo',
+            posType: 'Tipo di POS',
+            posTypeLabel: 'Scegli un tipo di POS',
             typeEbics: 'EBICS - Sistema bancario',
-            typeWond: 'WOND - Sistema e-commerce',
+            typePOS: 'POS - Sistema e-commerce',
             typeKumo: 'Kumo - Sistema contabile',
             name: 'Nome dell\'interfaccia',
             url: 'URL del sistema',
@@ -611,17 +613,29 @@ export default {
                 hostId: 'ID dell\'host',
                 passphrase: 'Frase chiave',
                 downloadLetter: {
-                    title: 'Finalizza la configurazione EBICS',
+                    title: 'Configura la connessione con EBICS',
                     message: 'Clicca il pulsante qui sotto per scaricare la lettera di autorizzazione EBICS. Questa lettera contiene le informazioni necessarie per stabilire la connessione tra la banca e il sistema. Dovrai stamparla, firmarla e inviarla alla tua banca. Contatta direttamente la banca per maggiori informazioni.',
                     downloadBtn: 'Scarica lettera',
+                },
+                confirmation: {
+                    title: 'Finalizza la connessione con EBICS',
+                    message: 'L\interfaccia è attualmente inattiva in attesa che la tua banca configuri il sistema per l\'uso.',
+                    tutorialLine1: 'Per procedere con la finalizzazione:',
+                    tutorialLine2: 'Scarica la lettera di autorizzazione EBICS tramite il pulsante qui sotto e inviala alla tua banca.',
+                    tutorialLine3: 'Attendi una conferma o risposta positiva dalla tua banca.',
+                    tutorialLine4: 'Una volta ricevuta la conferma, torna su questa pagina e clicca sul pulsante "Attiva interfaccia".',
+                    downloadBtn: 'Scarica lettera',
+                    finalizeBtn: 'Attiva interfaccia',
+                    cancelBtn: 'Chiudi',
+                    error: 'Errore durante la finalizzazione. Verifica di avere ricevuto la conferma dalla tua banca e riprova, oppure contatta il supporto.',
                 }
             },
             kumo: {
                 username: 'Nome utente',
                 password: 'Password',
             },
-            wond: {
-                wondType: 'Tipo di wond',
+            pos: {
+                posType: 'Tipo di POS',
                 typeLightspeed: 'Lightspeed',
                 typeTcpos: 'TCPOS',
                 tcpos: {
@@ -645,7 +659,8 @@ export default {
         associations: {
             title: 'Interfaccie Associate',
             addBtn: 'Associa interfaccia',
-            noInterface: 'Non hai configurato interfaccie nella tua compagnia. Registra prima un\'interfaccia',
+            noInterface: 'Non hai configurato nessuna interfaccia nella tua compagnia. Registra prima un\'interfaccia',
+            noAssociation: 'Non hai associato nessuna interfaccia POS a questo negozio. Associa prima un\'interfaccia POS',
             noInterfaceLinkText: 'qui',
             form: {
                 interfaceAssociation: 'Scegli l\'interfaccia da attivare in questo negozio',
@@ -674,7 +689,7 @@ export default {
             kumo: {
                 shopId: 'ID del negozio su Kumo (shopId)'
             },
-            wond: {
+            pos: {
                 tcpos: {
                     shopId: 'ID del negozio su TCPOS (shopId)'
                 }

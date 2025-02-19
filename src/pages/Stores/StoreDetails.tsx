@@ -8,6 +8,7 @@ import StoreIndicatorLine from '../../components/StoreIndicator/StoreIndicator';
 import LoadingSpinner from '../../components/Loading/LoadingSpinner';
 import { Modal } from '../../components/Modal/Modal';
 import StoreData from '../../components/StoreData/StoreData';
+import AssociatedPosFeatureGuard from '../../components/HOC/AssociatedPosFeatureGuard';
 
 const enum TabNames {
     DATA = 'store-data',
@@ -38,57 +39,68 @@ export default function StoreDetails() {
         {
             name: TabNames.TABLES,
             label: t('tabs.tables'),
-            path: `/merchant/${merchantId}/stores/store`
+            path: `/merchant/${merchantId}/stores/store`,
+            withoutPos: false,
         },
         {
             name: TabNames.OFFERS,
             label: t('tabs.offers'),
-            path: `/merchant/${merchantId}/stores/store/offers`
+            path: `/merchant/${merchantId}/stores/store/offers`,
+            withoutPos: false,
         },
         {
             name: TabNames.PRODUCTS,
             label: t('tabs.products'),
-            path: `/merchant/${merchantId}/stores/store/products`
-        },
-        {
-            name: TabNames.SUPPLIERS,
-            label: t('tabs.suppliers'),
-            path: `/merchant/${merchantId}/stores/store/suppliers`
-        },
-        {
-            name: TabNames.CUSTOMERS,
-            label: t('tabs.customers'),
-            path: `/merchant/${merchantId}/stores/store/customers`
-        },
-        {
-            name: TabNames.BLOCKCHAIN,
-            label: t('tabs.blockchains'),
-            path: `/merchant/${merchantId}/stores/store/chains`
-        },
-        {
-            name: TabNames.TRANSACTIONS,
-            label: t('tabs.transactions'),
-            path: `/merchant/${merchantId}/stores/store/transactions`
+            path: `/merchant/${merchantId}/stores/store/products`,
+            withoutPos: false,
         },
         {
             name: TabNames.INVOICES,
             label: t('tabs.invoices'),
-            path: `/merchant/${merchantId}/stores/store/invoices`
+            path: `/merchant/${merchantId}/stores/store/invoices`,
+            withoutPos: true,
+        },
+        {
+            name: TabNames.SUPPLIERS,
+            label: t('tabs.suppliers'),
+            path: `/merchant/${merchantId}/stores/store/suppliers`,
+            withoutPos: true,
+        },
+        {
+            name: TabNames.CUSTOMERS,
+            label: t('tabs.customers'),
+            path: `/merchant/${merchantId}/stores/store/customers`,
+            withoutPos: true,
+        },
+        {
+            name: TabNames.BLOCKCHAIN,
+            label: t('tabs.blockchains'),
+            path: `/merchant/${merchantId}/stores/store/chains`,
+            withoutPos: true,
+        },
+        {
+            name: TabNames.TRANSACTIONS,
+            label: t('tabs.transactions'),
+            path: `/merchant/${merchantId}/stores/store/transactions`,
+            withoutPos: true,
         },
         {
             name: TabNames.DATA_SYNC,
             label: t('tabs.dataSync'),
-            path: `/merchant/${merchantId}/stores/store/data-sync`
+            path: `/merchant/${merchantId}/stores/store/data-sync`,
+            withoutPos: true,
         },
         {
             name: TabNames.INTERFACES,
             label: t('tabs.interfaces'),
-            path: `/merchant/${merchantId}/stores/store/interfaces`
+            path: `/merchant/${merchantId}/stores/store/interfaces`,
+            withoutPos: true,
         },
         {
             name: TabNames.APPEARANCE,
             label: t('tabs.appearance'),
-            path: `/merchant/${merchantId}/stores/store/style`
+            path: `/merchant/${merchantId}/stores/store/style`,
+            withoutPos: true
         },
     ]
 
@@ -121,40 +133,54 @@ export default function StoreDetails() {
         })
     }, [url])
 
+
+    if (merchantId === undefined) {
+        throw new Error('Merchant ID is required');
+    }
+
+    const merchantIdNumber = parseInt(merchantId);
     return (
         <div>
             <div className="mx-5 pb-5">
                 {/* Store indicator line */}
-                <div className='flex flex-row items-start'>
-                    <label className="btn btn-accent btn-circle btn-sm mt-5 mr-8 text-white" onClick={onGoBack}>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
-                        </svg>
-                    </label>
-                    {store ?
-                        <StoreIndicatorLine store={store} onInfo={onInfo} />
-                        :
-                        <LoadingSpinner />
-                    }
-                </div>
-                <div className="tabs tabs-lifted mt-3" role="tablist">
-                    {tabs.map(t => {
-                        const isActive = isRouteActive(t.name);
-                        return (
-                            <Fragment key={t.path}>
-                                <NavLink to={`${t.path}?storeUrl=${encodeURIComponent(store?.url || '')}`}
-                                    role="tab" className={'tab' + (isActive ? ' tab-active' : '')}>
-                                    {t.label}
-                                </NavLink>
-                                <div role="tabpanel" key={t.name + 'content'} className='tab-content bg-base-100 border-base-300 rounded-box p-6'>
-                                    {isActive &&
-                                        <Outlet />
-                                    }
-                                </div>
-                            </Fragment>
-                        )
-                    })}
-                </div>
+                {store ?
+                    <>
+                        <div className='flex flex-row items-start'>
+                            <label className="btn btn-accent btn-circle btn-sm mt-5 mr-8 text-white" onClick={onGoBack}>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+                                </svg>
+                            </label>
+                            <StoreIndicatorLine store={store} onInfo={onInfo} />
+                        </div>
+                        <div className="tabs tabs-lifted mt-3" role="tablist">
+                            {tabs.map(t => {
+                                const isActive = isRouteActive(t.name);
+                                return (
+                                    <Fragment key={t.path}>
+                                        <NavLink to={`${t.path}?storeUrl=${encodeURIComponent(store?.url || '')}`}
+                                            role="tab" className={'tab' + (isActive ? ' tab-active' : '')}>
+                                            {t.label}
+                                        </NavLink>
+                                        <div role="tabpanel" key={t.name + 'content'} className='tab-content bg-base-100 border-base-300 rounded-box p-6'>
+                                            {
+                                                isActive &&
+                                                    t.withoutPos ?
+                                                    <Outlet />
+                                                    :
+                                                    <AssociatedPosFeatureGuard merchantId={merchantIdNumber} storeUrl={store?.url || ''}>
+                                                        <Outlet />
+                                                    </AssociatedPosFeatureGuard>
+                                            }
+                                        </div>
+                                    </Fragment>
+                                )
+                            })
+                            }
+                        </div>
+                    </>
+                    : <LoadingSpinner />
+                }
             </div>
 
             <Modal open={storeInfoModal} onChangeOpen={setStoreInfoModal}>

@@ -1,20 +1,21 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { interfacesService } from "../../../api/services/Interfaces";
+import { storeService } from "../../../api/services/Store";
+import AddTableForm from "../../../components/AddTableForm/AddTableForm";
+import LoadingSpinner from "../../../components/Loading/LoadingSpinner";
+import { Modal } from "../../../components/Modal/Modal";
+import QRViewer from "../../../components/QRViewer/QRViewer";
+import GenericTable, { GenericTableAction, GenericTableColumn } from "../../../components/Table/GenericTable";
+import TabTitle from "../../../components/Tabs/TabTitle";
+import { CreateTcposTableDto } from "../../../dto/CreateTableDto";
+import { InterfaceType, PosAssociationResponseDto } from "../../../dto/ErpInterfacesDto";
 import { StoreDto } from "../../../dto/stores/StoreDto";
 import { TableDto } from "../../../dto/TableDto";
-import { storeService } from "../../../api/services/Store";
-import LoadingSpinner from "../../../components/Loading/LoadingSpinner";
-import { CreateTcposTableDto } from "../../../dto/CreateTableDto";
-import AddTableForm from "../../../components/AddTableForm/AddTableForm";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import QRViewer from "../../../components/QRViewer/QRViewer";
-import GenericTable, { GenericTableColumn, GenericTableAction } from "../../../components/Table/GenericTable";
-import { Modal } from "../../../components/Modal/Modal";
-import TabTitle from "../../../components/Tabs/TabTitle";
+import { PosType } from "../../../model/PosType";
 import { useStoreUrl } from "../../../utils";
-import { interfacesService } from "../../../api/services/Interfaces";
-import { AssociationResponseDto, InterfaceType, WondAssociationResponseDto } from "../../../dto/ErpInterfacesDto";
-import { WondType } from "../../../model/WondType";
+import AssociatedPosFeatureGuard from "../../../components/HOC/AssociatedPosFeatureGuard";
 
 const tableColumns: GenericTableColumn<TableDto>[] = [
     {
@@ -27,9 +28,10 @@ const tableColumns: GenericTableColumn<TableDto>[] = [
     }
 ]
 
-export default () => {
+const TablesTab = () => {
     const navigate = useNavigate();
     const [store, setStore] = useState<StoreDto>({} as StoreDto);
+    const [posType, setPosType] = useState<PosType>();
     const [tables, setTables] = useState<TableDto[]>([]);
     const [addTableModalOpen, setAddTableModalOpen] = useState<boolean>(false);
     const [qrCodeShownTable, setQrCodeShownTable] = useState<TableDto | null>(
@@ -50,6 +52,8 @@ export default () => {
     const { merchantId } = useParams<{ merchantId: string }>();
     const { t } = useTranslation(undefined, { keyPrefix: "supplierTables" });
 
+    if (!merchantId) throw new Error("No merchantId provided");
+    const merchantIdNum = parseInt(merchantId);
     const tableActions: GenericTableAction<TableDto>[] = [
         {
             label: <>
@@ -80,14 +84,14 @@ export default () => {
     const fetchData = async (store: StoreDto) => {
         const tables = await storeService.listTables(store.url);
         const associations = await interfacesService.getAssociations(store.url);
-        const wondAssociations = associations.filter(a => a.interfaceType === InterfaceType.WOND) as WondAssociationResponseDto[];
-        const tcposAssociation = wondAssociations.find(a => a.wondType === WondType.TCPOS);
-        if (!tcposAssociation) {
+        const wondAssociation = associations.find(a => a.interfaceType === InterfaceType.POS) as PosAssociationResponseDto;
+        if (!wondAssociation) {
             setHasRequiredAssociations(false);
         } else {
             setHasRequiredAssociations(true);
         }
 
+        setPosType(wondAssociation.posType);
         setTables(tables);
     };
 
@@ -151,15 +155,17 @@ export default () => {
                         }
                     />
                     <div className="flex w-full flex-col" style={{ padding: '20px' }}>
-                        <GenericTable data={tables} columns={tableColumns} actions={tableActions} />
-                        {!hasRequiredAssociations &&
-                            <span className="mt-4 flex flex-row self-stretch items-center justify-center">
-                                <span className="text-error text-center">
-                                    {t("noRequiredAssociations")}
+                        <AssociatedPosFeatureGuard merchantId={merchantIdNum} storeUrl={store.url}>
+                            <GenericTable data={tables} columns={tableColumns} actions={tableActions} />
+                            {!hasRequiredAssociations &&
+                                <span className="mt-4 flex flex-row self-stretch items-center justify-center">
+                                    <span className="text-error text-center">
+                                        {t("noRequiredAssociations")}
+                                    </span>
+                                    <button className="inline btn btn-primary btn-sm mx-2" onClick={() => goToAssociations()}>{t("hereLink")}</button>
                                 </span>
-                                <button className="inline btn btn-primary btn-sm mx-2" onClick={() => goToAssociations()}>{t("hereLink")}</button>
-                            </span>
-                        }
+                            }
+                        </AssociatedPosFeatureGuard>
                     </div>
 
                 </>
@@ -186,7 +192,7 @@ export default () => {
                 <div className="flex flex-col">
                     <h1 className="text-2xl mb-2">{t("insertTableData")}</h1>
                     <AddTableForm
-                        erpType={store.erpType}
+                        erpType={posType!}
                         label={addingTable.label}
                         username={addingTable.credentials.username}
                         password={addingTable.credentials.password}
@@ -201,3 +207,5 @@ export default () => {
         </div>
     );
 };
+
+export default TablesTab;

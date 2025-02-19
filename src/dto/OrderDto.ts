@@ -1,4 +1,4 @@
-import { ErpOrderStatus, WondType } from "../model/WondType";
+import { PosOrderStatus, PosType } from "../model/PosType";
 
 export interface OrderTotalDto {
   total: number;
@@ -7,10 +7,10 @@ export interface OrderTotalDto {
 }
 
 export interface OrderDto {
-  erpType: WondType;
+  erpType: PosType;
   id: string;
   storeName: string;
-  status: ErpOrderStatus;
+  status: PosOrderStatus;
   tableId?: string;
   tableLabel?: string;
   date: Date;

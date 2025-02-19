@@ -571,9 +571,9 @@ export default {
     },
     supplierInterfacesDashboard: {
         title: "Interfaces",
-        wond: "Wond",
-        wondCaption: "Manage Wond interfaces here.",
-        wondButton: "Manage",
+        pos: "POS",
+        posCaption: "Manage POS interfaces here.",
+        posButton: "Manage",
         kumo: "Kumo",
         kumoCaption: "Manage Kumo interfaces here.",
         kumoButton: "Manage",
@@ -600,8 +600,10 @@ export default {
             updateTitle: 'Update interface',
             interfaceType: 'Interface Type',
             interfaceTypeLabel: 'Choose an interface type',
+            posType: 'POS Type',
+            posTypeLabel: 'Choose a POS type',
             typeEbics: 'EBICS - Banking system',
-            typeWond: 'WOND - E-commerce system',
+            typePos: 'POS - E-commerce system',
             typeKumo: 'Kumo - Accounting system',
             name: 'Interface name',
             url: 'System URL',
@@ -612,18 +614,30 @@ export default {
                 hostId: 'Host ID',
                 passphrase: 'Passphrase',
                 downloadLetter: {
-                    title: 'Finalize EBICS Setup',
+                    title: 'Configure EBICS Connection',
                     message: 'Click the button below to download the EBICS letter. This letter contains the information needed to establish the connection between the bank and the system. You will have to print it, sign it and send it to your bank. Directly contact the bank for more information.',
                     downloadBtn: 'Download Letter',
+                },
+                confirmation: {
+                    title: 'Finalize the Connection with EBICS',
+                    message: 'The interface is currently inactive, waiting for your bank to configure the system for use.',
+                    tutorialLine1: 'To proceed with the finalization:',
+                    tutorialLine2: 'Download the EBICS authorization letter using the button below and send it to your bank.',
+                    tutorialLine3: 'Wait for confirmation or a positive response from your bank.',
+                    tutorialLine4: 'Once you receive confirmation, return to this page and click the "Activate Interface" button.',
+                    downloadBtn: 'Download Letter',
+                    finalizeBtn: 'Activate Interface',
+                    cancelBtn: 'Close',
+                    error: 'Error during finalization. Please check that you have received confirmation from your bank or contact support.',
                 }
             },
             kumo: {
                 username: 'Username',
                 password: 'Password',
             },
-            wond: {
-                wondType: 'Wond type',
-                typeLightspeed: 'Lightspeed',
+            pos: {
+                posType: 'POS type',
+                typeInternal: 'Internal (DERP)',
                 typeTcpos: 'TCPOS',
                 tcpos: {
                     username: 'Username',
@@ -646,7 +660,8 @@ export default {
         associations: {
             title: 'Associated Interfaces',
             addBtn: 'Associate interface',
-            noInterface: 'You have not configured any interface for your company yet. Start by adding an interface',
+            noInterface: 'You have not configured any POS interface for your company yet. Start by adding a POS interface',
+            noAssociation: 'You have not linked any POS interface to this store. Start by linking a POS interface',
             noInterfaceLinkText: 'here',
             form: {
                 interfaceAssociation: 'Choose the interface to activate in this store',
@@ -675,7 +690,7 @@ export default {
             kumo: {
                 shopId: 'ID of the shop in Kumo (shopId)'
             },
-            wond: {
+            pos: {
                 tcpos: {
                     shopId: 'ID of the shop in TCPOS (shopId)'
                 }

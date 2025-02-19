@@ -30,19 +30,6 @@ const BaseInterfaceFormPart = ({
             />
         </label>
 
-        <label className="form-control w-full  mt-2">
-            <div className="label">
-                <span className="label-text">{t('form.interfaceType')}</span>
-            </div>
-
-            <select className="select select-bordered" value={iface.interfaceType || "null"} onChange={e => onChange({ ...iface, interfaceType: e.target.value as InterfaceType })}>
-                <option value="null" disabled>{t('form.interfaceTypeLabel')}</option>
-                <option value={InterfaceType.WOND} disabled={updating && iface.interfaceType !== InterfaceType.WOND}>{t('form.typeWond')}</option>
-                <option value={InterfaceType.KUMO} disabled={updating && iface.interfaceType !== InterfaceType.KUMO}>{t('form.typeKumo')}</option>
-                <option value={InterfaceType.EBICS} disabled={updating && iface.interfaceType !== InterfaceType.EBICS}>{t('form.typeEbics')}</option>
-            </select>
-        </label>
-
         <label className="form-control w-full mt-2">
             <div className="label">
                 <span className="label-text">{t('form.url')}</span>
@@ -51,6 +38,19 @@ const BaseInterfaceFormPart = ({
                 value={iface.url || ""}
                 onChange={(e) => onChange({ ...iface, url: e.target.value })}
             />
+        </label>
+
+        <label className="form-control w-full  mt-2">
+            <div className="label">
+                <span className="label-text">{t('form.interfaceType')}</span>
+            </div>
+
+            <select className="select select-bordered" value={iface.interfaceType || "null"} onChange={e => onChange({ ...iface, interfaceType: e.target.value as InterfaceType })}>
+                <option value="null" disabled>{t('form.interfaceTypeLabel')}</option>
+                <option value={InterfaceType.POS} disabled={updating && iface.interfaceType !== InterfaceType.POS}>{t('form.typePos')}</option>
+                <option value={InterfaceType.KUMO} disabled={updating && iface.interfaceType !== InterfaceType.KUMO}>{t('form.typeKumo')}</option>
+                <option value={InterfaceType.EBICS} disabled={updating && iface.interfaceType !== InterfaceType.EBICS}>{t('form.typeEbics')}</option>
+            </select>
         </label>
     </>
 }
