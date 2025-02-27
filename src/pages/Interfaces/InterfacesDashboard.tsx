@@ -47,7 +47,7 @@ export default function InterfacesDashboard() {
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [merchantId]);
 
     const columns: GenericTableColumn<InterfaceResponseDto>[] = [
         {

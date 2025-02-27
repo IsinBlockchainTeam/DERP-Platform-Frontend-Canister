@@ -1,4 +1,4 @@
-import { CreateTcposTableDto } from '../../dto/CreateTableDto';
+import { CreateTableDto } from '../../dto/CreateTableDto';
 import { CreateStoreDto, StoreDto } from '../../dto/stores/StoreDto';
 import { StoreList } from '../../dto/stores/StoreList';
 import { TableDto } from '../../dto/TableDto';
@@ -128,7 +128,7 @@ export const storeService = {
         return res.data;
     },
 
-    createTcposTable: async (storeUrl: string, dto: CreateTcposTableDto): Promise<TableDto> => {
+    createTable: async (storeUrl: string, dto: CreateTableDto): Promise<TableDto> => {
         const res = await api.post<TableDto>(`/stores/tables`, dto, {
             params: {storeUrl},
             headers: await auth.authenticatedHeaders(),

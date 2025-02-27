@@ -9,7 +9,7 @@ import { Modal } from "../../../components/Modal/Modal";
 import QRViewer from "../../../components/QRViewer/QRViewer";
 import GenericTable, { GenericTableAction, GenericTableColumn } from "../../../components/Table/GenericTable";
 import TabTitle from "../../../components/Tabs/TabTitle";
-import { CreateTcposTableDto } from "../../../dto/CreateTableDto";
+import { CreateTableDto } from "../../../dto/CreateTableDto";
 import { InterfaceType, PosAssociationResponseDto } from "../../../dto/ErpInterfacesDto";
 import { StoreDto } from "../../../dto/stores/StoreDto";
 import { TableDto } from "../../../dto/TableDto";
@@ -37,15 +37,14 @@ const TablesTab = () => {
     const [qrCodeShownTable, setQrCodeShownTable] = useState<TableDto | null>(
         null,
     );
+    const [qrModalOpen, setQrModalOpen] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(true);
     const [searchParams] = useSearchParams();
     const [hasRequiredAssociations, setHasRequiredAssociations] = useState<boolean>(false);
-    const [addingTable, setAddingTable] = useState<CreateTcposTableDto>({
+    const [addingTable, setAddingTable] = useState<CreateTableDto>({
         label: "",
-        credentials: {
-            password: "",
-            username: "",
-        }
+        tcposUsername: "",
+        tcposPassword: "",
     });
 
     const storeUrl = useStoreUrl();
@@ -96,28 +95,29 @@ const TablesTab = () => {
     };
 
     const hideQrModal = () => {
-        window.location.hash = "";
+        setQrModalOpen(false);
     };
 
     const showQrModal = (table: TableDto) => {
         setQrCodeShownTable(table);
-        window.location.hash = "show-qrcode-modal";
+        setQrModalOpen(true);
     };
 
     const openAddModal = () => {
-        setAddingTable({ label: "", credentials: { password: "", username: "" } });
+        setAddingTable({ label: "", tcposUsername: "", tcposPassword: "" });
         setAddTableModalOpen(true);
     }
 
     const onConfirmAddTable = async () => {
         setLoading(true);
-        await storeService.createTcposTable(storeUrl, addingTable);
+        await storeService.createTable(storeUrl, addingTable);
         fetchData(store);
         setAddTableModalOpen(false);
         setLoading(false);
     }
 
     useEffect(() => {
+        console.log("searchParams", searchParams.get("storeUrl"));
         setLoading(true);
         storeService.list(merchantId).then((stores) => {
             const store = stores.find(
@@ -128,7 +128,7 @@ const TablesTab = () => {
             setStore(store);
             fetchData(store).then(() => setLoading(false));
         });
-    }, []);
+    }, [merchantId, searchParams]);
 
     const goToAssociations = () => {
         navigate(`/merchant/${merchantId}/stores/store/interfaces?storeUrl=${encodeURIComponent(store.url)}`);
@@ -172,20 +172,16 @@ const TablesTab = () => {
             )}
 
             {/* QR Code modal */}
-            <div id="show-qrcode-modal" className="modal">
-                <div className="modal-box relative">
-                    <form method="dialog">
-                        <QRViewer
-                            table={qrCodeShownTable || undefined}
-                            store={store}
-                        />
-                        <div className="modal-action">
-                            {/* if there is a button in form, it will close the modal */}
-                            <button className="btn" onClick={() => hideQrModal()}>{t("closeBtn")}</button>
-                        </div>
-                    </form>
+            <Modal closeButton open={qrModalOpen} onChangeOpen={setQrModalOpen}>
+                <QRViewer
+                    table={qrCodeShownTable || undefined}
+                    store={store}
+                />
+                <div className="modal-action">
+                    {/* if there is a button in form, it will close the modal */}
+                    <button className="btn" onClick={() => hideQrModal()}>{t("closeBtn")}</button>
                 </div>
-            </div>
+            </Modal>
 
             {/* Add Table modal */}
             <Modal closeButton open={addTableModalOpen} onChangeOpen={setAddTableModalOpen}>
@@ -194,11 +190,11 @@ const TablesTab = () => {
                     <AddTableForm
                         erpType={posType!}
                         label={addingTable.label}
-                        username={addingTable.credentials.username}
-                        password={addingTable.credentials.password}
+                        username={addingTable.tcposUsername || ""}
+                        password={addingTable.tcposPassword || ""}
                         onChangeLabel={(value: string) => setAddingTable({ ...addingTable, label: value })}
-                        onChangeUsername={(value: string) => setAddingTable({ ...addingTable, credentials: { ...addingTable.credentials, username: value } })}
-                        onChangePassword={(value: string) => setAddingTable({ ...addingTable, credentials: { ...addingTable.credentials, password: value } })}
+                        onChangeUsername={(value: string) => setAddingTable({ ...addingTable, tcposUsername: value })}
+                        onChangePassword={(value: string) => setAddingTable({ ...addingTable, tcposPassword: value })}
                         onCancel={() => setAddTableModalOpen(false)}
                         onConfirm={() => onConfirmAddTable()}
                     />

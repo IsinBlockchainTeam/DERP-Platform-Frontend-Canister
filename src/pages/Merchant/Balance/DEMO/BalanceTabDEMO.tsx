@@ -24,11 +24,11 @@ const BalanceTabDEMO = () => {
 
     const [loading, setLoading] = useState(true);
     const { t } = useTranslation(undefined, { keyPrefix: 'merchantBalance' })
-    const [expandedCategory, setExpandedCategory] = useState<number[]>([]);
-    const [selectedCategory, setSelectedCateogry] = useState<number | null>(null);
-    const [categories, setCategories] = useState<StatementItemCategory[]>([])
-    const [statementItemsByCategoryMap, setStatementItemsByCategoryMap] = useState<Map<number,StatementItem[]>>(new Map());
-    const [statementAggregatesByStatementItemMap, setStatementAggregatesByStatementItemMap] = useState<Map<number,StatementItemAggregate>>(new Map());
+    const [expandedCategory, setExpandedCategory] = useState<(number | undefined)[]>([]);
+    const [selectedCategory, setSelectedCateogry] = useState<number | null | undefined>(null);
+    const [categories, setCategories] = useState<(StatementItemCategory | { id: undefined, name: string })[]>([])
+    const [statementItemsByCategoryMap, setStatementItemsByCategoryMap] = useState<Map<number | undefined, StatementItem[]>>(new Map());
+    const [statementAggregatesByStatementItemMap, setStatementAggregatesByStatementItemMap] = useState<Map<number, StatementItemAggregate>>(new Map());
 
 
     const fetchData = async () => {
@@ -36,21 +36,27 @@ const BalanceTabDEMO = () => {
             setLoading(true);
             // Fetch data here
             const categories = await statementItemsClient.getStatementItemsCategories();
-            console.log(categories);
-            setCategories(categories);
-            const statementItemByCategoryMap = new Map<number,StatementItem[]>();
-            await Promise.all(categories.map(async category => {
-                try{
+            const uncategorizedCategory = { id: undefined, name: t('uncategorized') }
+            const allCategories = [...categories, uncategorizedCategory];
+            setCategories(allCategories);
+
+            const statementItemByCategoryMap = new Map<number | undefined, StatementItem[]>();
+            await Promise.all(allCategories.map(async category => {
+                try {
                     const items = await statementItemsClient.getStatementItems(category.id);
                     statementItemByCategoryMap.set(category.id, items);
-                }catch (error){
+                } catch (error) {
                     console.log(error);
                     statementItemByCategoryMap.set(category.id, []);
                 }
             }));
-            const statementAggregatesByStatementItemMap = await getAllCategoriesAggregateData(categories,statementItemByCategoryMap);
+
+            const statementAggregatesByStatementItemMap = await getAllCategoriesAggregateData(allCategories, statementItemByCategoryMap);
             setStatementItemsByCategoryMap(statementItemByCategoryMap);
             setStatementAggregatesByStatementItemMap(statementAggregatesByStatementItemMap);
+            
+            console.log(statementAggregatesByStatementItemMap);
+            console.log(statementItemByCategoryMap);
         } catch (error) {
             console.log(error);
         } finally {
@@ -71,9 +77,9 @@ const BalanceTabDEMO = () => {
 
     const yearNumber = new Number(year).valueOf();
 
-    const getAllCategoriesAggregateData = async (categories: StatementItemCategory[],statementItemsMap: Map<number,StatementItem[]>) => {
+    const getAllCategoriesAggregateData = async (categories: (StatementItemCategory | { id: undefined, name: string })[], statementItemsMap: Map<number | undefined, StatementItem[]>) => {
         const finalMap = new Map<number, StatementItemAggregate>();
-        const maps = await Promise.all(categories.map(category => getStatementItemAggregateDataMapByCategoryId(category.id,statementItemsMap)));
+        const maps = await Promise.all(categories.map(category => getStatementItemAggregateDataMapByCategoryId(category.id, statementItemsMap)));
 
         maps.forEach(categoryMap => {
             categoryMap.forEach((value, key) => {
@@ -84,22 +90,22 @@ const BalanceTabDEMO = () => {
         return finalMap;
     }
 
-    const toggleCategory = async (groupId:number) => {
+    const toggleCategory = async (groupId: number | undefined) => {
 
-        setExpandedCategory(prev =>{
-            if(prev.includes(groupId)){
+        setExpandedCategory(prev => {
+            if (prev.includes(groupId)) {
                 setSelectedCateogry(null);
                 return prev.filter(id => id !== groupId)
-            }else{
+            } else {
                 setSelectedCateogry(groupId);
-               return [...prev, groupId]
+                return [...prev, groupId]
             }
         }
         );
     };
 
-    const getStatementItemAggregateDataMapByCategoryId = async (categoryId:number, statementItemsMap:Map<number,StatementItem[]>) : Promise<Map<number,StatementItemAggregate>> =>{
-        const aggregateValuesMap = new Map<number,StatementItemAggregate>();
+    const getStatementItemAggregateDataMapByCategoryId = async (categoryId: number | undefined, statementItemsMap: Map<number | undefined, StatementItem[]>): Promise<Map<number, StatementItemAggregate>> => {
+        const aggregateValuesMap = new Map<number, StatementItemAggregate>();
         const statementItems = statementItemsMap.get(categoryId) || [];
 
         await Promise.all(
@@ -109,7 +115,7 @@ const BalanceTabDEMO = () => {
                     aggregateValuesMap.set(item.id, aggregateValue);
                 } catch (error) {
                     console.error(`Error fetching aggregate value for statement item ${item.id}:`, error);
-                    aggregateValuesMap.set(item.id, new StatementItemAggregate(   item.id,0,yearNumber));
+                    aggregateValuesMap.set(item.id, new StatementItemAggregate(item.id, 0, yearNumber));
                 }
             })
         );
@@ -117,19 +123,19 @@ const BalanceTabDEMO = () => {
         return aggregateValuesMap;
     }
 
-    const goToMonthlyDetail = (statementId:number,categoryId:number) => {
+    const goToMonthlyDetail = (statementId: number, categoryId: number | undefined) => {
         console.log('Navigate to monthly detail:', statementId);
         navigate(`/merchant/${merchantId}/balance/${year}/categories/${categoryId}/items/${statementId}/months`);
     };
 
-    const calculateTotalByCategory = (categoryId:number) => {
+    const calculateTotalByCategory = (categoryId: number | undefined) => {
         const statementItems = statementItemsByCategoryMap.get(categoryId) || [];
         return statementItems.reduce((acc, statement) => {
             return acc + Math.abs(statementAggregatesByStatementItemMap.get(statement.id)?.total || 0);
         }, 0);
     }
 
-    const generateUniqueColors = (length:number) => {
+    const generateUniqueColors = (length: number) => {
         const colors = [...CHART_COLORS];
         const result = [];
 
@@ -147,7 +153,7 @@ const BalanceTabDEMO = () => {
     };
 
     const renderPieChart = () => {
-        if (!selectedCategory) return null;
+        if (selectedCategory === null) return null;
 
         const statementItems = statementItemsByCategoryMap.get(selectedCategory) || [];
 
@@ -157,8 +163,6 @@ const BalanceTabDEMO = () => {
         }));
 
         const pieColors = generateUniqueColors(data.length);
-
-
         return (
             <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -198,7 +202,7 @@ const BalanceTabDEMO = () => {
                 </div>
                 <div>
                     <button
-                        onClick={() =>  navigate(`/merchant/${merchantId}/balance/settings`)}
+                        onClick={() => navigate(`/merchant/${merchantId}/balance/settings`)}
                         className="btn btn-ghost btn-circle mr-4"
                         aria-label="Impostazioni"
                     >
@@ -222,7 +226,7 @@ const BalanceTabDEMO = () => {
                 <div className="col-span-3 space-y-4">
                     {categories.map(category => (
                         <div
-                            key={category.id}
+                            key={category.id ?? 'uncategorized'}
                             className="card bg-base-100 shadow-lg hover:shadow-xl transition-all"
                         >
                             <div
@@ -249,22 +253,22 @@ const BalanceTabDEMO = () => {
                             {/* Accounts List */}
                             {expandedCategory.includes(category.id) && (
                                 <div className="p-4 space-y-2">
-                                    {statementItemsByCategoryMap.get(category.id)?.map(statment => (
+                                    {statementItemsByCategoryMap.get(category.id)?.map(statement => (
                                         <div
-                                            key={statment.id}
-                                            onClick={() => goToMonthlyDetail(statment.id,category.id)}
+                                            key={statement.id}
+                                            onClick={() => goToMonthlyDetail(statement.id, category.id)}
                                             className="flex items-center justify-between p-3 hover:bg-base-200 rounded-lg cursor-pointer transition-all"
                                         >
                                             <div className="flex items-center gap-3">
                                                 <Calendar className="w-4 h-4 text-gray-400" />
                                                 <div>
-                                                    <span className="font-medium">{statment.name}</span>
-                                                    <span className="text-gray-500 text-sm ml-2">({statment.id})</span>
+                                                    <span className="font-medium">{statement.name}</span>
+                                                    <span className="text-gray-500 text-sm ml-2">({statement.id})</span>
                                                 </div>
                                             </div>
                                             <span className="font-semibold">
-                        CHF {Math.abs(statementAggregatesByStatementItemMap.get(statment.id)?.total || 0).toLocaleString('it-CH', { minimumFractionDigits: 2 })}
-                      </span>
+                                                CHF {Math.abs(statementAggregatesByStatementItemMap.get(statement.id)?.total || 0).toLocaleString('it-CH', { minimumFractionDigits: 2 })}
+                                            </span>
                                         </div>
                                     ))}
                                 </div>
@@ -276,13 +280,13 @@ const BalanceTabDEMO = () => {
                     <div className="card card-bordered border-2 bg-base-100 shadow-lg sticky top-6">
                         <div className="card-body">
                             <h3 className="card-title text-xl">
-                                {selectedCategory
+                                {selectedCategory !== null
                                     ? `Distribuzione ${categories.find(g => g.id === selectedCategory)?.name}`
                                     : 'Seleziona una categoria'
                                 }
                             </h3>
                             <div className="h-96">
-                                {selectedCategory ? (
+                                {selectedCategory !== null ? (
                                     renderPieChart()
                                 ) : (
                                     <div className="flex items-center justify-center h-full text-gray-400">

@@ -43,7 +43,7 @@ function ConfirmPayment() {
             setLoading(true);
             const transactionId = `${searchParams.get(DATATRANS_TRX_ID)}`;
             localStorage.setItem(TRANSACTION_ID, transactionId);
-            setInvoiceUrl(`${window.location.origin}/api/orders/last/payed-invoice?trxId=${transactionId}`);
+            setInvoiceUrl(`${process.env.REACT_APP_BACKEND_URL}/api/orders/last/payed-invoice?trxId=${transactionId}`);
 
             const customerToken = await auth.generateCustomerToken({transactionId});
             auth.customerLogin(customerToken);
@@ -91,8 +91,6 @@ function ConfirmPayment() {
 
     return (
         <main className={"flex flex-col flex-1"}>
-            <CustomerHeader/>
-
             {
                 (!loading && !failed) &&
                 <div className="w-screen overflow-hidden flex flex-col grow">
@@ -155,8 +153,8 @@ function ConfirmPayment() {
                         </div>
                     </div>
                     <div className="h-18 p-3 flex items-center justify-center shrink border-t border-gray-300">
-                        <a download href={invoiceUrl}>
-                            <label className="btn btn-primary">{t('downloadBtn')}</label>
+                        <a href={invoiceUrl}>
+                            <label className="btn btn-primary">{t('viewBtn')}</label>
                         </a>
                     </div>
                 </div>

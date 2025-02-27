@@ -9,8 +9,7 @@ const BalanceSettings = () => {
     const location = useLocation();
     const navigate = useNavigate()
 
-
-    const categories = [
+    const menuEntries = [
         {
             label: t('categories'),
             path: 'balance/settings/categories',
@@ -27,7 +26,7 @@ const BalanceSettings = () => {
         navigate(`/merchant/${merchantId}/balance/settings/${name}`);
     }
 
-    const activeRoute = categories.find(category => location.pathname.includes(category.path))?.name;
+    const activeRoute = menuEntries.find(category => location.pathname.includes(category.path))?.name;
     return <div>
         <div className="flex flex-row col w-full p-6 items-center content-center">
             <BackButton onGoBack={
@@ -37,7 +36,7 @@ const BalanceSettings = () => {
         </div>
         <div className="flex flex-row p-6">
             <ul className="menu rounded-box bg-base-200 w-56">
-                {categories.map((category, index) =>
+                {menuEntries.map((category, index) =>
                     <li key={index}>
                         <a onClick={() => changeRoute(category.name)}
                             className={activeRoute === category.name ? 'active' : ''}>{category.label}</a>

@@ -65,15 +65,14 @@ const BalanceTab = () => {
     const yearNumber = new Number(year).valueOf();
 
     return <div className="flex flex-col col w-full p-6">
-        <TabTitle title={t('title')} rightSlot=<button
+        <TabTitle title={t('title')} rightSlot={<button
             className="btn btn-primary"
             onClick={() => navigate(`/merchant/${merchantId}/balance/settings`)}
         >
 
             {t('settings')}
-        </button> />
-        <div
-        >
+        </button>} /> 
+        <div>
             <label className="form-control mb-4 w-min">
                 <SmartIntInput
                     onChange={onChangeYear}

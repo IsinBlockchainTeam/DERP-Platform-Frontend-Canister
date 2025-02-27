@@ -29,7 +29,7 @@ export default function QRViewer({ store, table}: Props) {
             });
 
             const url = await auth.shorten(
-                `${window.location.origin}/table?token=${token}`,
+                `${process.env.REACT_APP_BACKEND_URL}/table?token=${token}`,
             );
             setTableLink(url);
         } finally {

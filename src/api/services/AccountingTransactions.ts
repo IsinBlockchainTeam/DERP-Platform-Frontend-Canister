@@ -16,7 +16,7 @@ export const accountingTransactionService = {
         );
 
         const trxs = resp.data.map((trx) => {
-            (trx.Header as any).IssueDate = new Date(trx.Header.IssueDate?.toISOString() || "");
+            (trx.Header as any).IssueDate = new Date(trx.Header.IssueDate || "");
             if (trx.Header.ValueDate)
                 (trx.Header as any).ValueDate = new Date(trx.Header.ValueDate);
 
@@ -39,7 +39,7 @@ export const accountingTransactionService = {
 
         const trx = resp.data;
 
-        (trx.Header as any).IssueDate = new Date(trx.Header.IssueDate?.toISOString() || "");
+        (trx.Header as any).IssueDate = new Date(trx.Header.IssueDate || "");
         if (trx.Header.ValueDate)
             (trx.Header as any).ValueDate = new Date(trx.Header.ValueDate);
 

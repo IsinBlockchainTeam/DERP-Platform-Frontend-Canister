@@ -193,7 +193,7 @@ export const auth = {
             },
         );
 
-        return `${window.location.origin}/api/shortUrl/${res.data.id}`;
+        return `${process.env.REACT_APP_BACKEND_URL}/api/shortUrl/${res.data.id}`;
     },
 };
 

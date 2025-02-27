@@ -42,7 +42,7 @@ const AssociatedPosFeatureGuard = ({
 
     useEffect(() => {
         fetchData();
-    }, [children, storeUrl, merchantId]);
+    }, [storeUrl, merchantId]);
 
     const onGotoAssociations = () => {
         navigate(`/merchant/${merchantId}/stores/store/interfaces?storeUrl=${encodeURIComponent(storeUrl)}`);

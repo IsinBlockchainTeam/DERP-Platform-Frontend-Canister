@@ -387,8 +387,8 @@ export default {
     supplierTables: {
         addTable: {
             tableLabelPlaceholder: 'Table label',
-            erpUsernamePlaceholder: 'ERP Account Username',
-            erpPasswordPlaceholder: 'ERP Account Password',
+            posUsernamePlaceholder: 'POS Account Username',
+            posPasswordPlaceholder: 'POS Account Password',
             confirmBtn: 'Confirm',
             cancelBtn: 'Cancel',
         },
@@ -436,8 +436,14 @@ export default {
     merchantBalance: {
         title: 'Balance Statement',
         noCategories: 'Balance statement has not been configured yet.',
-        uncategorized: 'Others',
+        uncategorized: 'Uncategorized',
         settings: 'Settings',
+        defaultCategories: {
+            Actives: 'Active',
+            Passives: 'Passive',
+            Incomes: 'Incomes',
+            Expenses: 'Expenses',
+        },
         balanceSettings: {
             title: 'Balance Statement Settings',
             year: 'Year',
@@ -447,6 +453,17 @@ export default {
             noCategorySelected: 'Please select a category to view the statement items',
             addStatementItem: 'Aggiungi Voce',
             addCategory: 'Add Category',
+            setupDefaultCategories: 'Setup Default Categories',
+            setupDefaultCategoriesModal: {
+                title: 'Setup Default Categories',
+                message: 'This action will setup your financial statement with the default categories for the system. This includes the following changes:',
+                changeCategories: 'Create the following categories: Active, Passive, Revenue, Expenses',
+                changeItems1: 'Create a statement rule and a statement item in the Revenue category for each group of products in the system (e.g. Beverages, Desserts, etc.)',
+                changeItems2: 'Create a statement rule and a statement item in the Passive category for each VAT definition in the system (e.g. Vat 8.1%, etc.)',
+                changeItems3: 'Create a statement rule and a statement item in the Active category for each supported payment method (e.g. Cash, Credit Card, etc.)',
+                submit: 'Apply',
+                cancel: 'Cancel',
+            },
             addCategoryModal: {
                 title: 'Add Category',
                 name: 'Category Name',
@@ -517,7 +534,7 @@ export default {
     copyQrLink: 'Copy QR Link',
     copiedToClipboard: 'Copied to clipboard!',
     confirmPayment: {
-        downloadBtn: 'Download Receipt',
+        viewBtn: 'View Receipt',
         loadingCaption: 'Loading ...',
         row: {
             id: 'ID',

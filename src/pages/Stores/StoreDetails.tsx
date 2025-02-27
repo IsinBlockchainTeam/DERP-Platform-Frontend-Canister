@@ -164,13 +164,14 @@ export default function StoreDetails() {
                                         </NavLink>
                                         <div role="tabpanel" key={t.name + 'content'} className='tab-content bg-base-100 border-base-300 rounded-box p-6'>
                                             {
-                                                isActive &&
+                                                isActive && (
                                                     t.withoutPos ?
                                                     <Outlet />
                                                     :
                                                     <AssociatedPosFeatureGuard merchantId={merchantIdNumber} storeUrl={store?.url || ''}>
                                                         <Outlet />
                                                     </AssociatedPosFeatureGuard>
+                                                )
                                             }
                                         </div>
                                     </Fragment>

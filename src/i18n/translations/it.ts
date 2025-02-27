@@ -387,8 +387,8 @@ export default {
     supplierTables: {
         addTable: {
             tableLabelPlaceholder: 'Etichetta Tavolo',
-            erpUsernamePlaceholder: 'Nome Utente Account ERP',
-            erpPasswordPlaceholder: 'Password Account ERP',
+            posUsernamePlaceholder: 'Nome Utente Account POS',
+            posPasswordPlaceholder: 'Password Account POS',
             confirmBtn: 'Conferma',
             cancelBtn: 'Annulla',
         },
@@ -437,6 +437,12 @@ export default {
         noCategories: 'Non sono ancora state configurate le categorie di bilancio.',
         settings: 'Impostazioni',
         uncategorized: 'Non categorizzato',
+        defaultCategories: {
+            Actives: 'Attivi',
+            Passives: 'Passivi',
+            Incomes: 'Ricavi',
+            Expenses: 'Spese',
+        },
         balanceSettings: {
             title: 'Impostazioni Bilancio',
             year: 'Anno',
@@ -446,6 +452,17 @@ export default {
             addCategory: 'Aggiungi Categoria',
             addStatementItem: 'Aggiungi Voce',
             noCategorySelected: 'Please select a category to view the statement items',
+            setupDefaultCategories: 'Configura le Categorie di Bilancio di Default',
+            setupDefaultCategoriesModal: {
+                title: 'Configura le Categorie di Bilancio di Default',
+                message: 'Questa azione configurerà il riassunto finanziario con le categorie di default del sistema. Questo include le seguenti modifiche:',
+                changeCategories: 'Crea le seguenti categorie: Attivo, Passivo, Ricavi, Spese',
+                changeItems1: 'Crea una regola e una voce nella categoria Ricavi per ogni gruppo di prodotti nel sistema (e.g. Bevande, Dolci, etc.)',
+                changeItems2: 'Crea una regola e una voce nella categoria Passive per ogni definizione IVA nel sistema (e.g. IVA 8.1%, etc.)',
+                changeItems3: 'Crea una regola e una voce nella categoria Attivi per ogni metodo di pagamento supportato (e.g. Cash, Credit Card, etc.)',
+                submit: 'Applica',
+                cancel: 'Annulla',
+            },
             addCategoryModal: {
                 title: 'Aggiungi Categoria',
                 name: 'Nome Categoria',

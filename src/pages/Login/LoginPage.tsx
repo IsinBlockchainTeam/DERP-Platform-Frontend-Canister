@@ -37,7 +37,8 @@ function LoginPage() {
         await authClient.login({
             identityProvider:  identityProvider(),
             onSuccess: async () => {
-                await fakeLogin();
+                await submitLogin();
+                //await fakeLogin();
             },
             onError: (err: any) => {
                 showErrorMessage(err.message);
