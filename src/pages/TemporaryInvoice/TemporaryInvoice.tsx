@@ -190,7 +190,7 @@ function TemporaryInvoice(){
                                     transactionId={transactionId}
                                     onCancelled={onPaymentCancelled}
                                     onError={onPaymentError}
-                                    production={process.env.REACT_APP_ENV === 'prod'}
+                                    production={process.env.REACT_APP_ENV === 'production'}
                                 />
                             }
                         </>

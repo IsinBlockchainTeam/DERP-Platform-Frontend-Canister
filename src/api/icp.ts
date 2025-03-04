@@ -39,6 +39,6 @@ export const statementItemsClient = new Proxy(statementItemsClientOriginal, {
             }
         }
 
-        return target[prop];
+        return target[prop as keyof StatementItemsClient];
     }
 })
