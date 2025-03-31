@@ -4,12 +4,9 @@ import { DEFAULT_THEME } from './constants';
 import AdminDashboard from './pages/Administration/AdminDashboard';
 import PaymentCanceled from "./pages/PaymentFailed/PaymentFailed";
 import Report from './pages/Report/Report';
-import Offers from "./pages/Offers/Offers";
 import Redirect from './pages/Redirect/Redirect';
 import LoginPage from './pages/Login/LoginPage';
-import SupplierSignup from './pages/SupplierSignup/SupplierSignup';
 import TemporaryInvoice from "./pages/TemporaryInvoice/TemporaryInvoice";
-import SupplierOrders from "./pages/SupplierOrders/SupplierOrders";
 import PaymentFailed from './pages/PaymentFailed/PaymentFailed';
 import PaymentSuccess from './pages/PaymentSuccess/PaymentSuccess';
 import StoreDetails from './pages/Stores/StoreDetails';
@@ -79,7 +76,6 @@ function App() {
             <Route path="/login" element={<LoginPage />}></Route>
 
             { /* Customer Paths */}
-            <Route path="/offers" element={<Offers />}></Route>
             <Route path="/table" element={<TemporaryInvoice />}></Route>
             <Route path="/paymentSuccess" element={<PaymentSuccess />}></Route>
             <Route path="/paymentFailed" element={<PaymentFailed />}></Route>
@@ -87,12 +83,6 @@ function App() {
             <Route path="/report" element={<Report />}></Route>
             <Route path="/confirmPayment" element={<ConfirmPayment />}></Route>
             <Route path="/redirect" element={<Redirect />}></Route>
-
-            {/* TODO: Are these still needed? */}
-            <Route path="/supplier/signup" element={<SupplierSignup />}></Route>
-            <Route path="/supplier/orders" element={<SupplierOrders />}></Route>
-            <Route path="/supplier/updateCompanyInfo" element={<UpdateCompanyInfo />}></Route>
-            <Route path="/supplier/saveCompanyInfo" element={<SaveCompanyInfo />}></Route>
 
             {/* Every route child of this will have the header */}
             <Route path={"/*"} element={<BaseNavigator />}>
@@ -148,7 +138,7 @@ function App() {
                     <Route path="customers" element={<CustomersTab />}></Route>
                     <Route path="transactions" element={<AccountingTransactionsTab />}>
                         <Route index element={<AccountingTransactionsList />}></Route>
-                        <Route path=":transactionId" element={<AccountingTransactionDetails />}></Route>
+                        <Route path=":transactionType/:transactionId" element={<AccountingTransactionDetails />}></Route>
                     </Route>
                     <Route path={"invoices"} element={<SupplierInvoicesTab />}></Route>
                     <Route path={"invoices/invoice"} element={<InvoicePage />}></Route>

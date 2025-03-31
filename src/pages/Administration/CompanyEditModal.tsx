@@ -1,4 +1,4 @@
-import { CreatedCompanyDto, CreateRepresentativeDto, InfoCompanyDto, RepresentativeStatus } from '../../dto/CompanyDto';
+import { CreateRepresentativeDto, CompanyDto, RepresentativeStatus } from '../../dto/CompanyDto';
 import React, { Fragment, useEffect, useState } from 'react';
 import { companyService } from '../../api/services/Company';
 import LoadingSpinner from '../../components/Loading/LoadingSpinner';
@@ -16,7 +16,7 @@ type ModalProps = {
     toggleModal: () => void
     companyId: number,
     isMerchant: boolean,
-    resellersForMerchant?: InfoCompanyDto[]
+    resellersForMerchant?: CompanyDto[]
     infoMessage?: string,
     title?: string
 }
@@ -28,7 +28,7 @@ enum TabNames {
 
 
 function CompanyEditModal(props: ModalProps) {
-    const [companyUpdated, setCompanyUpdated] = React.useState<CreatedCompanyDto | undefined>(undefined);
+    const [companyUpdated, setCompanyUpdated] = React.useState<CompanyDto | undefined>(undefined);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [activeTab, setActiveTab] = useState<TabNames>(TabNames.COMPANY);
     const [users, setUsers] = useState<GenericFormData[]>([]);
@@ -228,7 +228,7 @@ function CompanyEditModal(props: ModalProps) {
                                         </label>
                                         <input
                                             type="text"
-                                            value={companyUpdated[field.name as keyof CreatedCompanyDto] || ''}
+                                            value={companyUpdated[field.name as keyof CompanyDto] || ''}
                                             readOnly
                                             className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-600 bg-gray-100 cursor-not-allowed"
                                         />
@@ -243,7 +243,7 @@ function CompanyEditModal(props: ModalProps) {
                                         </label>
                                         <input
                                             type="text"
-                                            value={props.resellersForMerchant?.find(reseller => reseller.companyId === companyUpdated.resellerId)?.businessName || ''}
+                                            value={props.resellersForMerchant?.find(reseller => reseller.id === companyUpdated.resellerId)?.businessName || ''}
                                             readOnly
                                             className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-600 bg-gray-100 cursor-not-allowed"
                                         />
@@ -349,8 +349,8 @@ function CompanyEditModal(props: ModalProps) {
                     emptyOption: 'Select a Reseller',
                     options: props.resellersForMerchant!.map(reseller =>
                         ({
-                            key: `${reseller.companyId}`,
-                            value: `${reseller.companyId}`,
+                            key: `${reseller.id}`,
+                            value: `${reseller.id}`,
                             label: reseller.businessName
                         }))
                 },
@@ -407,7 +407,7 @@ function CompanyEditModal(props: ModalProps) {
             setCompanyUpdated({
                 ...formData,
                 resellerId: formData.resellerId ? parseInt(formData.resellerId) : 0
-            } as unknown as CreatedCompanyDto);
+            } as unknown as CompanyDto);
         } catch (e) {
             console.error(e);
         } finally {

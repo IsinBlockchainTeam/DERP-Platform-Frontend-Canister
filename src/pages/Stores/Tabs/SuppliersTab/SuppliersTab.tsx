@@ -9,7 +9,7 @@ import GenericTable, { GenericTableColumn, GenericTableAction } from "../../../.
 import TabTitle from "../../../../components/Tabs/TabTitle";
 import { StoreDto } from "../../../../dto/stores/StoreDto";
 import { MySupplier } from "../../../../dto/stores/StoreList";
-import { parseSearchParamSafe, useStoreUrl } from "../../../../utils";
+import { parseSearchParamSafe, useStoreId } from "../../../../utils";
 import AllSuppliersTable from "./AllSuppliers";
 
 export default function SuppliersTab() {
@@ -22,14 +22,14 @@ export default function SuppliersTab() {
     const [showAllSuppliers, setShowAllSuppliers] = useState<boolean>(false);
     const [supplierToRemove, setSupplierToRemove] = useState<MySupplier>();
     const [confirmRemoveModalOpen, setConfirmRemoveModalOpen] = useState<boolean>(false);
-    const storeUrl = useStoreUrl();
+    const storeId = useStoreId();
 
     const { t } = useTranslation(undefined, { keyPrefix: 'mySuppliers' })
 
     const fetchData = async () => {
         try {
             setLoading(true);
-            const response = await relationsService.getSuppliers(storeUrl);
+            const response = await relationsService.getSuppliers(storeId);
             setSuppliers(response);
         } finally {
             setLoading(false);
@@ -74,8 +74,8 @@ export default function SuppliersTab() {
             throw new Error("No supplier to remove");
         }
 
-        await relationsService.removeSupplier(supplierToRemove.store.url);
-        setSuppliers(suppliers.filter(s => s.store.url !== supplierToRemove.store.url))
+        await relationsService.removeSupplier(supplierToRemove.store.id, storeId);
+        setSuppliers(suppliers.filter(s => s.store.id !== supplierToRemove.store.id))
         setSupplierToRemove(undefined);
     }
 
@@ -85,7 +85,7 @@ export default function SuppliersTab() {
         }
 
         const store = selectedStoreForAdd;
-        await relationsService.addSupplier(store.url, extIDinSelectedStore, storeUrl);
+        await relationsService.addSupplier(store.id, extIDinSelectedStore, storeId);
         setSuppliers((current) => [...current, { store: store, options: { supplierExternalID: extIDinSelectedStore } }]);
         setExtIDinSelectedStore('');
         setOptionsModalOpen(false);

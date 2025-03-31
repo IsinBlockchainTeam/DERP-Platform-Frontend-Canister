@@ -1,48 +1,37 @@
+import { AccountingTransaction, AccountingTransactionType } from '@derp/company-canister';
 import { GetAccountingTransactionQuery, ListAccountingTransactionQuery } from '../../dto/AccountingTransactionDto';
-import { AccountingTransaction } from '../../model/AccountingTransaction';
 import api from '../api';
 import { auth } from '../auth';
+import { accountingTransactionClient } from '../icp';
 
 export const accountingTransactionService = {
     async listAccountingTransactions(
         query: ListAccountingTransactionQuery,
     ): Promise<AccountingTransaction[]> {
-        const resp = await api.get<AccountingTransaction[]>(
-            '/accounting-transactions',
-            {
-                headers: await auth.authenticatedHeaders(),
-                params: query,
-            },
-        );
+        const tickets = await accountingTransactionClient.listTicketTransactions(query.dateFrom, query.dateTo);
+        const invoices = await accountingTransactionClient.listInvoiceTransactions(query.dateFrom, query.dateTo);
+        const bankings = await accountingTransactionClient.listBankTransactions(query.dateFrom, query.dateTo);
 
-        const trxs = resp.data.map((trx) => {
-            (trx.Header as any).IssueDate = new Date(trx.Header.IssueDate || "");
-            if (trx.Header.ValueDate)
-                (trx.Header as any).ValueDate = new Date(trx.Header.ValueDate);
-
-            return trx;
-        });
-
-        return trxs;
+        return [
+            ...tickets,
+            ...invoices,
+            ...bankings,
+        ]
     },
+
     async getAccountingTransaction(
         query: GetAccountingTransactionQuery,
         id: string
     ): Promise<AccountingTransaction> {
-        const resp = await api.get<AccountingTransaction>(
-            `/accounting-transactions/${id}`,
-            {
-                headers: await auth.authenticatedHeaders(),
-                params: query,
-            },
-        );
-
-        const trx = resp.data;
-
-        (trx.Header as any).IssueDate = new Date(trx.Header.IssueDate || "");
-        if (trx.Header.ValueDate)
-            (trx.Header as any).ValueDate = new Date(trx.Header.ValueDate);
-
-        return trx;
+        switch (query.type) {
+            case AccountingTransactionType.TICKET:
+                return await accountingTransactionClient.getTicketTransactionById(id);
+            case AccountingTransactionType.INVOICE:
+                return await accountingTransactionClient.getInvoiceTransactionById(id);
+            case AccountingTransactionType.BANK_TRX:
+                return await accountingTransactionClient.getBankTransactionById(id);
+            default:
+                throw new Error('Unknown transaction type');
+        }
     }
 };

@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
-import { relationsService } from "../../../../api/services/Relations";
 import { StoreDto } from "../../../../dto/stores/StoreDto";
 import { MySupplier } from "../../../../dto/stores/StoreList";
 import { useTranslation } from "react-i18next";
 import { storeService } from "../../../../api/services/Store";
 import LoadingSpinner from "../../../../components/Loading/LoadingSpinner";
-import { Modal } from "../../../../components/Modal/Modal";
 import GenericTable, { GenericTableColumn, GenericTableAction } from "../../../../components/Table/GenericTable";
 import { useParams } from "react-router-dom";
 
@@ -34,8 +32,8 @@ const AllSuppliersTable = ({
 
                 // filter out my stores and mySuppliers
                 const actualStoresToDisplay = stores
-                    .filter(store => !myStores.some(myStore => myStore.url === store.url))
-                    .filter(store => !mySuppliers.some(mySupplier => mySupplier.store.url === store.url));
+                    .filter(store => !myStores.some(myStore => myStore.id === store.id))
+                    .filter(store => !mySuppliers.some(mySupplier => mySupplier.store.id === store.id));
                 setStores(actualStoresToDisplay);
             } finally {
                 setLoadingStores(false);

@@ -3,14 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { companyService } from "../../../api/services/Company";
 import CompaniesTable from "../../../components/CompaniesTable/CompaniesTable";
 import LoadingSpinner from "../../../components/Loading/LoadingSpinner";
-import { InfoCompanyDto } from "../../../dto/CompanyDto";
+import { CompanyDto } from "../../../dto/CompanyDto";
 import CompanyEditModal from "../CompanyEditModal";
 import CompanyRegistrationModal from "../CompanyRegistrationModal";
 import { useTranslation } from 'react-i18next';
 
 const AdminMerchantsTab = () => {
-    const [merchants, setMerchants] = useState < InfoCompanyDto[] > ([]);
-    const [resellers, setResellers] = useState < InfoCompanyDto[] > ([]);
+    const [merchants, setMerchants] = useState < CompanyDto[] > ([]);
+    const [resellers, setResellers] = useState < CompanyDto[] > ([]);
     const [isRegistrationModalOpen, setIsRegistrationModalOpen] = useState < boolean > (false);
     const [companyIdSelected, setCompanyIdSelected] = useState < number > ();
     const [loading, setLoading] = useState < boolean > (false);
@@ -66,11 +66,11 @@ const AdminMerchantsTab = () => {
                 </div>
                 <CompaniesTable data={merchants}
                     onEdit={(row) => {
-                        setCompanyIdSelected(row.companyId)
+                        setCompanyIdSelected(row.id)
                         toggleEditModal()
                     }}
                     onDetails={(row) => {
-                        navigate(`/merchant/${row.companyId}/stores`)
+                        navigate(`/merchant/${row.id}/stores`)
                     }}
                 ></CompaniesTable>
 

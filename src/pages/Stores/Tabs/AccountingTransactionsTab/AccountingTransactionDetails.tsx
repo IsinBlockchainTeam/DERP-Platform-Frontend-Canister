@@ -1,26 +1,26 @@
 import { useTranslation } from 'react-i18next';
 import TabTitle from '../../../../components/Tabs/TabTitle';
-import { useStoreUrl } from '../../../../utils';
+import { useStoreId } from '../../../../utils';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { AccountingTransaction, AccountingTransactionType } from '../../../../model/AccountingTransaction';
 import { accountingTransactionService } from '../../../../api/services/AccountingTransactions';
 import LoadingSpinner from '../../../../components/Loading/LoadingSpinner';
 import { DownloadIcon } from '../../../../components/Icons/Icons';
+import { AccountingTransaction, AccountingTransactionType } from '@derp/company-canister';
 
 const AccountingTransactionDetails = () => {
     const { t } = useTranslation(undefined, { keyPrefix: 'supplierTransactions' });
 
-    const storeUrl = useStoreUrl();
-    const { transactionId } = useParams<{ transactionId: string }>();
+    const storeId = useStoreId();
+    const { transactionId, transactionType } = useParams<{ transactionId: string, transactionType: AccountingTransactionType }>();
     const [loading, setLoading] = useState<boolean>(false);
     const [transaction, setTransaction] = useState<AccountingTransaction | undefined>(undefined);
 
     const fetchTransaction = async () => {
-        if (!transactionId) return;
+        if (!transactionId || !transactionType) throw new Error("Transaction id or type is missing");
 
         setLoading(true);
-        const transaction = await accountingTransactionService.getAccountingTransaction({ storeUrl }, transactionId);
+        const transaction = await accountingTransactionService.getAccountingTransaction({ type: transactionType }, transactionId);
         setTransaction(transaction);
         setLoading(false);
     }
@@ -39,7 +39,7 @@ const AccountingTransactionDetails = () => {
         {loading ? <LoadingSpinner /> :
             <div className='flex flex-col items-center'>
                 {
-                    transaction?.Header.TypeCode === AccountingTransactionType.BANK
+                    transaction?.Header.TypeCode === AccountingTransactionType.BANK_TRX
                     &&
                     <a
                         download

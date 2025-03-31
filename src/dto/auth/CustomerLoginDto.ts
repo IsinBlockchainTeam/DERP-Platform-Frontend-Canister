@@ -1,6 +1,6 @@
 export interface CustomerLoginDto {
-  storeUrl: string;
-  tableId: string;
+  storeId: number;
+  tableId: number;
 }
 export interface CustomerLoginWithTrxIdDto {
   transactionId: string;

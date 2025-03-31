@@ -10,14 +10,15 @@ import TWI from '../../images/paymentMethods/TWI.jpg';
 import VIS from '../../images/paymentMethods/VIS.jpg';
 import ECA from '../../images/paymentMethods/ECA.jpg';
 import PAP from '../../images/paymentMethods/PAP.jpg';
-import {ERPItemDto} from "../../dto/ERPItemDto";
-import {OrderPaymentDto} from "../../dto/OrderPaymentDto";
 import {auth} from "../../api/auth";
+import { paymentsService } from '../../api/services/Payments';
+import { PaymentDto } from '../../dto/OrderPaymentDto';
+import { OfferLineDto } from '../../dto/OfferLine';
 
 
 function ConfirmPayment() {
-    const [orderDetails, setOrderDetails] = useState<ERPItemDto[]>();
-    const [currentPayment, setCurrentPayment] = useState<OrderPaymentDto>();
+    const [orderDetails, setOrderDetails] = useState<OfferLineDto[]>();
+    const [currentPayment, setCurrentPayment] = useState<PaymentDto>();
     const [loading, setLoading] = useState<boolean>(false)
     const [invoiceUrl, setInvoiceUrl] = useState<string>('');
     const [failed, setFailed] = useState<boolean>(false);
@@ -25,11 +26,10 @@ function ConfirmPayment() {
     const {t} = useTranslation(undefined, {keyPrefix: 'confirmPayment'});
 
     const fetchPaymentInfo = async (transactionId: string) => {
-        const orderId = await ordersService.getLastOpenOrderId();
-        const currentPayment = (await ordersService.getOrderPayments(orderId)).find(p => p.trxId === transactionId);
+        const currentPayment = await paymentsService.getTransactionPayment(transactionId);
         if (currentPayment) {
-            if (currentPayment.paidItems && currentPayment.paidItems.length) {
-                const paidItems = await ordersService.getOrderLinesInfo(currentPayment.paidItems);
+            if (currentPayment.paymentTargets && currentPayment.paymentTargets.length) {
+                const paidItems = await ordersService.getOfferlinesFromInvoiceItems(currentPayment.paymentTargets);
                 setOrderDetails(paidItems);
             }
             setCurrentPayment(currentPayment);
@@ -43,7 +43,7 @@ function ConfirmPayment() {
             setLoading(true);
             const transactionId = `${searchParams.get(DATATRANS_TRX_ID)}`;
             localStorage.setItem(TRANSACTION_ID, transactionId);
-            setInvoiceUrl(`${process.env.REACT_APP_BACKEND_URL}/api/orders/last/payed-invoice?trxId=${transactionId}`);
+            setInvoiceUrl(`${process.env.REACT_APP_BACKEND_URL}/payments/transactions/${transactionId}/receipt`);
 
             const customerToken = await auth.generateCustomerToken({transactionId});
             auth.customerLogin(customerToken);
@@ -143,9 +143,9 @@ function ConfirmPayment() {
                                         {renderPaymentImg()}
                                     </div>
                                     <div className="flex-1 space-y-2 py-1">
-                                        <p className="font-bold text-sm m-0">{t('info.transactionId')}: <p className="inline font-normal text-sm">{currentPayment?.trxId}</p></p>
+                                        <p className="font-bold text-sm m-0">{t('info.transactionId')}: <p className="inline font-normal text-sm">{currentPayment?.transactionId}</p></p>
                                         <p className="font-bold text-sm m-0">{t('info.type')}: <p className="inline font-normal text-sm">{currentPayment?.paymentType}</p></p>
-                                        <p className="font-bold text-sm m-0">{t('info.amount')}: <p className="inline font-normal text-sm">CHF. {currentPayment?.paymentAmount.toFixed(2)}</p></p>
+                                        <p className="font-bold text-sm m-0">{t('info.amount')}: <p className="inline font-normal text-sm">CHF. {currentPayment?.amount.toFixed(2)}</p></p>
                                     </div>
                                 </div>
                                 <div className="divider"></div>

@@ -1,4 +1,4 @@
-import { AccountingTransaction, StatementItem} from "@derp/company-canister";
+import { AccountingTransaction, StatementItem } from "@derp/company-canister";
 import { EyeIcon } from "../../../components/Icons/Icons";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -56,12 +56,7 @@ const DailyDetailBalanceView = () => {
 
             console.log("Custom date: " + JSON.stringify(customDate));
 
-            const transactions = await statementItemsClient.getStatementItemTransactions(itemIdNumber.valueOf(), {
-                year: currentDate.getFullYear(),
-                month: currentDate.getMonth(),
-                day: currentDate.getDate(),
-            });
-
+            const transactions = await statementItemsClient.getStatementItemTransactions(itemIdNumber.valueOf(), new Date());
             setTransactions(transactions);
         } catch (error) {
             console.log(error);
@@ -108,7 +103,7 @@ const DailyDetailBalanceView = () => {
             data={transactions}
             isActive={(row) => selectedTransaction?.Header.DLTERPId === row.Header.DLTERPId}
         />}
-        rightSlot={<TransactionDetails transaction={selectedTransaction}/>}
+        rightSlot={<TransactionDetails transaction={selectedTransaction} />}
     />
 }
 

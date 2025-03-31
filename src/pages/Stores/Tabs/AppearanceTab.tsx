@@ -8,19 +8,18 @@ import LogoForm from '../../../components/AppearanceForms/LogoForm';
 import LoadingSpinner from '../../../components/Loading/LoadingSpinner';
 import TabTitle from '../../../components/Tabs/TabTitle';
 import { StoreDto } from '../../../dto/stores/StoreDto';
-import { parseSearchParamSafe } from '../../../utils';
+import { parseSearchParamSafe, useStoreId } from '../../../utils';
 
 
 export default function AppearanceTab() {
-    const [searchParams] = useSearchParams();
     const [store, setStore] = useState<StoreDto>();
     const { t } = useTranslation(undefined, { keyPrefix: 'supplierAppearance' });
     const { merchantId } = useParams<{merchantId: string}>();
+    const storeId = useStoreId();
 
     useEffect(() => {
-        const storeUrl = parseSearchParamSafe(searchParams, 'storeUrl');
         storeService.list(merchantId).then(stores => {
-            const store = stores.find(s => s.url === storeUrl);
+            const store = stores.find(s => s.id === storeId);
             if (store)
                 setStore(store);
         });

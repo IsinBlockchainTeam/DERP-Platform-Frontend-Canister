@@ -6,7 +6,7 @@ import FormLoader from '../Loading/FormLoader';
 import { DEFAULT_STORE_COLOR } from '../../constants';
 import "./ColorForm.css"
 import {useTranslation} from "react-i18next";
-import { useStoreUrl } from '../../utils';
+import { useStoreId } from '../../utils';
 
 interface Props {
     store: StoreDto;
@@ -17,7 +17,7 @@ function ColorForm({ store }: Props) {
     const [color, setColor] = useState<string>(DEFAULT_STORE_COLOR);
     const [errorMessage, setErrorMessage] = useState<string>('');
     const {t} = useTranslation(undefined, {keyPrefix: 'supplierAppearance'});
-    const storeUrl = useStoreUrl();
+    const storeId = useStoreId();
 
     const showErrorMessage = (message: string) => {
         setErrorMessage(message);
@@ -29,7 +29,7 @@ function ColorForm({ store }: Props) {
 
     const updateColor = () => {
         setLoadingColorTab(true);
-        storeService.updateStoreColor(storeUrl, color)
+        storeService.updateStoreColor(storeId, color)
             .then(() => { store.color = color; })
             .catch(error => { showErrorMessage(error.response.data.message); })
             .finally(() => setLoadingColorTab(false));

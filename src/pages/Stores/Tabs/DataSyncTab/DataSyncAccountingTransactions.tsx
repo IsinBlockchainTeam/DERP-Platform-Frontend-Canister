@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import TabTitle from "../../../../components/Tabs/TabTitle"
 import GenericTable, { GenericTableColumn, GenericTableAction } from "../../../../components/Table/GenericTable";
 import { useEffect, useState } from "react";
-import { useStoreUrl } from "../../../../utils";
+import { useStoreId } from "../../../../utils";
 import { TransactionSyncJobDto, TransactionSyncJobDtoWithId, TransactionSyncJobType } from "../../../../dto/TransactionSyncJobDto";
 import { dataSynchronizationService } from "../../../../api/services/DataSynchronization";
 import FormLoader from "../../../../components/Loading/FormLoader";
@@ -25,7 +25,7 @@ const defaultNewJob: Partial<TransactionSyncJobDtoWithId> = {
 
 const DataSyncAccountingTransactions = () => {
     const { t } = useTranslation(undefined, { keyPrefix: "supplierDataSync.accountingTransactionsTab" });
-    const storeUrl = useStoreUrl();
+    const storeId = useStoreId();
     const [loading, setLoading] = useState(false);
     const [configuredJobs, setConfiguredJobs] = useState<TransactionSyncJobDtoWithId[]>([]);
     const [associations, setAssociations] = useState<AssociationResponseDto[]>([]);
@@ -110,10 +110,10 @@ const DataSyncAccountingTransactions = () => {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const jobs = await dataSynchronizationService.list(storeUrl);
+            const jobs = await dataSynchronizationService.list(storeId);
             setConfiguredJobs(jobs);
 
-            const associations = await interfacesService.getAssociations(storeUrl);
+            const associations = await interfacesService.getAssociations(storeId);
             setAssociations(associations);
         } catch (e) {
             console.error(e);
@@ -149,9 +149,9 @@ const DataSyncAccountingTransactions = () => {
         }
 
         if (createNew) {
-            await dataSynchronizationService.create(storeUrl, formJob as TransactionSyncJobDto);
+            await dataSynchronizationService.create(storeId, formJob as TransactionSyncJobDto);
         } else {
-            await dataSynchronizationService.update(storeUrl, formJob as TransactionSyncJobDtoWithId);
+            await dataSynchronizationService.update(storeId, formJob as TransactionSyncJobDtoWithId);
         }
 
         setModalOpen(false);

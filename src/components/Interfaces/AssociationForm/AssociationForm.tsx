@@ -7,7 +7,7 @@ import EbicsAssociationFormPart from "./EbicsAssociationFormPart";
 import PosAssociationFormPart from "./PosAssociationFormPart";
 
 interface Props {
-    storeUrl: string,
+    storeId: number,
     merchantId: number,
     association: Partial<AssociationResponseDto>,
     onUpdateAssociation: (association: Partial<AssociationResponseDto>) => void,

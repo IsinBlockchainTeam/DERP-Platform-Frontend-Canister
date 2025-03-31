@@ -7,13 +7,13 @@ import { storeService } from '../../../api/services/Store';
 import { offersService } from '../../../api/services/Offers';
 import LoadingSpinner from '../../../components/Loading/LoadingSpinner';
 import TabTitle from '../../../components/Tabs/TabTitle';
+import { useStoreId } from '../../../utils';
 
 export default function OfferList() {
     const [loading, setLoading] = useState<boolean>(false);
     const [offers, setOffers] = useState<OfferDto[]>([]);
-    const [storeUrl, setStoreUrl] = useState<string>('');
-    const { merchantId } = useParams<{merchantId: string}>();
-    const [searchParams] = useSearchParams();
+    const { merchantId } = useParams<{ merchantId: string }>();
+    const storeId = useStoreId();
     const navigate = useNavigate();
     const { t } = useTranslation(undefined, { keyPrefix: "merchantOffers" });
 
@@ -35,7 +35,7 @@ export default function OfferList() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
             </svg>
         ), onClick: (offer: OfferDto) => {
-            navigate(`/merchant/${merchantId}/stores/store/offers/${offer.id}?storeUrl=${encodeURIComponent(storeUrl)}`, {
+            navigate(`/merchant/${merchantId}/stores/store/offers/${offer.id}?storeId=${storeId}`, {
                 state: {
                     offerLines: offer.offerLines,
                 }
@@ -46,13 +46,12 @@ export default function OfferList() {
     const init = async () => {
         setLoading(true);
         const stores = await storeService.list(merchantId);
-        const store = stores.find(s => s.url === searchParams.get("storeUrl"));
+        const store = stores.find(s => s.id === storeId);
         if (!store) {
             setLoading(false);
             return;
         }
-        setStoreUrl(store.url);
-        const offers = await offersService.getOffers(store.url);
+        const offers = await offersService.getOffers(store.id);
         setOffers(offers);
         setLoading(false);
     }
@@ -74,7 +73,7 @@ export default function OfferList() {
                             title={t("title")}
                         />
                         <div className="flex w-full flex-col" style={{ padding: '20px' }}>
-                            <GenericTable data={offers} columns={tableColumns} actions={actions}/>
+                            <GenericTable data={offers} columns={tableColumns} actions={actions} />
                         </div>
                     </Fragment>
                 )

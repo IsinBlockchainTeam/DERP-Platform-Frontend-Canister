@@ -4,13 +4,14 @@ import { InvoiceDto, InvoiceWithStore } from "../../../../dto/Invoices";
 import { invoicesService } from "../../../../api/services/Invoices";
 import LoadingSpinner from "../../../../components/Loading/LoadingSpinner";
 import { InvoicesTable } from "../../../../components/InvoicesTable/InvoicesTable";
-import { parseSearchParamSafe } from "../../../../utils";
+import { parseSearchParamSafe, useStoreId } from "../../../../utils";
 import { useSearchParams } from "react-router-dom";
 import { storeService } from "../../../../api/services/Store";
 import { GenericTableColumn } from "../../../../components/Table/GenericTable";
 import TabTitle from "../../../../components/Tabs/TabTitle";
 
 export const SupplierInvoicesTab = () => {
+    const storeId = useStoreId();
     const [searchParams] = useSearchParams();
     const [loading, setLoading] = useState<boolean>(false);
     const [invoices, setInvoices] = useState<InvoiceWithStore[]>([]);
@@ -19,18 +20,17 @@ export const SupplierInvoicesTab = () => {
 
     useEffect(() => {
         const fetchInvoices = async () => {
-            const storeUrl = parseSearchParamSafe(searchParams, 'storeUrl');
-            const invoices = await invoicesService.listMyInvoices(storeUrl) as InvoiceDto[];
+            const invoices = await invoicesService.listMyInvoices(storeId) as InvoiceDto[];
             const stores = await Promise.all(
                 invoices.map(async invoice => {
-                    return await storeService.getStore(invoice.supplierUrl);
+                    return await storeService.getStore(invoice.storeId);
                 })
             )
 
             const processedInvoices = invoices.map(invoice => {
                 return {
                     ...invoice,
-                    supplier: stores.find(s => s.url === invoice.supplierUrl)
+                    store: stores.find(s => s.id === invoice.storeId)
                 } as InvoiceWithStore;
             });
 

@@ -1,4 +1,4 @@
 export interface TableDto {
-    id: string;
+    id: number;
     label: string;
 }

@@ -3,11 +3,11 @@ import api from "../api";
 import { auth } from "../auth";
 
 export const dataSynchronizationService = {
-  list: async (storeUrl: string) => {
+  list: async (storeId: number) => {
     const response = await api.get<TransactionSyncJobDtoWithId[]>('/sync-jobs/transactions', {
       headers: await auth.authenticatedHeaders(),
       params: {
-        storeUrl
+        storeId
       }
     });
 
@@ -25,11 +25,11 @@ export const dataSynchronizationService = {
     }));
   },
 
-  create: async (storeUrl: string, job: TransactionSyncJobDto) => {
+  create: async (storeId: number, job: TransactionSyncJobDto) => {
     const response = await api.post('/sync-jobs/transactions', job, {
       headers: await auth.authenticatedHeaders(),
       params: {
-        storeUrl
+        storeId
       }
     });
 
@@ -38,11 +38,11 @@ export const dataSynchronizationService = {
     }
   },
   
-  update: async (storeUrl: string, job: TransactionSyncJobDtoWithId) => {
+  update: async (storeId: number, job: TransactionSyncJobDtoWithId) => {
     const response = await api.put(`/sync-jobs/transactions/${job.id}`, job, {
       headers: await auth.authenticatedHeaders(),
       params: {
-        storeUrl
+        storeId
       }
     });
     

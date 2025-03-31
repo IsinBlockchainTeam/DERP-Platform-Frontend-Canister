@@ -1,8 +1,7 @@
 import {
     CreateCompanyDto,
-    CreatedCompanyDto,
     CreateRepresentativeDto,
-    InfoCompanyDto,
+    CompanyDto,
     RepresentativeStatus
 } from '../../dto/CompanyDto';
 import React, { Fragment, useState } from 'react';
@@ -51,7 +50,7 @@ type ModalProps = {
 }
 
 function CompanyModalRegistration(props: ModalProps) {
-    const [companyCreated, setCompanyCreated] = React.useState<CreatedCompanyDto | undefined>(undefined);
+    const [companyCreated, setCompanyCreated] = React.useState<CompanyDto | undefined>(undefined);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [currentStep, setCurrentStep] = useState<Steps>(Steps.COMPANY);
     const [companyData, setCompanyData] = useState<GenericFormData>(initialCompanyFormData);
@@ -288,7 +287,7 @@ function CompanyModalRegistration(props: ModalProps) {
                                         </label>
                                         <input
                                             type="text"
-                                            value={companyCreated[field.name as keyof CreatedCompanyDto] || ''}
+                                            value={companyCreated[field.name as keyof CompanyDto] || ''}
                                             readOnly
                                             className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-600 bg-gray-100 cursor-not-allowed"
                                         />

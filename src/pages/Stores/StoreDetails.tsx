@@ -2,7 +2,7 @@ import { Fragment, useEffect, useState } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { StoreDto } from '../../dto/stores/StoreDto';
 import { storeService } from '../../api/services/Store';
-import { parseSearchParamSafe } from '../../utils';
+import { parseSearchParamSafe, useStoreId } from '../../utils';
 import { useTranslation } from "react-i18next";
 import StoreIndicatorLine from '../../components/StoreIndicator/StoreIndicator';
 import LoadingSpinner from '../../components/Loading/LoadingSpinner';
@@ -30,7 +30,7 @@ export default function StoreDetails() {
     const [store, setStore] = useState<StoreDto>();
     const [storeInfoModal, setStoreInfoModal] = useState<boolean>(false);
     const navigate = useNavigate();
-    const url = parseSearchParamSafe(searchParams, 'storeUrl');
+    const id = useStoreId();
     const location = useLocation();
     const { t } = useTranslation(undefined, { keyPrefix: 'storeDetails' });
     const { merchantId } = useParams<{ merchantId: string }>();
@@ -118,7 +118,7 @@ export default function StoreDetails() {
     }
 
     const onGoBack = () => {
-        navigate(`..?storeUrl=${encodeURIComponent(store!.url)}`, { relative: 'path', });
+        navigate(`..?storeId=${encodeURIComponent(store!.id)}`, { relative: 'path', });
     }
 
     const onInfo = () => {
@@ -127,11 +127,11 @@ export default function StoreDetails() {
 
     useEffect(() => {
         storeService.list(merchantId).then((stores) => {
-            const store = stores.find(s => s.url === url);
+            const store = stores.find(s => s.id === id);
             if (store)
                 setStore(store);
         })
-    }, [url])
+    }, [id])
 
 
     if (merchantId === undefined) {
@@ -158,7 +158,7 @@ export default function StoreDetails() {
                                 const isActive = isRouteActive(t.name);
                                 return (
                                     <Fragment key={t.path}>
-                                        <NavLink to={`${t.path}?storeUrl=${encodeURIComponent(store?.url || '')}`}
+                                        <NavLink to={`${t.path}?storeId=${store?.id}`}
                                             role="tab" className={'tab' + (isActive ? ' tab-active' : '')}>
                                             {t.label}
                                         </NavLink>
@@ -168,7 +168,7 @@ export default function StoreDetails() {
                                                     t.withoutPos ?
                                                     <Outlet />
                                                     :
-                                                    <AssociatedPosFeatureGuard merchantId={merchantIdNumber} storeUrl={store?.url || ''}>
+                                                    <AssociatedPosFeatureGuard merchantId={merchantIdNumber} storeId={store?.id}>
                                                         <Outlet />
                                                     </AssociatedPosFeatureGuard>
                                                 )

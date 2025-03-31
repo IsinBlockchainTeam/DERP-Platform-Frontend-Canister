@@ -5,15 +5,15 @@ import { accountingTransactionService } from "../../../../api/services/Accountin
 import LoadingSpinner from "../../../../components/Loading/LoadingSpinner";
 import GenericTable, { GenericTableColumn, GenericTableAction } from "../../../../components/Table/GenericTable";
 import TabTitle from "../../../../components/Tabs/TabTitle";
-import { AccountingTransaction } from "../../../../model/AccountingTransaction";
-import { parseSearchParamSafe } from "../../../../utils";
+import { parseSearchParamSafe, useStoreId } from "../../../../utils";
 import { EyeIcon } from "../../../../components/Icons/Icons";
+import { AccountingTransaction } from "@derp/company-canister";
 
 const AccountingTransactionsList = () => {
     const navigate = useNavigate();
+    const storeId = useStoreId();
     const { t } = useTranslation(undefined, { keyPrefix: 'supplierTransactions' });
     const [searchParams] = useSearchParams();
-    const [storeUrl, setStoreUrl] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
     const [transactions, setTransactions] = useState<AccountingTransaction[]>([]);
 
@@ -64,17 +64,17 @@ const AccountingTransactionsList = () => {
         {
             label: <EyeIcon />,
             onClick: (row) => {
-                navigate(row.Header.DLTERPId + '?' + searchParams.toString());
+                navigate(row.Header.TypeCode + '/' + row.Header.DLTERPId + '?' + searchParams.toString());
             }
         }
     ]
 
 
-    const refreshData = async (url: string) => {
+    const refreshData = async () => {
         setLoading(true);
         try {
             const resp = await accountingTransactionService.listAccountingTransactions({
-                storeUrl: url
+                storeId
             });
             setTransactions(resp);
         } catch (e) {
@@ -87,12 +87,7 @@ const AccountingTransactionsList = () => {
 
 
     useEffect(() => {
-        const storeUrl = parseSearchParamSafe(searchParams, 'storeUrl');
-        if (storeUrl) {
-            setStoreUrl(storeUrl);
-        }
-
-        refreshData(storeUrl);
+        refreshData();
     }, []);
 
     return (

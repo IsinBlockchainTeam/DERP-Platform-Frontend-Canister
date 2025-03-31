@@ -1,7 +1,7 @@
-import {OfferLine} from "./OfferLine";
+import {OfferLineDto} from "./OfferLine";
 
 export interface OfferDto {
-  id: string;
+  id: number;
   description: string;
-  offerLines: OfferLine[];
+  offerLines: OfferLineDto[];
 }

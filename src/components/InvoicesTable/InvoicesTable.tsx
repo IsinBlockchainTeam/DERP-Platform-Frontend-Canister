@@ -27,15 +27,15 @@ export const InvoicesTable = ({ invoices }: Props) => {
         },
         {
             header: t('supplierLabel'),
-            accessor: (invoice) => invoice.supplier?.name
+            accessor: (invoice) => invoice.store?.name
         },
         {
             header: t('issuedLabel'),
-            accessor: (invoice) => new Date(invoice.issueTimestamp).toLocaleDateString()
+            accessor: (invoice) => invoice.issueDate.toLocaleDateString()
         },
         {
             header: t('expirationLabel'),
-            accessor: (invoice) => new Date(invoice.expirationTimestamp).toLocaleDateString()
+            accessor: (invoice) => invoice.expiryDate.toLocaleDateString()
         },
         {
             header: t('totalLabel'),

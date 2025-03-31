@@ -24,7 +24,7 @@ export default function QRViewer({ store, table}: Props) {
             if (!table) throw new Error("Not valid selected table");
 
             const token = await auth.generateCustomerToken({
-                storeUrl: store.url,
+                storeId: store.id,
                 tableId: table.id,
             });
 

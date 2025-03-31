@@ -3,7 +3,7 @@ import {auth} from '../../api/auth';
 import {ordersService} from '../../api/services/Orders';
 // @ts-expect-error since no types are provided
 import Lightbox from 'react-datatrans-light-box';
-import {createSearchParams, useNavigate, useSearchParams} from 'react-router-dom';
+import {useNavigate, useSearchParams} from 'react-router-dom';
 import Progress from '../../components/Loading/Progress';
 import DocumentViewer from '../../components/DocumentViewer/DocumentViewer';
 import CustomerHeader from '../../components/CustomerHeader/CustomerHeader';
@@ -13,7 +13,7 @@ import FormLoader from '../../components/Loading/FormLoader';
 import {useTranslation} from "react-i18next";
 
 function TemporaryInvoice(){
-    const [orderId, setOrderId] = useState('');
+    const [orderId, setOrderId] = useState<number>();
     const [invoiceUrl, setInvoiceUrl] = useState<string>('');
     const [pageLoading, setPageLoading] = useState(true);
     const [paymentLoading, setPaymentLoading] = useState(false);
@@ -68,6 +68,9 @@ function TemporaryInvoice(){
 
     const payOrder = async (alias?: CardInfoDto) => {
         try {
+            if(!orderId)
+                throw new Error("No order ID to initialize payment for");
+
             hideModal();
             setPaymentLoading(true);
             const transactionId = await ordersService.initPaymentTransaction(orderId, savePaymentInfo, alias);

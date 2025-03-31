@@ -1,17 +1,17 @@
 export interface SupportedCryptoDTO {
-  id: string;
+  id: number;
   name: string;
-  url: string;
-  chainUrl: string;
+  chainId: number;
+
   toSwissFrancs: number;
   isNative: boolean;
-  contractAddress?: string;
   iconUrl?: string;
+  contractAddress?: string;
 }
 
 export interface AddSupportedCryptoDTO {
   name: string;
-  chainUrl: string;
+  chainId: number;
   toSwissFrancs: number;
   isNative: boolean;
   contractAddress?: string;

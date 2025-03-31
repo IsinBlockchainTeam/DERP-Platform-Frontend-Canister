@@ -7,30 +7,30 @@ import { Modal } from "../../components/Modal/Modal";
 import GenericTable, { GenericTableColumn, GenericTableAction } from "../../components/Table/GenericTable";
 import TabTitle from "../../components/Tabs/TabTitle";
 import { SupportedChainDTO } from "../../dto/SupportedChainDto";
-import { parseSearchParamSafe } from "../../utils";
+import { parseSearchParamSafe, useStoreId } from "../../utils";
 import { chainService } from "../../api/services/Chains";
 
 export default function ChainList() {
+    const storeId = useStoreId();
     const [loading, setLoading] = useState<boolean>(false);
     const [chains, setChains] = useState<SupportedChainDTO[]>([]);
-    const [storeUrl, setStoreUrl] = useState<string>('');
     const [searchParams] = useSearchParams();
     const [addChainModal, setAddChainModal] = useState<boolean>(false);
     const { t } = useTranslation(undefined, { keyPrefix: "supplierChains" });
     const { merchantId } = useParams<{ merchantId: string }>();
     const navigate = useNavigate();
 
-    const refreshData = (url: string) => {
+    const refreshData = () => {
         setLoading(true);
-        chainService.listChains(url).then(chains => {
+        chainService.listChains(storeId).then(chains => {
             setChains(chains);
         }).finally(() => setLoading(false));
     }
 
-    const onDetail = (chainUrl: string) => {
+    const onDetail = (chainId: number) => {
         if(!merchantId) return;
-        if(!storeUrl) return;
-        navigate(`/merchant/${merchantId}/stores/store/chains/chain?storeUrl=${encodeURIComponent(storeUrl)}&chainUrl=${encodeURIComponent(chainUrl)}`);
+        if(!storeId) return;
+        navigate(`/merchant/${merchantId}/stores/store/chains/chain?storeId=${storeId}&chainId=${chainId}`);
     }
 
     const supportedChainColumns: GenericTableColumn<SupportedChainDTO>[] = [
@@ -56,15 +56,12 @@ export default function ChainList() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
                 </svg>
             </div>,
-            onClick: (chain) => onDetail(chain.url)
+            onClick: (chain) => onDetail(chain.id)
         }
     ]
 
     useEffect(() => {
-        const storeUrl = parseSearchParamSafe(searchParams, 'storeUrl');
-        console.log(storeUrl);
-        setStoreUrl(storeUrl);
-        refreshData(storeUrl);
+        refreshData();
     }, []);
 
     return (
@@ -86,7 +83,7 @@ export default function ChainList() {
 
                         {/* Add chain modal */}
                         <Modal open={addChainModal} onChangeOpen={setAddChainModal} closeButton>
-                                <AddChainForm afterSubmit={() => { setAddChainModal(false); refreshData(storeUrl) }} storeUrl={ storeUrl }></AddChainForm>
+                                <AddChainForm afterSubmit={() => { setAddChainModal(false); refreshData() }} storeId={ storeId }></AddChainForm>
                         </Modal>
                     </>
             }

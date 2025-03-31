@@ -1,9 +1,17 @@
+export enum SupportedChainType {
+    EVM = 'EVM',
+    BITCOIN = 'BITCOIN',
+    BITCOIN_TESTNET = 'BITCOIN_TESTNET',
+}
+
 export interface SupportedChainDTO {
-  chainId: number;
+  id: number;
+
   name: string;
   explorerUrl: string;
   supplierAddress: string;
-  url: string;
+  type: SupportedChainType;
   jsonRpcProviderUrl: string;
-  type: string;
+
+  chainId?: number;
 }

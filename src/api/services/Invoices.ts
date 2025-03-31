@@ -4,10 +4,10 @@ import {auth} from "../auth";
 
 
 export const invoicesService = {
-    listMyInvoices: async (storeUrl?: string): Promise<InvoiceDto[]> => {
+    listMyInvoices: async (storeId?: number): Promise<InvoiceDto[]> => {
         let params = {}
-        if(storeUrl) {
-            params = {storeUrl}
+        if(storeId) {
+            params = {storeId}
         }
 
         const resp = await api<InvoiceList<InvoiceDto>>('/api/invoices/incoming', {
@@ -15,6 +15,10 @@ export const invoicesService = {
             headers: await auth.authenticatedHeaders()
         });
 
-        return resp.data.invoices;
+        return resp.data.invoices.map(invoice => ({
+            ...invoice,
+            issueDate: new Date(invoice.issueDate),
+            expiryDate: new Date(invoice.expiryDate)
+        }));
     }
 }

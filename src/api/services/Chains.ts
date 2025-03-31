@@ -5,13 +5,13 @@ import api from "../api"
 import { auth } from "../auth";
 
 export const chainService = {
-    async listChains(storeUrl: string): Promise<SupportedChainDTO[]> {
-        const res = await api.get<{ chains: SupportedChainDTO[] }>(`/stores/chains`, { headers: await auth.authenticatedHeaders(), params: { storeUrl } });
+    async listChains(storeId: number): Promise<SupportedChainDTO[]> {
+        const res = await api.get<{ chains: SupportedChainDTO[] }>(`/stores/chains`, { headers: await auth.authenticatedHeaders(), params: { storeId } });
         return res.data.chains;
     },
 
-    async addChain(storeUrl: string, chain: AddSupportedChainDTO): Promise<SupportedChainDTO> {
-        const res = await api.post<SupportedChainDTO>(`/stores/chains`, chain, { headers: await auth.authenticatedHeaders(), params: { storeUrl } });
+    async addChain(storeId: number, chain: AddSupportedChainDTO): Promise<SupportedChainDTO> {
+        const res = await api.post<SupportedChainDTO>(`/stores/chains`, chain, { headers: await auth.authenticatedHeaders(), params: { storeId } });
         if (res.status != 201) throw new Error("Error adding chain");
         return res.data;
     },
@@ -21,23 +21,23 @@ export const chainService = {
         return res.data.chainTypes;
     },
 
-    async listSupportedCrypto(storeUrl: string): Promise<SupportedCryptoDTO[]> {
-        const res = await api.get<{ crypto: SupportedCryptoDTO[] }>(`/stores/crypto`, { headers: await auth.authenticatedHeaders(), params: { storeUrl } });
+    async listSupportedCrypto(storeId: number): Promise<SupportedCryptoDTO[]> {
+        const res = await api.get<{ crypto: SupportedCryptoDTO[] }>(`/stores/crypto`, { headers: await auth.authenticatedHeaders(), params: { storeId } });
         return res.data.crypto;
     },
 
-    async addSupportedCrypto(storeUrl: string, crypto: AddSupportedCryptoDTO): Promise<SupportedCryptoDTO> {
-        const res = await api.post<SupportedCryptoDTO>(`/stores/crypto`, crypto, { headers: await auth.authenticatedHeaders(), params: { storeUrl } });
+    async addSupportedCrypto(storeId: number, crypto: AddSupportedCryptoDTO): Promise<SupportedCryptoDTO> {
+        const res = await api.post<SupportedCryptoDTO>(`/stores/crypto`, crypto, { headers: await auth.authenticatedHeaders(), params: { storeId } });
         return res.data;
     },
 
-    async setCryptoImage(storeUrl: string, formData: FormData, cryptoId: string): Promise<SupportedCryptoDTO> {
+    async setCryptoImage(storeId: number, formData: FormData, cryptoId: number): Promise<SupportedCryptoDTO> {
         const res = await api.post<SupportedCryptoDTO>(`/stores/crypto/image`, formData, {
             headers: {
                 ... await auth.authenticatedHeaders(),
                 'Content-Type': 'multipart/form-data'
             },
-            params: { storeUrl, cryptoId }
+            params: { storeId, cryptoId }
         });
 
         return res.data;

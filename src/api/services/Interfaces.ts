@@ -74,11 +74,11 @@ export const interfacesService = {
             throw new Error('Error deleting interface');
     },
 
-    associate: async (storeUrl: string, associationData: CreateAssociationReqDto) => {
+    associate: async (storeId: number, associationData: CreateAssociationReqDto) => {
         const res = await api.post<AssociationResponseDto>('/interfaces/associations', associationData, {
             headers: await auth.authenticatedHeaders(),
             params: {
-                storeUrl
+                storeId
             },
         });
 
@@ -88,11 +88,11 @@ export const interfacesService = {
         return res.data;
     },
 
-    getAssociations: async (storeUrl: string):Promise<AssociationResponseDto[]> => {
+    getAssociations: async (storeId: number):Promise<AssociationResponseDto[]> => {
         const res = await api.get('/interfaces/associations', {
             headers: await auth.authenticatedHeaders(),
             params: {
-                storeUrl
+                storeId
             }
         });
 
@@ -102,11 +102,11 @@ export const interfacesService = {
         return res.data;
     },
 
-    updateAssociation: async (storeUrl: string, id: number, associationToUpdate: UpdateAssociationReqDto) => {
+    updateAssociation: async (storeId: number, id: number, associationToUpdate: UpdateAssociationReqDto) => {
         const res = await api.patch(`/interfaces/associations/${id}`, associationToUpdate, {
             headers: await auth.authenticatedHeaders(),
             params: {
-                storeUrl
+                storeId
             }
         });
 
@@ -114,11 +114,11 @@ export const interfacesService = {
             throw new Error('Error updating interface of type ' + associationToUpdate.interfaceType);
     },
     
-    deleteAssociation: async (storeUrl: string, id: number) => {
+    deleteAssociation: async (storeId: number, id: number) => {
         const res = await api.delete(`/interfaces/associations/${id}`, {
             headers: await auth.authenticatedHeaders(),
             params: {
-                storeUrl
+                storeId
             }
         });
 

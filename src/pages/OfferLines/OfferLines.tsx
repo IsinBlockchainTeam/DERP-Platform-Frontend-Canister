@@ -3,7 +3,7 @@ import React, { Fragment, useState } from 'react';
 import LoadingSpinner from '../../components/Loading/LoadingSpinner';
 import GenericTable, { GenericTableColumn } from '../../components/Table/GenericTable';
 import { useTranslation } from 'react-i18next';
-import { OfferLine } from '../../dto/OfferLine';
+import { OfferLineDto } from '../../dto/OfferLine';
 import TabTitle from '../../components/Tabs/TabTitle';
 import { Outlet } from 'react-router';
 
@@ -14,7 +14,7 @@ export default function OfferLines() {
     const { t } = useTranslation(undefined, { keyPrefix: "offerLinesPage" });
 
 
-    const tableColumns: GenericTableColumn<OfferLine>[] = [
+    const tableColumns: GenericTableColumn<OfferLineDto>[] = [
         {
             header: "ID",
             accessor: "id",

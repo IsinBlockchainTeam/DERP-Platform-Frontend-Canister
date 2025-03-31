@@ -7,14 +7,12 @@ export interface OrderTotalDto {
 }
 
 export interface OrderDto {
-  erpType: PosType;
   id: string;
   storeName: string;
   status: PosOrderStatus;
   tableId?: string;
   tableLabel?: string;
   date: Date;
-  trxHash?: string;
 }
 
 export enum TransactionStatus {

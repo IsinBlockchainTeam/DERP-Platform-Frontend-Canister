@@ -9,6 +9,7 @@ import GenericTable, { GenericTableColumn } from "../../../components/Table/Gene
 import TabTitle from "../../../components/Tabs/TabTitle";
 import { SupportedChainDTO } from "../../../dto/SupportedChainDto";
 import { SupportedCryptoDTO } from "../../../dto/SupportedCryptoDto";
+import { useStoreId } from "../../../utils";
 
 export default function ChainDetails() {
   const [searchParams] = useSearchParams();
@@ -19,19 +20,23 @@ export default function ChainDetails() {
   const [addCryptoModal, setAddCryptoModal] = useState<boolean>(false);
   const { t } = useTranslation(undefined, { keyPrefix: "supplierChains" });
 
-  const chainUrl = searchParams.get("chainUrl");
-  const storeUrl = searchParams.get("storeUrl");
+  const storeId = useStoreId();
+  const chainId = searchParams.get("chainId");
 
-  if (!chainUrl) throw new Error("No chainUrl supplied in query params");
+  if (!chainId) throw new Error("No chainUrl supplied in query params");
+  const chainIdNum = parseInt(chainId);
+  if(isNaN(chainIdNum)) {
+      throw new Error('chainID must be integer');
+  }
 
-  if (!storeUrl) throw new Error("No storeUrl supplied in query params");
+  if (!storeId) throw new Error("No storeUrl supplied in query params");
 
   const cryptoColumns: GenericTableColumn<SupportedCryptoDTO>[] = [
     {
       header: t('logo'),
       accessor: (crypto) => <div className="avatar">
         <div className="mask mask-circle h-12 w-12">
-          <img src={chainService.cryptoImageUrl(crypto.iconUrl)} alt="logo" />
+          <img src={crypto.iconUrl} alt="logo" />
         </div>
       </div>
     },
@@ -57,13 +62,13 @@ export default function ChainDetails() {
     setLoading(true);
 
     Promise.all([
-      chainService.listChains(storeUrl).then((chains) => {
-        const chain = chains.find((c) => c.url === chainUrl);
+      chainService.listChains(storeId).then((chains) => {
+        const chain = chains.find((c) => c.id === chainIdNum);
         if (chain) setChain(chain);
       }),
-      chainService.listSupportedCrypto(storeUrl).then((cryptos) => {
+      chainService.listSupportedCrypto(storeId).then((cryptos) => {
         const thisChainCryptos = cryptos.filter(
-          (c) => c.chainUrl === chainUrl,
+          (c) => c.chainId === chainIdNum,
         );
         setCryptos(thisChainCryptos);
       }),
@@ -91,7 +96,7 @@ export default function ChainDetails() {
     )
       setCanAddCrypto(false);
     else setCanAddCrypto(true);
-  }, [chainUrl, cryptos, loading, searchParams, chain]);
+  }, [chainId, cryptos, loading, searchParams, chain]);
 
   return (
     <div className='flex flex-col w-full'>
@@ -110,8 +115,8 @@ export default function ChainDetails() {
       {/* Add crypto modal */}
       <Modal open={addCryptoModal} onChangeOpen={setAddCryptoModal}>
         <AddCryptoForm
-          storeUrl={storeUrl}
-          chainUrl={chainUrl}
+          storeId={storeId}
+          chainId={chainIdNum}
           onDone={() => {
             hideModal();
             fetchData();
