@@ -1,4 +1,6 @@
 export interface OrderLineDto {
-    offerId: string;
-    offerLineId: string;
+    offerId: number;
+    offerLineId: number;
+    id: number;
+    orderId: number;
 }

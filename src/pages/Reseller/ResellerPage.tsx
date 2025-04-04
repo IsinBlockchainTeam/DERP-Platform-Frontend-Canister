@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { NavLink, Outlet, useParams } from 'react-router-dom';
 import { companyService } from '../../api/services/Company';
 import LoadingSpinner from '../../components/Loading/LoadingSpinner';
-import { InfoCompanyDto } from '../../dto/CompanyDto';
+import { CompanyDto } from '../../dto/CompanyDto';
 
 const enum TabNames {
     MERCHANTS = 'merchants'
@@ -11,7 +11,7 @@ const enum TabNames {
 
 const ResellerPage = () => {
     const { resellerId } = useParams<{ resellerId: string }>();
-    const [reseller, setReseller] = useState<InfoCompanyDto | null>();
+    const [reseller, setReseller] = useState<CompanyDto | null>();
     const [loading, setLoading] = useState<boolean>(false);
     const { t } = useTranslation(undefined, { keyPrefix: 'reseller' });
 

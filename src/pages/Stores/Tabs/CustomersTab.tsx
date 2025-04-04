@@ -6,13 +6,14 @@ import { useTranslation } from "react-i18next";
 import GenericTable, { GenericTableColumn } from "../../../components/Table/GenericTable";
 import TabTitle from "../../../components/Tabs/TabTitle";
 import { useSearchParams } from "react-router-dom";
-import { parseSearchParamSafe } from "../../../utils";
+import { parseSearchParamSafe, useStoreId } from "../../../utils";
 
 export default function CustomersTab() {
     const [loading, setLoading] = useState<boolean>(true);
     const [customers, setCustomers] = useState<MyCustomer[]>([]);
     const { t } = useTranslation(undefined, { keyPrefix: "myCustomers" });
     const [searchParams] = useSearchParams();
+    const storeId = useStoreId();
 
     useEffect(() => {
         fetchCustomers();
@@ -21,8 +22,7 @@ export default function CustomersTab() {
     const fetchCustomers = async () => {
         setLoading(true);
         try {
-            const storeUrl = parseSearchParamSafe(searchParams, 'storeUrl')
-            const customers = await relationsService.getCustomers(storeUrl);
+            const customers = await relationsService.getCustomers(storeId);
             setCustomers(customers);
         } catch (e) {
             console.error(e);

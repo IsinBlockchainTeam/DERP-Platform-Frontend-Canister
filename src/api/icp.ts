@@ -21,6 +21,7 @@ const statementItemsClientOriginal = new StatementItemsClient(icpUrl, canisterId
 
 
 // Proxy to add a custom method when reading categories/category
+// handles the translation of the category name
 export const statementItemsClient = new Proxy(statementItemsClientOriginal, {
     get(target, prop, receiver) {
         if (prop === 'getStatementItemsCategories') {

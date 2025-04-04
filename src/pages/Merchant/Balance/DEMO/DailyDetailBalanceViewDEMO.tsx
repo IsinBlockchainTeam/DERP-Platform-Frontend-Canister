@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from 'react-router-dom';
 import { statementItemsClient } from '../../../../api/icp';
-import { AccountingTransactionStatus } from '../../../../model/AccountingTransaction';
 
 const DailyDetailBalanceViewDEMO = () => {
     const { itemId, categoryId, merchantId, year, monthId, day } = useParams();
@@ -48,19 +47,7 @@ const DailyDetailBalanceViewDEMO = () => {
             const originalStatementItem = await statementItemsClient.getStatementItem(itemIdNumber.valueOf());
             setParentStatementItem(originalStatementItem);
 
-            const customDate = {
-                year: currentDate.getFullYear(),
-                month: currentDate.getMonth(),
-                day: currentDate.getDate(),
-            }
-
-            console.log("Custom date: " + JSON.stringify(customDate));
-
-            const transactions = await statementItemsClient.getStatementItemTransactions(itemIdNumber.valueOf(), {
-                year: currentDate.getFullYear(),
-                month: currentDate.getMonth(),
-                day: currentDate.getDate(),
-            });
+            const transactions = await statementItemsClient.getStatementItemTransactions(itemIdNumber.valueOf(), currentDate);
 
             setTransactions(transactions);
         } catch (error) {

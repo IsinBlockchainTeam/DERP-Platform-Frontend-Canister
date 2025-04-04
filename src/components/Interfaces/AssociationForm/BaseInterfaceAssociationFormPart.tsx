@@ -6,7 +6,7 @@ import { AssociationResponseDto, InterfaceResponseDto, InterfaceType } from "../
 export interface InterfaceAssociationFormPartProps<T extends AssociationResponseDto = AssociationResponseDto> {
     association: Partial<T>
     onUpdateAssociation: (updated: Partial<T>) => void
-    storeUrl: string
+    storeId: number
     merchantId: number
     interfaceType: InterfaceType
 }
@@ -14,7 +14,7 @@ export interface InterfaceAssociationFormPartProps<T extends AssociationResponse
 type BaseInterfaceAssociationFormProps = Omit<InterfaceAssociationFormPartProps, 'interfaceType'>
 
 const BaseInterfaceAssociationFormPart = ({
-    merchantId, storeUrl, association, onUpdateAssociation
+    merchantId, storeId: storeUrl, association, onUpdateAssociation
 }: BaseInterfaceAssociationFormProps) => {
     const [loading, setLoading] = useState(false);
     const [merchantInterfaces, setMerchantInterfaces] = useState<InterfaceResponseDto[]>([])

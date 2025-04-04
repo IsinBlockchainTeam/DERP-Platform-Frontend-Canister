@@ -3,7 +3,7 @@ import { StoreDto } from '../../dto/stores/StoreDto';
 import React, { useRef, useState } from 'react';
 import { storeService } from '../../api/services/Store';
 import {useTranslation} from "react-i18next";
-import { useStoreUrl } from '../../utils';
+import { useStoreId } from '../../utils';
 
 interface Props {
     store: StoreDto;
@@ -17,7 +17,7 @@ function LogoForm({ store }: Props) {
     const [errorMessage, setErrorMessage] = useState<string>('');
     const inputFileLogo = useRef<HTMLInputElement>(null);
     const {t} = useTranslation(undefined, {keyPrefix: 'supplierAppearance'});
-    const storeUrl = useStoreUrl()
+    const storeId = useStoreId()
 
     const showErrorMessage = (message: string) => {
         setErrorMessage(message);
@@ -42,7 +42,7 @@ function LogoForm({ store }: Props) {
         event.preventDefault();
         const form = event.target as HTMLFormElement;
         const formData = new FormData(form);
-        storeService.uploadImage(storeUrl, formData)
+        storeService.uploadImage(storeId, formData)
             .then((res) => {
                 store.imageUrl = res.imageUrl;
 
@@ -71,7 +71,7 @@ function LogoForm({ store }: Props) {
                         </div>
                     </div>
                     <div className="avatar">
-                        <div className="w-48 h-48 rounded bg-no-repeat bg-contain bg-center" style={{ backgroundImage: `url(/stores/image?imageUrl=${store.imageUrl})` }} ></div>
+                        <div className="w-48 h-48 rounded bg-no-repeat bg-contain bg-center" style={{ backgroundImage: `url(${store.imageUrl})` }} ></div>
                     </div>
                     <label className="label">
                         <span className="label-text font-bold text-primary">{t('chooseLogo')} (max 2mb):</span>

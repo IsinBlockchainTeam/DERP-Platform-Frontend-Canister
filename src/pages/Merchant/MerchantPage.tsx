@@ -4,7 +4,7 @@ import { auth } from "../../api/auth";
 import Progress from "../../components/Loading/Progress";
 import { useTranslation } from "react-i18next";
 import { companyService } from '../../api/services/Company';
-import { InfoCompanyDto } from '../../dto/CompanyDto';
+import { CompanyDto } from '../../dto/CompanyDto';
 import { NavLink } from 'react-router-dom';
 import BalanceTabDEMO from './Balance/DEMO/BalanceTabDEMO';
 
@@ -19,7 +19,7 @@ function MerchantsPage() {
     const [loading, setLoading] = useState<boolean>(false);
     const navigate = useNavigate();
     const { merchantId } = useParams<{ merchantId: string }>();
-    const [merchantData, setMerchantData] = useState<InfoCompanyDto>();
+    const [merchantData, setMerchantData] = useState<CompanyDto>();
 
     const fetchMerchantData = async () => {
         if (merchantId === undefined)

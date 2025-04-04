@@ -9,13 +9,13 @@ import { Modal } from "../../../../components/Modal/Modal";
 import GenericTable, { GenericTableAction, GenericTableColumn } from "../../../../components/Table/GenericTable";
 import TabTitle from "../../../../components/Tabs/TabTitle";
 import { AssociationResponseDto, CreateAssociationReqDto, InterfaceResponseDto, InterfaceType, UpdateAssociationReqDto } from "../../../../dto/ErpInterfacesDto";
-import { useStoreUrl } from "../../../../utils";
+import { useStoreId } from "../../../../utils";
 import Handlebars from "handlebars";
 import ConfirmationModal from "../../../../components/Modal/ConfirmationModal";
 import { InterfaceAssociation } from "../../../../model/Interfaces";
 
 const InterfacesHome = () => {
-    const storeUrl = useStoreUrl();
+    const storeId = useStoreId();
     const { t } = useTranslation(undefined, { keyPrefix: 'supplierInterfacesDashboard' });
 
     const [errors, setErrors] = useState<string[]>([]);
@@ -67,7 +67,7 @@ const InterfacesHome = () => {
     ]
 
     const onDeleteConfirm = async () => {
-        await interfacesService.deleteAssociation(storeUrl, toDelete!.id);
+        await interfacesService.deleteAssociation(storeId, toDelete!.id);
         await fetchData();
         setDeleteModal(false);
     }
@@ -128,11 +128,11 @@ const InterfacesHome = () => {
 
         setErrors([]);
         if (updateAssociation) {
-            await interfacesService.updateAssociation(storeUrl, selectedAssociation.id!, {
+            await interfacesService.updateAssociation(storeId, selectedAssociation.id!, {
                 ...selectedAssociation,
             } as UpdateAssociationReqDto)
         } else {
-            await interfacesService.associate(storeUrl, {
+            await interfacesService.associate(storeId, {
                 ...selectedAssociation
             } as CreateAssociationReqDto)
         }
@@ -153,7 +153,7 @@ const InterfacesHome = () => {
         try {
             const interfaces = await interfacesService.listByCompany(+numMerchantId);
             setAvailableInterfaces(interfaces);
-            const associations = await interfacesService.getAssociations(storeUrl);
+            const associations = await interfacesService.getAssociations(storeId);
             const interfaceAssociations = associations.map(association => {
                 const iface = interfaces.find(i => i.id === association.interfaceId && i.interfaceType === association.interfaceType);
                 if (!iface)
@@ -210,7 +210,7 @@ const InterfacesHome = () => {
 
                         >
                             <AssociationForm
-                                storeUrl={storeUrl}
+                                storeId={storeId}
                                 merchantId={+merchantId!}
                                 association={selectedAssociation}
                                 onUpdateAssociation={(ass) => { console.log("update: ", ass); setSelectedAssociation(ass) }}

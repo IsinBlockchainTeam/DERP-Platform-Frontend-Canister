@@ -2,8 +2,8 @@ import api from '../api';
 import { auth } from '../auth';
 import {
     CreateCompanyDto,
+    CompanyDto,
     CreatedCompanyDto,
-    InfoCompanyDto,
 } from '../../dto/CompanyDto';
 
 export const companyService = {
@@ -20,7 +20,7 @@ export const companyService = {
         return res.data;
     },
 
-    findAll: async (filters?: {reseller?: string, type?: string}): Promise<InfoCompanyDto[]> => {
+    findAll: async (filters?: {reseller?: string, type?: string}): Promise<CompanyDto[]> => {
         const res = await api.get('/company', {
             headers: await auth.authenticatedHeaders(),
             params: filters
@@ -33,7 +33,7 @@ export const companyService = {
         return res.data;
     },
 
-    getById: async (companyId: number): Promise<InfoCompanyDto> => {
+    getById: async (companyId: number): Promise<CompanyDto> => {
         const res = await api.get(`/company/${companyId}`, {
             headers: await auth.authenticatedHeaders(),
         });

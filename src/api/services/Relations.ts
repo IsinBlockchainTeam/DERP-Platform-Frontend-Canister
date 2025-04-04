@@ -6,18 +6,18 @@ import {auth} from "../auth";
 export type MyCustomer = MySupplier;
 
 export const relationsService = {
-  async getSuppliers(storeUrl?: string): Promise<MySupplier[]> {
+  async getSuppliers(storeId?: number): Promise<MySupplier[]> {
     const resp = await api.get<MySuppliersList>(`/api/rel/suppliers`,
-      { params: {storeUrl}, headers: await auth.authenticatedHeaders()}
+      { params: {storeId}, headers: await auth.authenticatedHeaders()}
     );
 
     return resp.data.stores;
   },
 
-  async getCustomers(storeUrl?: string): Promise<MyCustomer[]> {
+  async getCustomers(storeId?: number): Promise<MyCustomer[]> {
     let params = {};
-    if (storeUrl) {
-      params = {storeUrl};
+    if (storeId) {
+      params = {storeId};
     }
 
     const resp = await api.get<MySuppliersList>(`/api/rel/customers`,
@@ -27,26 +27,26 @@ export const relationsService = {
     return resp.data.stores;
   },
 
-  async addSupplier(supplierUrl: string, supplierExternalID: string, storeUrl?: string): Promise<void> {
+  async addSupplier(supplierStoreId: number, supplierExternalID: string, forStoreId?: number): Promise<void> {
     let params = {};
-    if (storeUrl) {
-      params = {storeUrl};
+    if (forStoreId) {
+      params = {storeId: forStoreId};
     }
 
-    params = {...params, storeToAddUrl: supplierUrl};
+    params = {...params, storeToAddId: supplierStoreId};
     await api.post(`/api/rel/suppliers`,
       {supplierExternalID},
       { headers: await auth.authenticatedHeaders(), params }
     );
   },
 
-  async removeSupplier(supplierUrl: string, storeUrl?: string): Promise<void> {
+  async removeSupplier(supplierStoreId: number, fromStoreId?: number): Promise<void> {
     let params = {};
-    if (storeUrl) {
-      params = {storeUrl};
+    if (fromStoreId) {
+      params = {storeId: fromStoreId};
     }
 
-    params = {...params, storeToRemoveUrl: supplierUrl};
+    params = {...params, storeToRemoveId: supplierStoreId};
     await api.delete(`/api/rel/suppliers`,
       { headers: await auth.authenticatedHeaders(), params }
     );

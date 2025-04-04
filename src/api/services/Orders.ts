@@ -1,156 +1,64 @@
-import { ERPItemDto } from '../../dto/ERPItemDto';
-import { NewOrderDto } from '../../dto/NewOrderDto';
 import {
-    OrderTotalDto,
     OrderDto,
     TransactionStatusDto,
 } from '../../dto/OrderDto';
 import { OrderTransactionDto } from '../../dto/OrderTransactionDto';
 import api from '../api';
 import { auth } from '../auth';
-import { PosOrderStatus } from '../../model/PosType';
-import { OrderLine } from '../../dto/ERPOrderLineDto';
-import { OfferDto } from '../../dto/OfferDto';
-import { OrderPaymentDto } from '../../dto/OrderPaymentDto';
-import { OfferLine } from '../../dto/OfferLine';
+import { OfferLineDto, Unique } from '../../dto/OfferLine';
 import { offersService } from './Offers';
-import { LastOrderDetailsDto } from '../../dto/LastOrderDetailsDto';
 import { QueryOrderDto } from '../../dto/QueryOrderDto';
-import { LastOrderDetailsExpandedDto } from '../../dto/LastOrderDetailsExpandedDto';
-import {
-    CompleteOrderLineDto,
-    CompleteOrderLineStatus,
-    CompleteOrderLineTopic,
-} from '../../dto/CompleteOrderLineDto';
 import { OrderLineDto } from '../../dto/OrderLineDto';
-import { CUSTOMER_TOKEN_KEY } from '../../constants';
 import { CardInfoDto } from '../../dto/CardInfoDto';
+import { InvoiceItemDto } from '../../dto/Invoices';
 
-let eventSource: EventSource;
 
 export const ordersService = {
-    getOrderLinesInfo: async (
-        orderLines: OrderLine[],
-    ): Promise<ERPItemDto[]> => {
-        const items: ERPItemDto[] = [];
-        const offers = new Map<string, OfferDto>();
+    getOrderlines: async (storeId: number, orderId: number): Promise<OrderLineDto[]> => {
+        const res = await api.get<OrderLineDto[]>(`/api/orders/${orderId}/details`, {
+            headers: await auth.authenticatedHeaders(),
+            params: {storeId},
+        });
+        
+        return res.data;
+    },
+
+    getOfferlinesFromInvoiceItems: async (
+        invoiceItems: InvoiceItemDto[],
+    ): Promise<Unique<OfferLineDto>[]> => {
+        const uniqueOrderIds = Array.from(new Set(invoiceItems.map((o) => o.orderId))).filter((id) => id !== undefined);
+        const orderLines = (await Promise.all(uniqueOrderIds.map((id) => ordersService.getOrderlines(0, id!)))).flat();
+
+        const uniqueOfferIds = Array.from(new Set(orderLines.map((o) => o.offerId)));
+        const offers = await Promise.all(uniqueOfferIds.map(id => offersService.getOffer(id)));
+        const result = [] as Unique<OfferLineDto>[];
 
         for (const line of orderLines) {
-            const offer = offers.get(line.offerId);
-            let offerLines: OfferLine[];
-
-            if (offer) {
-                offerLines = offer.offerLines;
-            } else {
-                const offer = await offersService.getOffer(line.offerId);
-                offerLines = offer.offerLines;
-                offers.set(line.offerId, offer);
-            }
-
-            const offerLine = offerLines.find((o) => o.id === line.offerLineId);
-
-            if (!offerLine)
-                throw new Error(
-                    `Offerline with id ${line.offerLineId} not found`,
-                );
-
-            const it = items.find((i) => i.id === +offerLine.productId);
+            // TODO: get offerline
+            const offerLine = offers.find((o) => o.id === line.offerId)?.offerLines.find((l) => l.id === line.offerLineId);
+            if(!offerLine) throw new Error(`Offerline with id ${line.offerLineId} not found`);
+            
+            const it = result.find((o) => o.id === offerLine.id);
             if (!it) {
-                items.push({
+                result.push({
+                    id: offerLine.id,
                     description: offerLine.description,
-                    groups: offerLine.groups,
-                    id: +offerLine.productId,
                     price: offerLine.price,
                     quantity: offerLine.quantity,
-                    partialQuantity: 1,
-                    trxHashes: [line.trxHash],
+                    offerId: line.offerId,
+                    productId: offerLine.productId,
+                    repeat: 1,
                 });
             } else {
-                it.quantity += offerLine.quantity;
-                it.trxHashes.push(line.trxHash);
+                it.repeat += offerLine.quantity;
             }
         }
 
-        return items;
+        return result;
     },
 
-    getExpandedOrderLinesInfo: async (
-        orderLines: OrderLine[],
-    ): Promise<CompleteOrderLineDto[]> => {
-        const items: CompleteOrderLineDto[] = [];
-        const offers = new Map<string, OfferDto>();
-
-        for (const line of orderLines) {
-            const offer = offers.get(line.offerId);
-            let offerLines: OfferLine[];
-
-            if (offer) {
-                offerLines = offer.offerLines;
-            } else {
-                const offer = await offersService.getOffer(line.offerId);
-                offerLines = offer.offerLines;
-                offers.set(line.offerId, offer);
-            }
-
-            const offerLine = offerLines.find((o) => o.id === line.offerLineId);
-
-            if (!offerLine)
-                throw new Error(
-                    `Offerline with id ${line.offerLineId} not found`,
-                );
-
-            items.push({
-                id: +offerLine.productId,
-                description: offerLine.description,
-                price: offerLine.price,
-                checked: false,
-                status: CompleteOrderLineStatus.SELECTABLE,
-                offerId: line.offerId,
-                offerLineId: line.offerLineId,
-            });
-        }
-
-        return items;
-    },
-
-    getLastOrderDetails: async (): Promise<LastOrderDetailsDto> => {
-        const res = await api.get<{
-            id: string;
-            orderLines: OrderLine[];
-        }>('/api/orders/last/details', {
-            headers: await auth.authenticatedHeaders(),
-        });
-
-        if (res.status === 204) return { id: '', orderLines: [] };
-
-        const items = await ordersService.getOrderLinesInfo(
-            res.data.orderLines,
-        );
-
-        return {
-            id: res.data.id,
-            orderLines: items,
-        };
-    },
-
-    getLastOrderDetailsExpanded: async (
-        orderId: string,
-    ): Promise<LastOrderDetailsExpandedDto> => {
-        const res = await api.get<OrderLine[]>(
-            `/api/orders/${orderId}/details`,
-            {
-                headers: await auth.authenticatedHeaders(),
-            },
-        );
-        const items = await ordersService.getExpandedOrderLinesInfo(res.data);
-
-        return {
-            orderLines: items,
-        };
-    },
-
-    getLastOpenOrderId: async (): Promise<string> => {
-        const res = await api.get<{ id: string }>('/api/orders/last/id', {
+    getLastOpenOrderId: async (): Promise<number> => {
+        const res = await api.get<{ id: number }>('/api/orders/last/id', {
             headers: await auth.authenticatedHeaders(),
         });
 
@@ -173,12 +81,12 @@ export const ordersService = {
     },
 
     initPaymentTransaction: async (
-        orderId: string,
+        orderId: number,
         savePaymentInfo = false,
         cardInfo?: CardInfoDto,
     ): Promise<string> => {
         const res = await api.post<OrderTransactionDto>(
-            `/api/orders/${orderId}/transaction`,
+            `/api/payments/orders/${orderId}`,
             {
                 savePaymentInfo,
                 cardInfo,
@@ -187,72 +95,6 @@ export const ordersService = {
         );
 
         return res.data.transactionId;
-    },
-
-    initSplittedPaymentTransaction: async (
-        orderId: string,
-        savePaymentInfo = false,
-        itemsToPay: OrderLineDto[],
-        sseId: string,
-        cardInfo?: CardInfoDto,
-    ): Promise<string> => {
-        const res = await api.post(
-            `/api/orders/${orderId}/transaction`,
-            {
-                itemsToPay,
-                sseId,
-                savePaymentInfo,
-                cardInfo,
-            },
-            { headers: await auth.authenticatedHeaders() },
-        );
-
-        return res.data.transactionId;
-    },
-
-    getReportInfo: async (orderId: string): Promise<OrderTotalDto> => {
-        const res = await api.get<OrderTotalDto>(
-            `/api/orders/${orderId}/total`,
-            {
-                headers: await auth.authenticatedHeaders(),
-            },
-        );
-        return res.data;
-    },
-
-    createOrder: async (data: NewOrderDto): Promise<any> => {
-        const res = await api.post(`/api/orders`, data, {
-            headers: await auth.authenticatedHeaders(),
-        });
-        return res.data;
-    },
-
-    getOrderStatus: async (): Promise<PosOrderStatus[]> => {
-        const res = await api.get('/api/order-status');
-        return res.data.orderStatuses;
-    },
-
-    getOrderDetails: async (orderId: string): Promise<ERPItemDto[]> => {
-        const res = await api.get<OrderLine[]>(
-            `/api/orders/${orderId}/details`,
-            {
-                headers: await auth.authenticatedHeaders(),
-            },
-        );
-
-        const items = await ordersService.getOrderLinesInfo(res.data);
-        return items;
-    },
-
-    getOrderPayments: async (orderId: string): Promise<OrderPaymentDto[]> => {
-        const res = await api.get<OrderPaymentDto[]>(
-            `/api/orders/${orderId}/payments`,
-            {
-                headers: await auth.authenticatedHeaders(),
-            },
-        );
-
-        return res.data;
     },
 
     getBytesInvoice: async (transactionId: string) => {
@@ -266,17 +108,6 @@ export const ordersService = {
         return new Uint8Array(await res.data.arrayBuffer());
     },
 
-    getPaidItems: async (orderId: string): Promise<OrderLineDto[]> => {
-        const res = await api.get<OrderLineDto[]>(
-            `/api/orders/${orderId}/payedItems`,
-            {
-                headers: await auth.authenticatedHeaders(),
-            },
-        );
-
-        return res.data;
-    },
-
     getAliases: async (): Promise<CardInfoDto[]> => {
         const res = await api.get<CardInfoDto[]>('/api/orders/aliases', {
             headers: await auth.authenticatedHeaders(),
@@ -286,46 +117,6 @@ export const ordersService = {
         if (res.status === 200) aliases = res.data;
 
         return aliases;
-    },
-
-    onSelectionOrderLine: async (selectedOrderLine: {
-        orderLine: OrderLineDto;
-        topic: CompleteOrderLineTopic;
-        sseId: string;
-    }): Promise<void> => {
-        await api.post('api/orders/line/selection', selectedOrderLine, {
-            headers: await auth.authenticatedHeaders(),
-        });
-    },
-
-    initEventSource: async (sseId: string) => {
-        eventSource = new EventSource(
-            `${
-                window.location.origin
-            }/api/orders/sse?sseId=${sseId}&customerToken=${localStorage.getItem(
-                CUSTOMER_TOKEN_KEY,
-            )}`,
-        );
-        eventSource.onmessage = () => {
-            return;
-        };
-    },
-
-    setEventSourceHandler(
-        onmessage: (this: EventSource, ev: MessageEvent<any>) => any,
-    ) {
-        eventSource.onmessage = onmessage;
-    },
-
-    getSelectedItems: async () => {
-        const res = await api.get<{
-            selected: OrderLineDto[];
-            inPayment: (OrderLineDto & { sseId: string })[];
-        }>(`/api/orders/selectedItems`, {
-            headers: await auth.authenticatedHeaders(),
-        });
-
-        return res.data;
     },
 
     signalPaymentFailure: async (transactionId: string) => {
@@ -359,7 +150,9 @@ export const ordersService = {
         return res.data;
     },
 
-    getInvoiceProxyUrl: (url: string): string => {
-        return `/api/invoice?url=${url}`;
+    getPaymentReceiptUrl: (paymentId: number): string => {
+        let base = process.env.REACT_APP_BACKEND_URL;
+        base = base?.endsWith('/') ? base.slice(0, -1) : base;
+        return `${base}/payments/${paymentId}/receipt`;
     }
 };

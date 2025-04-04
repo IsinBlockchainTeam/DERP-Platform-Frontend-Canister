@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 
 export interface Props {
     afterSubmit: () => void;
-    storeUrl: string;
+    storeId: number;
 }
 
 const defaultChain = {
@@ -19,7 +19,7 @@ const defaultChain = {
     type: ''
 }
 
-export default function AddChainForm({ afterSubmit, storeUrl }: Props) {
+export default function AddChainForm({ afterSubmit, storeId }: Props) {
     const [loading, setLoading] = useState<boolean>(false)
     const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false)
     const [chain, setChain] = useState<Partial<AddSupportedChainDTO>>(defaultChain)
@@ -48,7 +48,7 @@ export default function AddChainForm({ afterSubmit, storeUrl }: Props) {
 
         setLoadingSubmit(true)
         try {
-            await chainService.addChain(storeUrl, chain as AddSupportedChainDTO)
+            await chainService.addChain(storeId, chain as AddSupportedChainDTO)
         } finally {
             setLoadingSubmit(false)
             setChain(defaultChain)

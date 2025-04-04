@@ -14,7 +14,7 @@ import { InterfaceType, PosAssociationResponseDto } from "../../../dto/ErpInterf
 import { StoreDto } from "../../../dto/stores/StoreDto";
 import { TableDto } from "../../../dto/TableDto";
 import { PosType } from "../../../model/PosType";
-import { useStoreUrl } from "../../../utils";
+import { useStoreId } from "../../../utils";
 import AssociatedPosFeatureGuard from "../../../components/HOC/AssociatedPosFeatureGuard";
 
 const tableColumns: GenericTableColumn<TableDto>[] = [
@@ -47,7 +47,7 @@ const TablesTab = () => {
         tcposPassword: "",
     });
 
-    const storeUrl = useStoreUrl();
+    const storeId = useStoreId();
     const { merchantId } = useParams<{ merchantId: string }>();
     const { t } = useTranslation(undefined, { keyPrefix: "supplierTables" });
 
@@ -81,8 +81,8 @@ const TablesTab = () => {
     ]
 
     const fetchData = async (store: StoreDto) => {
-        const tables = await storeService.listTables(store.url);
-        const associations = await interfacesService.getAssociations(store.url);
+        const tables = await storeService.listTables(store.id);
+        const associations = await interfacesService.getAssociations(store.id);
         const wondAssociation = associations.find(a => a.interfaceType === InterfaceType.POS) as PosAssociationResponseDto;
         if (!wondAssociation) {
             setHasRequiredAssociations(false);
@@ -110,7 +110,7 @@ const TablesTab = () => {
 
     const onConfirmAddTable = async () => {
         setLoading(true);
-        await storeService.createTable(storeUrl, addingTable);
+        await storeService.createTable(storeId, addingTable);
         fetchData(store);
         setAddTableModalOpen(false);
         setLoading(false);
@@ -121,7 +121,7 @@ const TablesTab = () => {
         setLoading(true);
         storeService.list(merchantId).then((stores) => {
             const store = stores.find(
-                (s) => s.url === searchParams.get("storeUrl"),
+                (s) => s.id === storeId
             );
             if (!store) return;
 
@@ -131,7 +131,7 @@ const TablesTab = () => {
     }, [merchantId, searchParams]);
 
     const goToAssociations = () => {
-        navigate(`/merchant/${merchantId}/stores/store/interfaces?storeUrl=${encodeURIComponent(store.url)}`);
+        navigate(`/merchant/${merchantId}/stores/store/interfaces?storeId=${store.id}`);
     }
 
     return (
@@ -155,7 +155,7 @@ const TablesTab = () => {
                         }
                     />
                     <div className="flex w-full flex-col" style={{ padding: '20px' }}>
-                        <AssociatedPosFeatureGuard merchantId={merchantIdNum} storeUrl={store.url}>
+                        <AssociatedPosFeatureGuard merchantId={merchantIdNum} storeId={store.id}>
                             <GenericTable data={tables} columns={tableColumns} actions={tableActions} />
                             {!hasRequiredAssociations &&
                                 <span className="mt-4 flex flex-row self-stretch items-center justify-center">

@@ -8,13 +8,13 @@ import LoadingSpinner from "../Loading/LoadingSpinner";
 interface Props {
     children: React.ReactNode;
     merchantId: number;
-    storeUrl: string;
+    storeId: number;
 }
 
 const AssociatedPosFeatureGuard = ({
     children,
     merchantId,
-    storeUrl
+    storeId,
 }: Props) => {
     const { t } = useTranslation(undefined, { keyPrefix: 'supplierInterfacesDashboard' });
     const [posInterfaces, setPosInterfaces] = useState<AssociationResponseDto[]>([]);
@@ -26,7 +26,7 @@ const AssociatedPosFeatureGuard = ({
         setLoading(true);
         try {
             const posAssociations: PosAssociationResponseDto[] = [];
-            const associations = await interfacesService.getAssociations(storeUrl)
+            const associations = await interfacesService.getAssociations(storeId)
             associations.forEach(association => {
                 if (association.interfaceType === InterfaceType.POS) {
                     posAssociations.push(association as PosAssociationResponseDto);
@@ -42,10 +42,10 @@ const AssociatedPosFeatureGuard = ({
 
     useEffect(() => {
         fetchData();
-    }, [storeUrl, merchantId]);
+    }, [storeId, merchantId]);
 
     const onGotoAssociations = () => {
-        navigate(`/merchant/${merchantId}/stores/store/interfaces?storeUrl=${encodeURIComponent(storeUrl)}`);
+        navigate(`/merchant/${merchantId}/stores/store/interfaces?storeUrl=${encodeURIComponent(storeId)}`);
     }
 
     return <>

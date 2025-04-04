@@ -38,8 +38,9 @@ export interface CreateRepresentativeDto {
 
 export type UpdateCompanyDto = Partial<CreateCompanyDto>;
 
-export interface InfoCompanyDto {
-    companyId: number;
+export interface CompanyDto {
+    id: number;
+    type: CompanyType;
     businessName: string;
     additionalInfo: string;
     address: string;
@@ -56,6 +57,7 @@ export interface InfoCompanyDto {
 }
 
 export interface CreatedCompanyDto {
+    id: number;
     type: CompanyType;
     businessName: string;
     additionalInfo: string;
@@ -69,8 +71,8 @@ export interface CreatedCompanyDto {
     webSite: string;
     email: string;
     representativeUserEmail: string;
-    defaultPassword: string;
     resellerId?: number;
+    defaultPassword: string;
 }
 
 export enum CompanyType {

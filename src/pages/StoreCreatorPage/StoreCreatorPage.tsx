@@ -19,8 +19,6 @@ function StoreCreator() {
         postalCodeAndLocation: '',
         canton: '',
         country: '',
-        bcPrivateKey: '',
-        bcAddress: ''
     });
 
     const navigate = useNavigate();
@@ -59,11 +57,6 @@ function StoreCreator() {
             return;
         }
 
-        if (!storeDto.bcPrivateKey) {
-            showErrorMessage(t('errors.privateKey'));
-            return;
-        }
-
         if (!merchantId) {
             showErrorMessage(t('errors.generalError'));
             return;
@@ -71,8 +64,7 @@ function StoreCreator() {
 
         const companyIdNum = parseInt(merchantId)
 
-        const bcAddress = new Wallet(storeDto.bcPrivateKey).address;
-        return storeService.createStore({ ...storeDto, bcAddress }, companyIdNum).then(() => {
+        return storeService.createStore({ ...storeDto }, companyIdNum).then(() => {
             navigate(`/merchant/${merchantId}/stores`);
         }).catch(error => {
             setLoading(false);

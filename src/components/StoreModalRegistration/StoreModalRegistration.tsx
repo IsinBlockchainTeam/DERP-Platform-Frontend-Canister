@@ -20,8 +20,6 @@ const initialStoreFormData: GenericFormData = {
     postalCodeAndLocation: '',
     canton: '',
     country: '',
-    bcPrivateKey: '',
-    bcAddress: ''
 };
 
 function StoreModalRegistration(props: ModalProps) {
@@ -67,12 +65,6 @@ function StoreModalRegistration(props: ModalProps) {
             typeNode: { typeNodeName: 'input', type: 'text', placeholder: t('storeForm.placeholderCountry') , maxLength: 3 },
             isRequired: false
         },
-        {
-            labelName: t('storeForm.privateKey'),
-            name: 'bcPrivateKey',
-            typeNode: { typeNodeName: 'input', type: 'text', placeholder: t('storeForm.placeholderPrivateKey') },
-            isRequired: true
-        },
     ];
 
     const handleSubmit = (formData: GenericFormData) => {
@@ -84,8 +76,7 @@ function StoreModalRegistration(props: ModalProps) {
         }
 
         const companyIdNum = parseInt(merchantId);
-        const bcAddress = new Wallet(formData.bcPrivateKey).address;
-        return storeService.createStore({ ...formData, bcAddress } as CreateStoreDto, companyIdNum).then((store: StoreDto) => {
+        return storeService.createStore(formData as unknown as CreateStoreDto, companyIdNum).then((store: StoreDto) => {
             navigate(`/merchant/${merchantId}/stores`);
             setStoreCreated(store);
         })

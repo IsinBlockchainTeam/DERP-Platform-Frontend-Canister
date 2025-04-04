@@ -116,15 +116,6 @@ export function StoreCreationForm({
                         maxLength={3}
                     />
 
-                    <label className="label">
-                        <span className="label-text font-bold text-primary">{t('privateKey')}:</span>
-                    </label>
-                    <input
-                        type="password" id="bcPrivateKey" placeholder={t('privateKeyPlaceholder')}
-                        className="input input-bordered w-full max-w-xs"
-                        value={value.bcPrivateKey}
-                        onChange={e => _onChange({ ...value, bcPrivateKey: e.target.value })} />
-
                     <button className="btn btn-primary mt-6" onClick={e => {
                         e.preventDefault();
                         onSubmit();

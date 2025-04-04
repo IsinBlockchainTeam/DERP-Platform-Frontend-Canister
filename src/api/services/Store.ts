@@ -19,10 +19,10 @@ export const storeService = {
         return res.data;
     },
 
-    getStore: async (storeUrl: string): Promise<StoreDto> => {
+    getStore: async (storeId: number): Promise<StoreDto> => {
         const res = await api.get<StoreDto>(`/stores/store`, {
             headers: await auth.authenticatedHeaders(),
-            params: { storeUrl },
+            params: { storeId },
         });
 
         return res.data;
@@ -45,27 +45,27 @@ export const storeService = {
         );
     },
 
-    updateStoreColor: async (storeUrl: string, color: string): Promise<void> => {
+    updateStoreColor: async (storeId: number, color: string): Promise<void> => {
         await api.put(
             '/stores/update-color',
             {
                 color,
             },
             {
-                params: {storeUrl},
+                params: {storeId},
                 headers: await auth.authenticatedHeaders(),
             },
         );
     },
 
-    updateStoreFont: async (storeUrl: string, font: string): Promise<void> => {
+    updateStoreFont: async (storeId: number, font: string): Promise<void> => {
         await api.put(
             '/stores/update-font',
             {
                 font,
             },
             {
-                params: {storeUrl},
+                params: {storeId},
                 headers: await auth.authenticatedHeaders(),
             },
         );
@@ -101,12 +101,12 @@ export const storeService = {
         return res.data;
     },
 
-    uploadImage: async (storeUrl: string, formData: FormData): Promise<{ imageUrl: string }> => {
+    uploadImage: async (storeId: number, formData: FormData): Promise<{ imageUrl: string }> => {
         const res = await api.post<{ imageUrl: string }>(
             `/stores/image`,
             formData,
             {
-                params: {storeUrl},
+                params: {storeId},
                 headers: {
                     ...(await auth.authenticatedHeaders()),
                     'Content-Type': 'multipart/form-data',
@@ -117,20 +117,20 @@ export const storeService = {
         return res.data;
     },
 
-    listTables: async (storeUrl: string): Promise<TableDto[]> => {
+    listTables: async (storeId: number): Promise<TableDto[]> => {
         const res = await api.get<TableDto[]>(`/stores/tables`, {
             headers: await auth.authenticatedHeaders(),
             params: {
-                storeUrl,
+                storeId,
             },
         });
 
         return res.data;
     },
 
-    createTable: async (storeUrl: string, dto: CreateTableDto): Promise<TableDto> => {
+    createTable: async (storeId: number, dto: CreateTableDto): Promise<TableDto> => {
         const res = await api.post<TableDto>(`/stores/tables`, dto, {
-            params: {storeUrl},
+            params: {storeId},
             headers: await auth.authenticatedHeaders(),
         });
 

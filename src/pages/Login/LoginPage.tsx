@@ -164,7 +164,7 @@ function LoginPage() {
                                         className="w-full h-12 bg-white rounded-lg font-semibold shadow-lg transform hover:-translate-y-0.5 transition duration-200 flex items-center justify-center gap-2"
                                         onClick={e => {
                                             e.preventDefault();
-                                            fakeLogin();
+                                            submitLogin();
                                         }}
                                     >
                                         Login

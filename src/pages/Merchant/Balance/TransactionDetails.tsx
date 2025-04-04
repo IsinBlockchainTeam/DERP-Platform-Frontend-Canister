@@ -48,7 +48,9 @@ const downloadReceipts = (trx: TicketAccountingTransaction) => {
 
     for (const paymentDetail of trx.PaymentDetails) {
         const a = document.createElement("a");
-        a.href = ordersService.getInvoiceProxyUrl(paymentDetail.externalUrl);
+        const paymentId = +paymentDetail.id;
+
+        a.href = ordersService.getPaymentReceiptUrl(paymentId);
         // TODO:
         // fix this since it wont work locally we are trivially doing this
         if (a.href.includes("localhost:3000")) {

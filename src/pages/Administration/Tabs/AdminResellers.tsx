@@ -3,14 +3,14 @@ import { useNavigate, useParams } from "react-router-dom";
 import { companyService } from "../../../api/services/Company";
 import CompaniesTable from "../../../components/CompaniesTable/CompaniesTable";
 import LoadingSpinner from "../../../components/Loading/LoadingSpinner";
-import { InfoCompanyDto } from "../../../dto/CompanyDto";
+import { CompanyDto } from "../../../dto/CompanyDto";
 import CompanyEditModal from "../CompanyEditModal";
 import CompanyRegistrationModal from "../CompanyRegistrationModal";
 import { useTranslation } from 'react-i18next';
 import { GenericFormField } from '../../../components/Form/GenericForm';
 
 const AdminResellerTab = () => {
-    const [resellers, setResellers] = useState < InfoCompanyDto[] > ([]);
+    const [resellers, setResellers] = useState < CompanyDto[] > ([]);
     const [isRegistrationModalOpen, setIsRegistrationModalOpen] = useState < boolean > (false);
     const [companyIdSelected, setCompanyIdSelected] = useState < number > ();
     const [loading, setLoading] = useState < boolean > (false);
@@ -62,11 +62,11 @@ const AdminResellerTab = () => {
                 </div>
                 <CompaniesTable data={resellers}
                     onEdit={(row) => {
-                        setCompanyIdSelected(row.companyId)
+                        setCompanyIdSelected(row.id)
                         toggleEditModal()
                     }}
                     onDetails={(row) => {
-                        navigate(`/reseller/${row.companyId}`)
+                        navigate(`/reseller/${row.id}`)
                     }}
                 ></CompaniesTable>
 

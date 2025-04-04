@@ -1,19 +1,13 @@
-import { AccountingTransaction } from '../model/AccountingTransaction';
-
-export type RegisterAccountingTransactionRequest<
-    T extends AccountingTransaction = AccountingTransaction,
-> = Omit<T, 'Header'> & {
-    Header: Omit<T['Header'], 'DLTERPId'>;
-};
+import { AccountingTransactionType } from "@derp/company-canister";
 
 export type ListAccountingTransactionQuery = {
     dateFrom?: Date;
 
     dateTo?: Date;
 
-    storeUrl?: string;
+    storeId?: number;
 };
 
 export type GetAccountingTransactionQuery = {
-    storeUrl: string;
+    type: AccountingTransactionType;
 };

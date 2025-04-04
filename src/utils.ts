@@ -68,21 +68,22 @@ export const parseSearchParamSafe = (searchParams: URLSearchParams, name: string
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
-export function useStoreUrl() {
+export function useStoreId() {
   const location = useLocation();
-  const [storeUrl, setStoreUrl] = useState(() => {
+  const [storeId, setStoreId] = useState(() => {
     // Initial parsing when the hook is first called
     const searchParams = new URLSearchParams(location.search);
-    return parseSearchParamSafe(searchParams, 'storeUrl');
+      return parseInt(parseSearchParamSafe(searchParams, 'storeId'));
   });
 
   useEffect(() => {
     // Whenever the location changes, update the storeUrl
     const searchParams = new URLSearchParams(location.search);
-    setStoreUrl(parseSearchParamSafe(searchParams, 'storeUrl'));
+    const val = parseSearchParamSafe(searchParams, 'storeId');
+    setStoreId(parseInt(val));
   }, [location.search]);
 
-  return storeUrl;
+  return storeId;
 }
 
 

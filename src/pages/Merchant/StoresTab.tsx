@@ -25,8 +25,7 @@ const StoresTab = () => {
 
 
     const onClickShowDetails = async (store: StoreDto) => {
-        const encodedUrl = encodeURIComponent(store.url);
-        navigate(`/merchant/${merchantId}/stores/store?storeUrl=${encodedUrl}`);
+        navigate(`/merchant/${merchantId}/stores/store?storeId=${store.id}`);
     }
 
 

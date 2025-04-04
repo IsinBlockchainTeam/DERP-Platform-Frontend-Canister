@@ -1,13 +1,4 @@
-import {OrderLine} from "./ERPOrderLineDto";
-
-export interface OrderPaymentDto {
-  trxId: string;
-  invoiceUrl: string;
-  paymentType: PaymentMethod;
-  paymentAmount: number;
-  paidItems: OrderLine[];
-  trxHash?: string;
-}
+import { InvoiceItemDto } from "./Invoices";
 
 export enum PaymentMethod {
   VISA = 'VIS',
@@ -16,4 +7,17 @@ export enum PaymentMethod {
   TWINT = 'TWI',
   CRYPTO = 'CRYPTO',
   POSTFINANCE = 'PFC',
+}
+
+export interface PaymentDto {
+    id: number;
+    payerAddress?: string;
+    payeeAddress?: string;
+    amount: number;
+    currency: string;
+    paymentTargets: InvoiceItemDto[];
+    externalId: string;
+    paymentType: PaymentMethod;
+    date: Date;
+    transactionId: string;
 }

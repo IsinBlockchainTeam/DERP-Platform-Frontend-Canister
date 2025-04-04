@@ -8,24 +8,24 @@ import AddEvmFormFields from './AddEvmFormFields'
 import { useTranslation } from "react-i18next";
 
 export interface Props {
-    chainUrl: string,
-    storeUrl: string,
+    chainId: number,
+    storeId: number,
     onDone: () => void;
 }
 
 const defaultCrypto: AddSupportedCryptoDTO = {
-    chainUrl: '',
+    chainId: 0,
     isNative: true,
     name: '',
     toSwissFrancs: 0,
 }
 
-export default function AddCryptoForm({ onDone, chainUrl, storeUrl }: Props) {
+export default function AddCryptoForm({ onDone, chainId, storeId }: Props) {
     const [loading, setLoading] = useState<boolean>(false);
     const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
     const [loadingTabLogo, setLoadingTabLogo] = useState<boolean>(false);
     const [chain, setChain] = useState<SupportedChainDTO | undefined>(undefined);
-    const [addingCrypto, setAddingCrypto] = useState<Partial<AddSupportedCryptoDTO>>({ ...defaultCrypto, chainUrl });
+    const [addingCrypto, setAddingCrypto] = useState<Partial<AddSupportedCryptoDTO>>({ ...defaultCrypto, chainId });
     const [addedCrypto, setAddedCrypto] = useState<SupportedCryptoDTO>();
     const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
     const [step, setStep] = useState<number>(0);
@@ -54,10 +54,10 @@ export default function AddCryptoForm({ onDone, chainUrl, storeUrl }: Props) {
 
     useEffect(() => {
         setLoading(true);
-        chainService.listChains(storeUrl).then((chains) => {
-            const c = chains.find((c) => c.url === chainUrl);
+        chainService.listChains(storeId).then((chains) => {
+            const c = chains.find((c) => c.id === chainId);
             if (!c) {
-                throw new Error(`Chain ${chainUrl} not found`);
+                throw new Error(`Chain ${chainId} not found`);
             }
 
             setChain(c);
@@ -71,7 +71,7 @@ export default function AddCryptoForm({ onDone, chainUrl, storeUrl }: Props) {
             submit: async (e: FormEvent<HTMLFormElement>) => {
                 e.preventDefault()
 
-                let valid = !!(addingCrypto.chainUrl && addingCrypto.name && addingCrypto.toSwissFrancs !== 0);
+                let valid = !!(addingCrypto.chainId && addingCrypto.name && addingCrypto.toSwissFrancs !== 0);
                 valid = valid && !!(addingCrypto.isNative || addingCrypto.contractAddress);
 
                 if (!valid) {
@@ -82,8 +82,8 @@ export default function AddCryptoForm({ onDone, chainUrl, storeUrl }: Props) {
 
                 setLoadingSubmit(true)
                 try {
-                    const added = await chainService.addSupportedCrypto(storeUrl, {
-                        chainUrl: addingCrypto.chainUrl?.trim(),
+                    const added = await chainService.addSupportedCrypto(storeId, {
+                        chainId: addingCrypto.chainId,
                         contractAddress: addingCrypto.contractAddress?.trim(),
                         name: addingCrypto.name?.trim(),
                         toSwissFrancs: addingCrypto.toSwissFrancs,
@@ -135,7 +135,7 @@ export default function AddCryptoForm({ onDone, chainUrl, storeUrl }: Props) {
                     const formData = new FormData(form);
                     if (!addedCrypto?.id) return;
 
-                    const newCrypto = await chainService.setCryptoImage(storeUrl, formData, addedCrypto.id)
+                    const newCrypto = await chainService.setCryptoImage(storeId, formData, addedCrypto.id)
                     setAddedCrypto(newCrypto);
                     setErrorMessage(undefined);
                 } catch (e: any) {

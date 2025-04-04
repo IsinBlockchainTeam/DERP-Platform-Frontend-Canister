@@ -5,7 +5,7 @@ import FormLoader from '../Loading/FormLoader';
 import FontCheckbox from '../FontCheckBox/FontCheckbox';
 import { DEFAULT_FONT } from '../../constants';
 import {useTranslation} from "react-i18next";
-import { useStoreUrl } from '../../utils';
+import { useStoreId } from '../../utils';
 
 interface Props {
     store: StoreDto;
@@ -17,7 +17,7 @@ function FontForm({ store }: Props) {
     const [errorMessage, setErrorMessage] = useState<string>('');
     const [fonts, setFonts] = useState<string[]>([]);
     const {t} = useTranslation(undefined, {keyPrefix: 'supplierAppearance'});
-    const storeUrl = useStoreUrl();
+    const storeUrl = useStoreId();
 
     const showErrorMessage = (message: string) => {
         setErrorMessage(message);
