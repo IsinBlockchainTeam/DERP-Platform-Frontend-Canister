@@ -33,5 +33,30 @@ export const accountingTransactionService = {
             default:
                 throw new Error('Unknown transaction type');
         }
+    },
+
+    async downloadOriginalXML(
+        id: string
+    ): Promise<void> {
+        const res = await api.get(`/accounting-transactions/${id}/xml`, {
+            headers: await auth.authenticatedHeaders(),
+            responseType: 'blob',
+        })
+
+        const blob = new Blob([res.data], { type: 'application/xml' });
+        const contentDisposition = res.headers['content-disposition'];
+        const filename = contentDisposition
+            ? contentDisposition.split('filename=')[1].replace(/"/g, '')
+            : `transaction-${id}.xml`;
+
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
     }
 };

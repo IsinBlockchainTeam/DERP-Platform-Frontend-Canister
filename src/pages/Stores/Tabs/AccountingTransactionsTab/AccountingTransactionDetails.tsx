@@ -29,8 +29,9 @@ const AccountingTransactionDetails = () => {
         fetchTransaction();
     }, [transactionId]);
 
-    const onDownloadOriginal = () => {
-        console.log("download")
+    const onDownloadOriginal = async () => {
+        if(!transactionId) throw new Error("Transaction id is missing");
+        await accountingTransactionService.downloadOriginalXML(transactionId);
     }
 
     return <>
@@ -44,7 +45,7 @@ const AccountingTransactionDetails = () => {
                     <a
                         download
                         className='btn btn-primary mb-5'
-                        href={`/accounting-transactions/${transactionId}/xml`}
+                        href={`${process.env.REAC_APP_BACKEND_URL}/accounting-transactions/${transactionId}/xml`}
                     >
                         <DownloadIcon size={6} />
                         {t('transactionDetails.downloadOriginal')}
