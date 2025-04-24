@@ -12,6 +12,7 @@ import GenericTable, { GenericTableAction, GenericTableColumn } from '../../comp
 import TabTitle from '../../components/Tabs/TabTitle';
 import { CreateInterfaceReqDto, InterfaceResponseDto, InterfaceStatus, InterfaceType, UpdateInterfaceReqDto } from '../../dto/ErpInterfacesDto';
 import { AxiosError } from 'axios';
+import PaginationIndicator from '../Pagination/PaginationIndicator';
 
 export default function InterfacesDashboard() {
     const [loading, setLoading] = useState(false);

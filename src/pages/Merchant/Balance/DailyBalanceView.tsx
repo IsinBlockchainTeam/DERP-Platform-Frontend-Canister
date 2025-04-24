@@ -75,13 +75,13 @@ const DailyBalanceView = () => {
                 items.push(new StatementItemAggregate(
                     parentId,
                     0,
-                    date.getFullYear(),
-                    date.getMonth(),
-                    date.getDate(),
+                    date.getUTCFullYear(),
+                    date.getUTCMonth(),
+                    date.getUTCDate(),
                 ));
             }
 
-            date.setDate(date.getDate() + 1);
+            date.setUTCDate(date.getUTCDate() + 1);
         }
 
 

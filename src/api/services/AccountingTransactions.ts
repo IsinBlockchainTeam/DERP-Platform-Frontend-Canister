@@ -18,6 +18,69 @@ export const accountingTransactionService = {
             ...bankings,
         ]
     },
+    
+    async listTransactionIDs(
+        query: ListAccountingTransactionQuery,
+    ): Promise<{
+        type: "ticket" | "invoice" | "bank",
+        id: string,
+    }[]> {
+        const tickets = await accountingTransactionClient.getTransactionIds("ticket", query.dateFrom, query.dateTo);
+        const invoices = await accountingTransactionClient.getTransactionIds("invoice", query.dateFrom, query.dateTo);
+        const bankings = await accountingTransactionClient.getTransactionIds("bank", query.dateFrom, query.dateTo);
+        
+        const ticketRet = tickets.map((ticket) => ({
+            id: ticket,
+            type: "ticket" as const,
+        }));
+
+        const invoiceRet = invoices.map((invoice) => ({
+            id: invoice,
+            type: "invoice" as const,
+        }));
+        
+        const bankingRet = bankings.map((banking) => ({
+            id: banking,
+            type: "bank" as const,
+        }));
+
+        return [
+            ...ticketRet,
+            ...invoiceRet,
+            ...bankingRet,
+        ]
+    },
+    
+    async getTransactionsByIDs(
+        ids: {
+            type: "ticket" | "invoice" | "bank",
+            id: string,
+        }[],
+        dateFrom?: Date,
+        dateTo?: Date,
+    ): Promise<AccountingTransaction[]> {
+        console.log(ids);
+        console.log(dateFrom);
+        console.log(dateTo);
+
+        const ticketIds = ids.filter((id) => id.type === "ticket").map((id) => id.id);
+        const invoiceIds = ids.filter((id) => id.type === "invoice").map((id) => id.id);
+        const bankIds = ids.filter((id) => id.type === "bank").map((id) => id.id);
+
+        const tickets = await accountingTransactionClient.getTransactionsByIds("ticket", ticketIds);
+        const invoices = await accountingTransactionClient.getTransactionsByIds("invoice", invoiceIds);
+        const bankings = await accountingTransactionClient.getTransactionsByIds("bank", bankIds);
+
+        let result = [...tickets, ...invoices, ...bankings];
+        if (dateFrom) {
+            result = result.filter((transaction) => transaction.Header.IssueDate && transaction.Header.IssueDate >= dateFrom);
+        }
+        if (dateTo) {
+            result = result.filter((transaction) => transaction.Header.IssueDate && transaction.Header.IssueDate <= dateTo);
+        }
+
+        return result;
+    },
 
     async getAccountingTransaction(
         query: GetAccountingTransactionQuery,

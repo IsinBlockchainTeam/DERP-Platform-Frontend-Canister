@@ -879,5 +879,15 @@ export default {
     merchantProducts: {
         title: "Prodotti",
         description: "Descrizione",
-    }
+    },
+    pagination: {
+        refresh: 'Aggiorna',
+        from: 'Da',
+        to: 'A',
+        showing: 'Visualizzando {{startItem}} - {{endItem}} di {{totalItems}}',
+        page: 'Pagina',
+        of: 'di',
+        next: 'Successiva',
+        previous: 'Precedente',
+    },
 };

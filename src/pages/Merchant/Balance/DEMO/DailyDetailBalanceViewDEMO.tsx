@@ -1,4 +1,4 @@
-import { AccountingTransaction, StatementItem} from "@derp/company-canister";
+import { AccountingTransaction, DailyTransactionRecord, StatementItem} from "@derp/company-canister";
 import { ChevronLeft, Download, ExternalLink, Eye, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from "react-i18next";
@@ -9,8 +9,8 @@ const DailyDetailBalanceViewDEMO = () => {
     const { itemId, categoryId, merchantId, year, monthId, day } = useParams();
     const [loading, setLoading] = useState(true);
     const [parentStatementItem, setParentStatementItem] = useState<StatementItem | null>(null);
-    const [transactions, setTransactions] = useState<AccountingTransaction[]>([]);
-    const [selectedTransaction, setSelectedTransaction] = useState<AccountingTransaction | null>(null);
+    const [transactions, setTransactions] = useState<{record: DailyTransactionRecord, transaction: AccountingTransaction}[]>([]);
+    const [selectedTransaction, setSelectedTransaction] = useState<{record: DailyTransactionRecord, transaction: AccountingTransaction} | null>(null);
     const { i18n, t } = useTranslation(undefined, { keyPrefix: 'merchantBalance' });
     const navigate = useNavigate();
 
@@ -47,9 +47,10 @@ const DailyDetailBalanceViewDEMO = () => {
             const originalStatementItem = await statementItemsClient.getStatementItem(itemIdNumber.valueOf());
             setParentStatementItem(originalStatementItem);
 
-            const transactions = await statementItemsClient.getStatementItemTransactions(itemIdNumber.valueOf(), currentDate);
+            const transactions = await statementItemsClient.getStatementItemRecordsWithTransactions(itemIdNumber.valueOf(), currentDate);
 
             setTransactions(transactions);
+            console.log("Transactions: " + JSON.stringify(transactions));
         } catch (error) {
             console.log(error);
         } finally {
@@ -57,8 +58,8 @@ const DailyDetailBalanceViewDEMO = () => {
         }
     }
 
-    const calculateDayTotal = (transactions: AccountingTransaction[]) => {
-        return transactions.reduce((acc, transaction) => acc + (transaction.Header.TotalAmount || 0), 0);
+    const calculateDayTotal = (transactions: {record: DailyTransactionRecord, transaction: AccountingTransaction}[]) => {
+        return transactions.reduce((acc, transaction) => acc + (transaction.record.total || 0), 0);
     }
 
     //TODO move this to a common place
@@ -114,6 +115,7 @@ const DailyDetailBalanceViewDEMO = () => {
                         <tr className="border-b border-base-100">
                             <th className="text-left px-6 py-3 text-lg font-medium text-neutral bg-base-100">ID</th>
                             <th className="text-left px-6 py-3 text-lg font-medium text-neutral bg-base-100">Fonte</th>
+                            <th className="text-right px-6 py-3 text-lg font-medium text-neutral bg-base-100">Contributo</th>
                             <th className="text-right px-6 py-3 text-lg font-medium text-neutral bg-base-100">Totale</th>
                             <th className="text-left px-6 py-3 text-lg font-medium text-neutral bg-base-100">Stato</th>
                             <th className="text-center px-6 py-3 text-lg font-medium text-neutral bg-base-100"></th>
@@ -122,14 +124,15 @@ const DailyDetailBalanceViewDEMO = () => {
                         <tbody>
                         {transactions.map((transaction) => (
                             <tr
-                                key={transaction.Header.DLTERPId}
+                                key={transaction.transaction.Header.DLTERPId}
                                 className={`border-b border-base-100 last:border-0 hover:bg-base-100/50 transition-colors
-                      ${selectedTransaction?.Header.DLTERPId === transaction.Header.DLTERPId ? 'bg-base-100/50' : ''}`}
+                      ${selectedTransaction?.transaction.Header.DLTERPId === transaction.transaction.Header.DLTERPId ? 'bg-base-100/50' : ''}`}
                             >
-                                <td className="px-6 py-3 text-neutral text-base">{transaction.Header.DLTERPId}</td>
-                                <td className="px-6 py-3 text-neutral text-base">{transaction.Header.Source}</td>
+                                <td className="px-6 py-3 text-neutral text-base">{transaction.transaction.Header.DLTERPId}</td>
+                                <td className="px-6 py-3 text-neutral text-base">{transaction.transaction.Header.Source}</td>
+                                <td className="px-6 py-3 text-neutral text-right text-base">{transaction.transaction.Header.Currency} {transaction.record.total.toFixed(2)}</td>
                                 <td className="px-6 py-3 text-right text-base text-primary">
-                                    {transaction.Header.Currency} {transaction.Header.TotalAmount?.toFixed(2)}
+                                    {transaction.transaction.Header.Currency} {transaction.transaction.Header.TotalAmount?.toFixed(2)}
                                 </td>
                                 <td className="px-6 py-3">
                       <span className={`text-base px-2 py-0.5 rounded-full bg-success/10 text-success`}>
@@ -169,19 +172,19 @@ const DailyDetailBalanceViewDEMO = () => {
                         <div className="text-center p-4 bg-base-100 rounded-lg">
                             <div className="text-base text-neutral">Importo Totale</div>
                             <div className="text-lg font-bold text-primary mt-1">
-                                {selectedTransaction.Header.Currency} {selectedTransaction.Header.TotalAmount?.toFixed(2)}
+                                {selectedTransaction.transaction.Header.Currency} {selectedTransaction.transaction.Header.TotalAmount?.toFixed(2)}
                             </div>
                         </div>
 
                         <div className="grid gap-4">
                             <div>
                                 <div className="text-base text-neutral">ID Transazione</div>
-                                <div className="text-base">{selectedTransaction.Header.DLTERPId}</div>
+                                <div className="text-base">{selectedTransaction.transaction.Header.DLTERPId}</div>
                             </div>
 
                             <div>
                                 <div className="text-base text-neutral">Fonte</div>
-                                <div className="text-base">{selectedTransaction.Header.Source}</div>
+                                <div className="text-base">{selectedTransaction.transaction.Header.Source}</div>
                             </div>
 
                             <div>
