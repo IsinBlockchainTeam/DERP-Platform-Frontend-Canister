@@ -9,7 +9,6 @@ import { useStoreId } from "../../../../utils";
 import { EyeIcon } from "../../../../components/Icons/Icons";
 import { AccountingTransaction } from "@derp/company-canister";
 import PaginationIndicator from "../../../Pagination/PaginationIndicator";
-// @ts-ignore
 import ReactDatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -136,16 +135,20 @@ const AccountingTransactionsList = () => {
     }, []);
 
     // Date picker change handlers
-    const handleDateFromChange = (date: Date) => {
-        const newDate = new Date(date);
-        newDate.setHours(0, 0, 0, 0);
-        setDateFrom(newDate);
+    const handleDateFromChange = (date: Date | null) => {
+        if (date) {
+            const newDate = new Date(date);
+            newDate.setHours(0, 0, 0, 0);
+            setDateFrom(newDate);
+        }
     };
 
-    const handleDateToChange = (date: Date) => {
-        const newDate = new Date(date);
-        newDate.setHours(0, 0, 0, 0);
-        setDateTo(newDate);
+    const handleDateToChange = (date: Date | null) => {
+        if (date) {
+            const newDate = new Date(date);
+            newDate.setHours(0, 0, 0, 0);
+            setDateTo(newDate);
+        }
     };
 
     const handlePageChange = (page: number) => {

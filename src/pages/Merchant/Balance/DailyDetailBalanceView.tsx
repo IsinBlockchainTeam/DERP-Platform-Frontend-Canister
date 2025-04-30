@@ -56,7 +56,7 @@ const DailyDetailBalanceView = () => {
 
             console.log("Custom date: " + JSON.stringify(customDate));
 
-            const transactions = await statementItemsClient.getStatementItemTransactions(itemIdNumber.valueOf(), new Date());
+            //const transactions = await statementItemsClient.getStatementItemTransactions(itemIdNumber.valueOf(), new Date());
             setTransactions(transactions);
         } catch (error) {
             console.log(error);
