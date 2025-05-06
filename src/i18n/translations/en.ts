@@ -371,6 +371,8 @@ export default {
                 cronLocale: LOCALE_EN,
                 enabled: "Is the job enabled?",
                 enabledLabel: "Enabled",
+                dayRolloverTime: "End of day time",
+                dayRolloverTimeDescription: "All transactions that are found before this time are registered in the accounting day before the current one",
                 cancel: "Cancel",
                 submit: "Create",
                 update: "Update",

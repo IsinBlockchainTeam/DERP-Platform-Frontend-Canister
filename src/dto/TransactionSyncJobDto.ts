@@ -8,6 +8,7 @@ export interface TransactionSyncJobDto {
     type: TransactionSyncJobType;
     cron: string;
     enabled: boolean;
+    dayRolloverTime?: string; // Optional field for ERP type jobs
 }
 
 export interface TransactionSyncJobDtoWithId extends TransactionSyncJobDto {

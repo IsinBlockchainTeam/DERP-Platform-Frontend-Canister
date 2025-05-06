@@ -371,6 +371,8 @@ export default {
                 cronLocale: LOCALE_IT,
                 enabled: "La procedura sarà abilitata?",
                 enabledLabel: "Abilita",
+                dayRolloverTime: "Orario di fine giornata",
+                dayRolloverTimeDescription: "Tutte le transazioni trovate prima di questo orario vengono registrate nel giorno contabile precedente a quello corrente",
                 cancel: "Annulla",
                 submit: "Crea",
                 update: "Aggiorna",

@@ -21,6 +21,7 @@ const defaultNewJob: Partial<TransactionSyncJobDtoWithId> = {
     cron: '* * * * *',
     enabled: true,
     type: TransactionSyncJobType.ERP,
+    dayRolloverTime: undefined,
 }
 
 const DataSyncAccountingTransactions = () => {
@@ -35,6 +36,12 @@ const DataSyncAccountingTransactions = () => {
     const [createNew, setCreateNew] = useState(false);
     const [errors, setErrors] = useState<string[]>([]);
     const [cronLocale, setCronLocale] = useState<DefaultLocale>(LOCALE_EN);
+
+    const formatTimeToHHmm = (time: string): string | undefined => {
+        if (!time) return undefined;
+        const [hours, minutes] = time.split(':');
+        return `${hours}:${minutes}`;
+    };
 
     const tableColumns: GenericTableColumn<TransactionSyncJobDtoWithId>[] = [
         {
@@ -231,6 +238,19 @@ const DataSyncAccountingTransactions = () => {
                         <option value={TransactionSyncJobType.INTERNAL}>{t('form.sourceOptions.internal')}</option>
                         <option value={TransactionSyncJobType.BANK}>{t('form.sourceOptions.bank')}</option>
                     </select>
+                    {formJob.type === TransactionSyncJobType.ERP && (
+                        <div className="mt-3">
+                            <span className="text-xl mb-2 block">{t('form.dayRolloverTime')}</span>
+                            <span className="text-sm text-gray-500 mb-3 block">{t('form.dayRolloverTimeDescription')}</span>
+                            <input 
+                                type="time" 
+                                className="input input-bordered w-full max-w-md"
+                                value={formJob.dayRolloverTime?.split(':').slice(0, 2).join(':') || ''}
+                                onChange={(e) => setFormJob(old => ({ ...old, dayRolloverTime: formatTimeToHHmm(e.target.value) }))}
+                                step="60"
+                            />
+                        </div>
+                    )}
                     <hr className="mt-3" />
 
                     <div className="form-control mt-5 max-w-xs">
