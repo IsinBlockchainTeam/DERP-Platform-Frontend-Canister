@@ -372,7 +372,7 @@ export default {
                 enabled: "Is the job enabled?",
                 enabledLabel: "Enabled",
                 dayRolloverTime: "End of day time",
-                dayRolloverTimeDescription: "All transactions that are found before this time are registered in the accounting day before the current one",
+                dayRolloverTimeDescription: "Every procedure that is executed before this time will continue to process transactions from the previous day; Only after this time, synchronization procedures will process transactions from the current day.",
                 cancel: "Cancel",
                 submit: "Create",
                 update: "Update",

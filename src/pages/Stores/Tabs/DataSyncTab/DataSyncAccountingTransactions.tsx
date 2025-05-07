@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import TabTitle from "../../../../components/Tabs/TabTitle"
 import GenericTable, { GenericTableColumn, GenericTableAction } from "../../../../components/Table/GenericTable";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useStoreId } from "../../../../utils";
 import { TransactionSyncJobDto, TransactionSyncJobDtoWithId, TransactionSyncJobType } from "../../../../dto/TransactionSyncJobDto";
 import { dataSynchronizationService } from "../../../../api/services/DataSynchronization";
@@ -30,6 +30,9 @@ const DataSyncAccountingTransactions = () => {
     const [loading, setLoading] = useState(false);
     const [configuredJobs, setConfiguredJobs] = useState<TransactionSyncJobDtoWithId[]>([]);
     const [associations, setAssociations] = useState<AssociationResponseDto[]>([]);
+    const [runningJobs, setRunningJobs] = useState<Record<string, 'loading' | 'success'>>({});
+    const pollingIntervalRef = useRef<NodeJS.Timeout>();
+    const POLLING_INTERVAL = 5000; // 5 seconds
 
     const [modalOpen, setModalOpen] = useState(false);
     const [formJob, setFormJob] = useState<Partial<TransactionSyncJobDtoWithId>>(defaultNewJob);
@@ -90,14 +93,95 @@ const DataSyncAccountingTransactions = () => {
     const tableActions: GenericTableAction<TransactionSyncJobDtoWithId>[] = [
         {
             label: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6">
-                <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
             </svg>,
             onClick: (row: TransactionSyncJobDtoWithId) => onEdit(row)
+        },
+        {
+            label: (row: TransactionSyncJobDtoWithId) => {
+                const status = runningJobs[row.id];
+                if (status === 'loading') {
+                    return (
+                        <svg className="animate-spin h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    );
+                }
+                if (status === 'success') {
+                    return (
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 text-success">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                        </svg>
+                    );
+                }
+                return (
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
+                    </svg>
+                );
+            },
+            onClick: async (row: TransactionSyncJobDtoWithId) => {
+                try {
+                    setRunningJobs(prev => ({ ...prev, [row.id]: 'loading' }));
+                    await dataSynchronizationService.runNow(row.id);
+                    setRunningJobs(prev => ({ ...prev, [row.id]: 'success' }));
+                    setTimeout(() => {
+                        setRunningJobs(prev => {
+                            const newState = { ...prev };
+                            delete newState[row.id];
+                            return newState;
+                        });
+                    }, 3000);
+                } catch (e) {
+                    console.error(e);
+                    setRunningJobs(prev => {
+                        const newState = { ...prev };
+                        delete newState[row.id];
+                        return newState;
+                    });
+                }
+            }
         }
     ]
 
+    const fetchData = async () => {
+        try {
+            const jobs = await dataSynchronizationService.list(storeId);
+            setConfiguredJobs(jobs);
+
+            const associations = await interfacesService.getAssociations(storeId);
+            setAssociations(associations);
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    const startPolling = () => {
+        // Clear any existing interval
+        if (pollingIntervalRef.current) {
+            clearInterval(pollingIntervalRef.current);
+        }
+
+        // Set up new polling interval
+        pollingIntervalRef.current = setInterval(fetchData, POLLING_INTERVAL);
+    }
+
     useEffect(() => {
-        fetchData();
+        // Initial load with loading state
+        setLoading(true);
+        fetchData().finally(() => {
+            setLoading(false);
+            // Start polling after initial load
+            startPolling();
+        });
+
+        // Cleanup on unmount
+        return () => {
+            if (pollingIntervalRef.current) {
+                clearInterval(pollingIntervalRef.current);
+            }
+        };
     }, []);
 
     useEffect(() => {
@@ -113,21 +197,6 @@ const DataSyncAccountingTransactions = () => {
                 setCronLocale(LOCALE_EN);
         }
     }, [i18next.resolvedLanguage])
-
-    const fetchData = async () => {
-        setLoading(true);
-        try {
-            const jobs = await dataSynchronizationService.list(storeId);
-            setConfiguredJobs(jobs);
-
-            const associations = await interfacesService.getAssociations(storeId);
-            setAssociations(associations);
-        } catch (e) {
-            console.error(e);
-        } finally {
-            setLoading(false);
-        }
-    }
 
     const onAdd = () => {
         setCreateNew(true);

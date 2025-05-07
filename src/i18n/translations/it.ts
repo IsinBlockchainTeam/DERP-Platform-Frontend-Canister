@@ -372,7 +372,7 @@ export default {
                 enabled: "La procedura sarà abilitata?",
                 enabledLabel: "Abilita",
                 dayRolloverTime: "Orario di fine giornata",
-                dayRolloverTimeDescription: "Tutte le transazioni trovate prima di questo orario vengono registrate nel giorno contabile precedente a quello corrente",
+                dayRolloverTimeDescription: "Ogni procedura che viene eseguita prima di questo orario continuerà a gestire le transazioni del giorno precedente; Solo dopo questo orario le procedure di sincronizzazione processeranno le transazioni del giorno corrente.",
                 cancel: "Annulla",
                 submit: "Crea",
                 update: "Aggiorna",
