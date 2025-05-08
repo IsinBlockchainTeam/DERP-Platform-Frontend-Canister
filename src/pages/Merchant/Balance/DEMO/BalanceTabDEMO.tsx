@@ -115,7 +115,7 @@ const BalanceTabDEMO = () => {
                     aggregateValuesMap.set(item.id, aggregateValue);
                 } catch (error) {
                     console.error(`Error fetching aggregate value for statement item ${item.id}:`, error);
-                    aggregateValuesMap.set(item.id, new StatementItemAggregate(item.id, 0, yearNumber));
+                    // aggregateValuesMap.set(item.id, new StatementItemAggregate(item.id, 0, yearNumber));
                 }
             })
         );
@@ -160,7 +160,7 @@ const BalanceTabDEMO = () => {
         const data = statementItems.map(statement => ({
             name: statement.name,
             value: Math.abs(statementAggregatesByStatementItemMap.get(statement.id)?.total || 0)
-        }));
+        })).filter(it => it.value !== 0);
 
         const pieColors = generateUniqueColors(data.length);
         return (
@@ -254,7 +254,7 @@ const BalanceTabDEMO = () => {
                             {/* Accounts List */}
                             {expandedCategory.includes(category.id) && (
                                 <div className="p-4 space-y-2">
-                                    {statementItemsByCategoryMap.get(category.id)?.map(statement => (
+                                    {statementItemsByCategoryMap.get(category.id)?.filter(statement => statementAggregatesByStatementItemMap.get(statement.id)?.total ?? 0 !== 0).map(statement => (
                                         <div
                                             key={statement.id}
                                             onClick={() => goToMonthlyDetail(statement.id, category.id)}
@@ -293,7 +293,7 @@ const BalanceTabDEMO = () => {
                                     <div className="flex items-center justify-center h-full text-gray-400">
                                         <div className="text-center">
                                             <BarChart className="w-16 h-16 mx-auto mb-4" />
-                                            <p>Clicca su un gruppo per vedere la distribuzione</p>
+                                            <p>Clicca su un gruppo per vederne la distribuzione</p>
                                         </div>
                                     </div>
                                 )}

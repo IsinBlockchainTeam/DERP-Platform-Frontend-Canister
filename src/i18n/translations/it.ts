@@ -588,6 +588,9 @@ export default {
     myCustomers: {
         title: 'I Tuoi Clienti',
         noCustomersFound: 'Nessun negozio ti ha registrato come suo fornitore.',
+        logo: 'Logo',
+        name: 'Nome',
+        address: 'Indirizzo',
     },
     confirmDialog: {
         confirm: 'Conferma',

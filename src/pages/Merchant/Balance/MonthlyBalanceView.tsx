@@ -35,7 +35,7 @@ const MonthlyBalanceView = () => {
 
             const originalStatementItem = await statementItemsClient.getStatementItem(itemIdNumber.valueOf());
             const aggregates = await statementItemsClient.getAggregateStatements(itemIdNumber.valueOf(), { year: yearNum });
-            setMonthlyAggregates(aggregates);
+            setMonthlyAggregates(aggregates.filter(it => it.total > 0));
             setParentStatementItem(originalStatementItem);
         } catch (error) {
             console.log(error);

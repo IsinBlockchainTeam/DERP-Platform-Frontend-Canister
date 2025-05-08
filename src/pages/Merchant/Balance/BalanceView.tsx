@@ -101,7 +101,7 @@ const BalanceView = () => {
                     value: getTotal(it),
                     id: it.id,
                     label: `${it.id} - ${it.name}`
-                })),
+                })).filter(it => it.value > 0),
             }]}
             width={850}
             height={500}

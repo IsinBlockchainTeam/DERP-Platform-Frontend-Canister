@@ -177,7 +177,7 @@ const MonthlyBalanceViewDEMO = () => {
                             </tr>
                             </thead>
                             <tbody>
-                            {monthlyAggregates.map((month, index) => (
+                            {monthlyAggregates.filter(it => it.total !== 0).map((month, index) => (
                                 <tr
                                     key={index}
                                     className="border-b border-base-100 last:border-0 hover:bg-base-100/50 transition-colors"

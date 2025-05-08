@@ -594,6 +594,9 @@ export default {
     myCustomers: {
         title: 'Your Customers',
         noCustomersFound: 'No store has added you as a supplier yet.',
+        logo: 'Logo',
+        name: 'Name',
+        address: 'Address',
     },
     confirmDialog: {
         confirm: 'Confirm',

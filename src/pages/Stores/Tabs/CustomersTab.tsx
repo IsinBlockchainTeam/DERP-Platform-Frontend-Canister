@@ -1,18 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { MyCustomer, relationsService } from "../../../api/services/Relations";
+import { relationsService } from "../../../api/services/Relations";
+import { SupplierPublicDto } from "../../../dto/stores/StoreList";
 import LoadingSpinner from "../../../components/Loading/LoadingSpinner";
-import CustomerCard from "../../../components/CustomerCard/CustomerCard";
 import { useTranslation } from "react-i18next";
 import GenericTable, { GenericTableColumn } from "../../../components/Table/GenericTable";
 import TabTitle from "../../../components/Tabs/TabTitle";
-import { useSearchParams } from "react-router-dom";
-import { parseSearchParamSafe, useStoreId } from "../../../utils";
+import { useStoreId } from "../../../utils";
 
 export default function CustomersTab() {
     const [loading, setLoading] = useState<boolean>(true);
-    const [customers, setCustomers] = useState<MyCustomer[]>([]);
+    const [customers, setCustomers] = useState<SupplierPublicDto[]>([]);
     const { t } = useTranslation(undefined, { keyPrefix: "myCustomers" });
-    const [searchParams] = useSearchParams();
     const storeId = useStoreId();
 
     useEffect(() => {
@@ -31,38 +29,56 @@ export default function CustomersTab() {
         }
     };
 
-    const customersColumns: GenericTableColumn<MyCustomer>[] = [
+    const customersColumns: GenericTableColumn<SupplierPublicDto>[] = [
         {
-            header: 'Logo',
-            accessor: (supplier) => <div className="avatar">
-                <div className="mask mask-circle h-12 w-12">
-                    <img src={supplier.store.imageUrl} alt="logo" />
+            header: t('logo'),
+            accessor: (customer) => (
+                <div className="avatar">
+                    <div className="mask mask-circle h-12 w-12 bg-gray-300 flex items-center justify-center">
+                        {customer.representsStore?.imageUrl ? (
+                            <img 
+                                src={customer.representsStore.imageUrl} 
+                                alt="logo"
+                                onError={(e) => {
+                                    e.currentTarget.style.display = 'none';
+                                }}
+                            />
+                        ) : (
+                            <div className="flex items-center justify-center w-full h-full">
+                                <span className="text-gray-500 text-xl font-semibold">
+                                    {(customer.representsStore?.name || customer.name || '?').charAt(0).toUpperCase()}
+                                </span>
+                            </div>
+                        )}
+                    </div>
                 </div>
-            </div>
+            )
         },
         {
-            header: 'Name',
-            accessor: (supplier) => supplier.store.name
+            header: t('name'),
+            accessor: (customer) => customer.representsStore?.name || customer.name || '-'
         },
         {
-            header: 'Address',
-            accessor: (supplier) => supplier.store.address
+            header: t('address'),
+            accessor: (customer) => customer.representsStore?.address || '-'
         }
-    ]
+    ];
 
     return (
-        <div>
+        <div className="flex flex-col w-full">
             <TabTitle title={t("title")} />
             {loading ? (
-                <LoadingSpinner />
+                <div className="flex flex-row grow items-center justify-center">
+                    <LoadingSpinner />
+                </div>
             ) : (
                 <>
                     {customers?.length ? (
-                        <div className="flex flex-col w-full">
+                        <div className="flex w-full flex-col" style={{ padding: '20px' }}>
                             <GenericTable data={customers} columns={customersColumns} />
                         </div>
                     ) : (
-                        <div className={"text-center w-full p-4"}>
+                        <div className="text-center w-full p-4">
                             {t("noCustomersFound")}
                         </div>
                     )}

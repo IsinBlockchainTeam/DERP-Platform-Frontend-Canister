@@ -91,7 +91,7 @@ const DailyBalanceView = () => {
             if(b.month === undefined || b.day === undefined) return 1;
 
             return new Date(a.year, a.month, a.day).getTime() - new Date(b.year, b.month, b.day).getTime();
-        });
+        }).filter(it => it.total > 0);
     }
 
 
