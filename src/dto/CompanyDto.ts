@@ -36,7 +36,21 @@ export interface CreateRepresentativeDto {
 }
 
 
-export type UpdateCompanyDto = Partial<CreateCompanyDto>;
+export type UpdateCompanyDto = {
+    businessName?: string;
+    additionalInfo?: string;
+    address?: string;
+    postalCodeAndLocation?: string;
+    canton?: string;
+    country?: string;
+    idi?: string;
+    vat?: string;
+    phone?: string;
+    webSite?: string;
+    email?: string;
+    type?: CompanyType;
+    representativeEmail?: string;
+}
 
 export interface CompanyDto {
     id: number;

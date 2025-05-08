@@ -1,22 +1,27 @@
 import Header from "../../components/Header/Header";
 import React, {useState} from "react";
 import LoadingSpinner from "../../components/Loading/LoadingSpinner";
-import {CompanyInfoDto} from "../../dto/CompanyInfoDto";
 import {useTranslation} from "react-i18next";
-import {companyInfoService} from "../../api/services/CompanyInfo";
 import CompanyInfoForm from "../../components/RegistryFrom/CompanyInfoForm";
 import {useNavigate} from "react-router-dom";
 import Card from "../../components/Card/Card";
 import {RegisterUserResponseDto} from "../../dto/auth/RegisterUserDto";
+import { CompanyDto, CompanyType, UpdateCompanyDto } from "../../dto/CompanyDto";
 
-const emptyCompanyInfo: CompanyInfoDto = {
+const emptyCompanyInfo: UpdateCompanyDto = {
     businessName: '',
-    email: '',
-    phone: '',
+    additionalInfo: '',
+    address: '',
+    postalCodeAndLocation: '',
+    canton: '',
+    country: '',
     idi: '',
     vat: '',
+    phone: '',
     webSite: '',
-    representativeUserEmail: ''
+    email: '',
+    type: CompanyType.MERCHANT,
+    representativeEmail: ''
 };
 
 type Props = {
@@ -25,7 +30,7 @@ type Props = {
 }
 
 export default function SaveCompanyInfo({supplier, onCompleted}: Props) {
-    const [companyInfo] = useState<CompanyInfoDto>(emptyCompanyInfo);
+    const [companyInfo] = useState<UpdateCompanyDto>(emptyCompanyInfo);
     const {t} = useTranslation(undefined, {keyPrefix: "saveCompanyInfo"});
     const [errorMessage, setErrorMessage] = useState<string>('');
     const [loadingForm, setLoadingForm] = useState<boolean>(false)

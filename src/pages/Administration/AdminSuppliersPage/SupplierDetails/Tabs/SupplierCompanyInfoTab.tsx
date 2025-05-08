@@ -1,4 +1,4 @@
-import UpdateCompanyInfo from "../../../../CompanyInfo/UpdateCompanyInfo";
+import UpdateCompanyInfo from "../../../../Company/UpdateCompanyInfo";
 import LoadingSpinner from "../../../../../components/Loading/LoadingSpinner";
 import {useEffect, useState} from "react";
 import {useSearchParams} from "react-router-dom";

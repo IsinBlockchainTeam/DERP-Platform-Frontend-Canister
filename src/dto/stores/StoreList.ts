@@ -1,21 +1,17 @@
 import {StoreDto} from "./StoreDto";
 
-export interface StoreList {
-  stores: StoreDto[];
+export type SupplierPublicDto = {
+    id: number;
+    representsStore?: StoreDto;
+    name?: string;
 }
 
-export interface MySuppliersList {
-  stores: MySupplier[]
+export type RegisterSupplierDto = {
+    representsStoreId: number;
+    name: string;
 }
 
-export interface MySupplier {
-  store: StoreDto,
-  options: {
-    supplierExternalID: string
-  }
-}
 
-export interface Supplier {
-  email: string,
-  webId: string,
+export type SupplierPrivateDto = SupplierPublicDto & {
+    token: string;
 }
