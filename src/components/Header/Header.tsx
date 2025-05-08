@@ -1,13 +1,12 @@
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { auth } from "../../api/auth";
 import { UserRole } from "../../model/UserRole";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { DEFAULT_FONT } from "../../constants";
 import { insertFontCSSRule } from "../../utils";
 import { useTranslation } from "react-i18next";
-import { AdminMenu } from "../Menu/AdminMenu";
-import { MerchantMenu } from "../Menu/MerchantMenu";
-import { ResellerMenu } from "../Menu/ResellerMenu";
+import { GenericMenu } from "../Menu/GenericMenu";
+import { ResourceType } from "../Menu/MenuProps";
 
 interface Props {
     color?: string;
@@ -30,6 +29,7 @@ function Header({
     const [role, setRole] = useState<UserRole>();
     const colorRegex = new RegExp("[#][a-fA-F0-9]{6}");
     const { t } = useTranslation(undefined, { keyPrefix: "menu" });
+    const { merchantId, resellerId } = useParams();
 
     const logout = () => {
         auth.logout()
@@ -45,13 +45,27 @@ function Header({
         try {
             console.log("Getting supplier data");
             const data = auth.getSupplierData();
-            const role = data.role;
+            const roleFromAuth = data.role;
             console.log(data)
-            setRole(role);
-        } catch (e) {}
+            setRole(roleFromAuth);
+        } catch (e) {
+            console.error("Error getting supplier data:", e);
+        }
 
         insertFontCSSRule(font);
-    }, []);
+    }, [font]);
+
+    const currentResource: ResourceType = useMemo(() => {
+        if (merchantId) {
+            return "merchant";
+        }
+
+        if (resellerId) {
+            return "reseller";
+        }
+
+        return "admin";
+    }, [merchantId, resellerId]);
 
     return (
         <div
@@ -63,23 +77,7 @@ function Header({
             }
         >
             <div className="navbar-start">
-                {
-                    (() => { 
-                        switch(role) {
-                            case UserRole.SUPPLIER:
-                                return <MerchantMenu/>;
-
-                            case UserRole.RESELLER:
-                                return <ResellerMenu/>
-
-                            case UserRole.ADMIN:
-                                return <AdminMenu/>
-
-                            default:
-                                return <div>User Role not recognized</div>
-                        }
-                    })()
-                }
+                <GenericMenu role={role} resourceType={currentResource} />
             </div>
             <div className="navbar-center">
                 <a

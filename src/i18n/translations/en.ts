@@ -43,11 +43,17 @@ export default {
         }
     },
     menu: {
-        homepage: 'Homepage',
+        homepage: 'Home',
+        dashboard: 'Dashboard',
+        orders: 'Orders',
+        stores: 'Stores',
+        invoices: 'Invoices',
+        companyInfo: 'Company Info',
+        interfaces: 'Interfaces',
     },
     adminMenu: {
         homepage: 'Home',
-        suppliers: 'Suppliers',
+        suppliers: 'Registered Companies',
     },
     offers: {
         tableAlreadyOccupied: 'The table already has an active order.',
@@ -227,6 +233,9 @@ export default {
         email: 'Email',
         password: 'Password',
         btnLogin: 'Login',
+        errors: {
+            invalidCredentials: 'Invalid username or password.'
+        }
     },
     supplierSignup: {
         errors: {

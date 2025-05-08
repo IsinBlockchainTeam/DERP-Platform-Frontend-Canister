@@ -44,6 +44,7 @@ export default {
     },
     menu: {
         homepage: 'Home',
+        dashboard: 'Dashboard',
         orders: 'Ordini',
         stores: 'Negozi',
         invoices: 'Fatture',
@@ -229,6 +230,9 @@ export default {
         email: 'Email',
         password: 'Password',
         btnLogin: 'Accedi',
+        errors: {
+            invalidCredentials: 'Nome utente o password non validi.'
+        }
     },
     supplierSignup: {
         errors: {
