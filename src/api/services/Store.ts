@@ -1,6 +1,5 @@
 import { CreateTableDto } from '../../dto/CreateTableDto';
 import { CreateStoreDto, StoreDto } from '../../dto/stores/StoreDto';
-import { StoreList } from '../../dto/stores/StoreList';
 import { TableDto } from '../../dto/TableDto';
 import { PosType } from '../../model/PosType';
 import api from '../api';
@@ -73,12 +72,12 @@ export const storeService = {
 
     list: async (merchantId?: string): Promise<StoreDto[]> => {
         const params = merchantId ? { merchantId } : {};
-        const res = await api.get<StoreList>(`/stores`, { params });
+        const res = await api.get<{ stores: StoreDto[] }>(`/stores`, { params });
         return res.data.stores;
     },
 
     listMine: async (): Promise<StoreDto[]> => {
-        const res = await api.get<StoreList>(`/stores/my-stores`, {
+        const res = await api.get<{ stores: StoreDto[] }>(`/stores/my-stores`, {
             headers: await auth.authenticatedHeaders(),
         });
 
