@@ -45,10 +45,10 @@ import BalanceSettings from './pages/Merchant/Balance/BalanceSettings';
 import StoreInterfacesTab from './pages/Stores/Tabs/InterfacesTab/StoreInterfacesTab';
 import BalanceSettingsCategories from './pages/Merchant/Balance/BalanceSettings/BalanceSettingsCategories';
 import BalanceSettingsItems from './pages/Merchant/Balance/BalanceSettings/BalanceSettingsItems';
-import BalanceTabDEMO from './pages/Merchant/Balance/DEMO/BalanceTabDEMO';
-import MonthlyBalanceViewDEMO from './pages/Merchant/Balance/DEMO/MonthlyBalanceViewDEMO';
-import DailyBalanceViewDEMO from './pages/Merchant/Balance/DEMO/DailyBalanceViewDEMO';
-import DailyDetailBalanceViewDEMO from './pages/Merchant/Balance/DEMO/DailyDetailBalanceViewDEMO';
+import BalanceTab from './pages/Merchant/Balance/BalanceTab';
+import MonthlyBalanceView from './pages/Merchant/Balance/MonthlyBalanceView';
+import DailyBalanceView from './pages/Merchant/Balance/DailyBalanceView';
+import DailyDetailBalanceView from './pages/Merchant/Balance/DailyDetailBalanceView';
 
 
 function App() {
@@ -102,10 +102,10 @@ function App() {
                     {/*    <Route path=":categoryId/items/:itemId/months/:monthId/days/:day" element={<Navigate to="transactions" />} />*/}
                     {/*    <Route path=":categoryId/items/:itemId/months/:monthId/days/:day/transactions" element={<DailyDetailBalanceView/>} />*/}
                     {/*</Route>*/}
-                    <Route path="balance/:year/categories/:categoryId/items/:itemId/months" element={<MonthlyBalanceViewDEMO />} />
-                    <Route path="balance/:year/categories/:categoryId/items/:itemId/months/:monthId/days" element={<DailyBalanceViewDEMO />} />
-                    <Route path="balance/:year/categories/:categoryId/items/:itemId/months/:monthId/days/:day/transactions" element={<DailyDetailBalanceViewDEMO/>} />
-                    <Route path="balance/:year/categories" element={<BalanceTabDEMO />}>
+                    <Route path="balance/:year/categories/:categoryId/items/:itemId/months" element={<MonthlyBalanceView />} />
+                    <Route path="balance/:year/categories/:categoryId/items/:itemId/months/:monthId/days" element={<DailyBalanceView />} />
+                    <Route path="balance/:year/categories/:categoryId/items/:itemId/months/:monthId/days/:day/transactions" element={<DailyDetailBalanceView/>} />
+                    <Route path="balance/:year/categories" element={<BalanceTab />}>
                         {/*<Route path=":categoryId/items/:itemId/months/:monthId" element={<Navigate to="days" />} />*/}
                         {/*<Route path=":categoryId/items/:itemId/months/:monthId/days/:day" element={<Navigate to="transactions" />} />*/}
                     </Route>

@@ -431,7 +431,8 @@ export default {
         },
         transactionDetails: {
             title: 'Transazione',
-            downloadOriginal: 'Scarica XML originale'
+            downloadOriginal: 'Scarica XML originale',
+            downloadJson: 'Scarica JSON'
         }
     },
     merchantOffers: {
@@ -441,8 +442,18 @@ export default {
     merchantBalance: {
         title: 'Bilancio',
         noCategories: 'Non sono ancora state configurate le categorie di bilancio.',
-        settings: 'Impostazioni',
         uncategorized: 'Non categorizzato',
+        settings: 'Impostazioni',
+        dailyDetail: {
+            title: 'Lista transazioni giornaliera',
+            table: {
+                dlterpId: 'ID DLTERP',
+                source: 'Fonte',
+                externalId: 'ID Esterno',
+                amount: 'Importo',
+                actions: 'Azioni'
+            }
+        },
         defaultCategories: {
             Actives: 'Attivi',
             Passives: 'Passivi',

@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { companyService } from '../../api/services/Company';
 import { CompanyDto } from '../../dto/CompanyDto';
 import { NavLink } from 'react-router-dom';
-import BalanceTabDEMO from './Balance/DEMO/BalanceTabDEMO';
+import BalanceTab from './Balance/BalanceTab';
 
 enum TabNames {
     BALANCE = 'balance',

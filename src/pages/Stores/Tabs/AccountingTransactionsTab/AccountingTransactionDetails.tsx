@@ -2,25 +2,37 @@ import { useTranslation } from 'react-i18next';
 import TabTitle from '../../../../components/Tabs/TabTitle';
 import { useStoreId } from '../../../../utils';
 import { useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { accountingTransactionService } from '../../../../api/services/AccountingTransactions';
 import LoadingSpinner from '../../../../components/Loading/LoadingSpinner';
 import { DownloadIcon } from '../../../../components/Icons/Icons';
 import { AccountingTransaction, AccountingTransactionType } from '@derp/company-canister';
 
-const AccountingTransactionDetails = () => {
+export interface AccountingTransactionDetailsProps {
+    transactionId?: string;
+    transactionType?: AccountingTransactionType;
+}
+
+const AccountingTransactionDetails = (props: AccountingTransactionDetailsProps) => {
     const { t } = useTranslation(undefined, { keyPrefix: 'supplierTransactions' });
 
-    const storeId = useStoreId();
     const { transactionId, transactionType } = useParams<{ transactionId: string, transactionType: AccountingTransactionType }>();
     const [loading, setLoading] = useState<boolean>(false);
     const [transaction, setTransaction] = useState<AccountingTransaction | undefined>(undefined);
 
     const fetchTransaction = async () => {
-        if (!transactionId || !transactionType) throw new Error("Transaction id or type is missing");
+        let actualTransactionId = props.transactionId;
+        let actualTransactionType = props.transactionType;
+
+        if (!actualTransactionId && !actualTransactionType) {
+            actualTransactionId = transactionId;
+            actualTransactionType = transactionType;
+        }
+
+        if (!actualTransactionId || !actualTransactionType) throw new Error("Transaction id or type is missing");
 
         setLoading(true);
-        const transaction = await accountingTransactionService.getAccountingTransaction({ type: transactionType }, transactionId);
+        const transaction = await accountingTransactionService.getAccountingTransaction({ type: actualTransactionType }, actualTransactionId);
         setTransaction(transaction);
         setLoading(false);
     }
@@ -30,36 +42,75 @@ const AccountingTransactionDetails = () => {
     }, [transactionId]);
 
     const onDownloadOriginal = async () => {
-        if(!transactionId) throw new Error("Transaction id is missing");
-        await accountingTransactionService.downloadOriginalXML(transactionId);
+        let actualTransactionId = props.transactionId;
+        if (!actualTransactionId) {
+            actualTransactionId = transactionId;
+        }
+
+        if (!actualTransactionId) throw new Error("Transaction id is missing");
+        await accountingTransactionService.downloadOriginalXML(actualTransactionId);
     }
 
-    return <>
-        <TabTitle title={t('transactionDetails.title') + transactionId} />
+    const onDownloadJson = () => {
+        if (!transaction || !actualTransactionId) return;
+        
+        const blob = new Blob([JSON.stringify(transaction, null, 2)], { type: 'application/json' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${actualTransactionId}.json`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+    }
+
+    const actualTransactionId = useMemo(() => {
+        let actualTransactionId = props.transactionId;
+        if (!actualTransactionId) {
+            actualTransactionId = transactionId;
+        }
+        return actualTransactionId;
+    }, [transactionId]);
+
+    return <div className='flex flex-col h-full'>
+        <TabTitle title={t('transactionDetails.title') + ' ' + actualTransactionId} />
 
         {loading ? <LoadingSpinner /> :
-            <div className='flex flex-col items-center'>
-                {
-                    transaction?.Header.TypeCode === AccountingTransactionType.BANK_TRX
-                    &&
-                    <a
-                        download
-                        className='btn btn-primary mb-5'
-                        href={`${process.env.REAC_APP_BACKEND_URL}/accounting-transactions/${transactionId}/xml`}
+            <div className='flex flex-col flex-1 items-center overflow-hidden'>
+                <div className='flex gap-4 mb-5 flex-initial'>
+                    <button
+                        className='btn btn-primary'
+                        onClick={onDownloadJson}
                     >
                         <DownloadIcon size={6} />
-                        {t('transactionDetails.downloadOriginal')}
-                    </a>
-                }
-                <div className="mockup-code max-w-7xl">
-                    <pre><code>
-                        {JSON.stringify(transaction, null, 2)}
-                    </code></pre>
+                        {t('transactionDetails.downloadJson')}
+                    </button>
+                    {
+                        transaction?.Header.TypeCode === AccountingTransactionType.BANK_TRX
+                        &&
+                        <a
+                            download
+                            className='btn btn-primary'
+                            href={`${process.env.REACT_APP_BACKEND_URL}/accounting-transactions/${actualTransactionId}/xml`}
+                        >
+                            <DownloadIcon size={6} />
+                            {t('transactionDetails.downloadOriginal')}
+                        </a>
+                    }
+                </div>
+                <div className="max-w-4xl w-full flex-1 overflow-auto bg-stone-600 text-stone-100 p-4 rounded-md">
+                    <div className="h-full">
+                        <pre className='h-full'>
+                            <code>
+                                {JSON.stringify(transaction, null, 2)}
+                            </code>
+                        </pre>
+                    </div>
                 </div>
             </div>
         }
-    </>
+    </div>
 }
-
 
 export default AccountingTransactionDetails;

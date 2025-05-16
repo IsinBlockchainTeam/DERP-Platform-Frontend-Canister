@@ -437,7 +437,8 @@ export default {
         },
         transactionDetails: {
             title: 'Transaction',
-            downloadOriginal: 'Download Original XML'
+            downloadOriginal: 'Download Original XML',
+            downloadJson: 'Download JSON'
         }
     },
     merchantOffers: {
@@ -449,6 +450,16 @@ export default {
         noCategories: 'Balance statement has not been configured yet.',
         uncategorized: 'Uncategorized',
         settings: 'Settings',
+        dailyDetail: {
+            title: 'Daily Transactions List',
+            table: {
+                dlterpId: 'DLTERP ID',
+                source: 'Source',
+                externalId: 'External ID',
+                amount: 'Amount',
+                actions: 'Actions'
+            }
+        },
         defaultCategories: {
             Actives: 'Active',
             Passives: 'Passive',
