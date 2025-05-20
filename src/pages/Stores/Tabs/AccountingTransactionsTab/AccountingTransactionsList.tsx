@@ -39,7 +39,7 @@ const AccountingTransactionsList = () => {
         },
         {
             header: t('transactionsTable.source'),
-            accessor: (row) => row.Header.Source || "-",
+            accessor: (row) => row.Header.TypeKey || "-",
         },
         {
             header: t('transactionsTable.type'),
