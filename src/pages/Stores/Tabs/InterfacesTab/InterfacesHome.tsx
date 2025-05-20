@@ -102,8 +102,7 @@ const InterfacesHome = () => {
             [
                 InterfaceType.POS,
                 InterfaceType.KUMO
-            ].includes(selectedAssociation.interfaceType),
-            selectedAssociation.interfaceType
+            ].includes(selectedAssociation.interfaceType)
         ) {
             if (updateAssociation) {
                 // if we are updating an association, we need to exclude the current one
