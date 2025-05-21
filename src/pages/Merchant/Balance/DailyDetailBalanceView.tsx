@@ -1,11 +1,15 @@
-import { AccountingTransaction, DailyTransactionRecord, StatementItem } from "@derp/company-canister";
-import { ChevronLeft, Download, ExternalLink, Eye, ScrollText, X } from 'lucide-react';
+import { AccountingTransaction, DailyTransactionRecord, DispatchRule, DispatchRulesClient, StatementItem } from "@derp/company-canister";
+import { ChevronLeft, Code, Download, ExternalLink, Eye, ScrollText, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from 'react-router-dom';
-import { statementItemsClient } from '../../../api/icp';
+import { dispatchRulesClient, statementItemsClient } from '../../../api/icp';
 import AccountingTransactionDetails from '../../Stores/Tabs/AccountingTransactionsTab/AccountingTransactionDetails';
 import { Modal } from '../../../components/Modal/Modal';
+import CodeView from "../../../components/CodeView";
+import LoadingSpinner from "../../../components/Loading/LoadingSpinner";
+import { DocumentCurrencyDollarIcon } from "@heroicons/react/24/outline";
+import TabTitle from "../../../components/Tabs/TabTitle";
 
 const DailyDetailBalanceView = () => {
     const { itemId, categoryId, merchantId, year, monthId, day } = useParams();
@@ -13,6 +17,11 @@ const DailyDetailBalanceView = () => {
     const [parentStatementItem, setParentStatementItem] = useState<StatementItem | null>(null);
     const [transactions, setTransactions] = useState<{ record: DailyTransactionRecord, transaction: AccountingTransaction }[]>([]);
     const [selectedTransaction, setSelectedTransaction] = useState<{ record: DailyTransactionRecord, transaction: AccountingTransaction } | null>(null);
+
+    const [ruleModalOpen, setRuleModalOpen] = useState(false);
+    const [loadingRuleForRecord, setLoadingRuleForRecord] = useState(false);
+    const [currentRuleForRecord, setCurrentRuleForRecord] = useState<DispatchRule | null>(null);
+
     const { i18n, t } = useTranslation(undefined, { keyPrefix: 'merchantBalance' });
     const navigate = useNavigate();
 
@@ -58,6 +67,18 @@ const DailyDetailBalanceView = () => {
         }
     }
 
+    const fetchRuleForRecord = async (record: DailyTransactionRecord) => {
+        setLoadingRuleForRecord(true);
+        try {
+            const rule = await dispatchRulesClient.getDispatchRule(record.originalRuleId);
+            setCurrentRuleForRecord(rule);
+        } catch (error) {
+            console.error('Error fetching dispatch rule:', error);
+        } finally {
+            setLoadingRuleForRecord(false);
+        }
+    }
+
     const calculateDayTotal = (transactions: { record: DailyTransactionRecord, transaction: AccountingTransaction }[]) => {
         return transactions.reduce((acc, transaction) => acc + (transaction.record.total || 0), 0);
     }
@@ -74,6 +95,11 @@ const DailyDetailBalanceView = () => {
 
     const goBackToMonthlyDetails = (month: number) => {
         navigate(`/merchant/${merchantId}/balance/${year}/categories/${categoryId}/items/${itemId}/months/${month}/days`);
+    }
+
+    const openRuleModal = (record: DailyTransactionRecord) => {
+        setRuleModalOpen(true);
+        fetchRuleForRecord(record);
     }
 
     return <div className="min-h-screen bg-base-100/50">
@@ -137,6 +163,12 @@ const DailyDetailBalanceView = () => {
                                         </button>
                                         <button
                                             className="btn btn-soft btn-sm p-1 rounded-full mx-2"
+                                            onClick={() => openRuleModal(transaction.record)}
+                                        >
+                                            <DocumentCurrencyDollarIcon className="h-5 w-5" />
+                                        </button>
+                                        <button
+                                            className="btn btn-soft btn-sm p-1 rounded-full mx-2"
                                             onClick={() => setSelectedTransaction(transaction)}
                                         >
                                             <Eye className="h-5 w-5" />
@@ -161,6 +193,32 @@ const DailyDetailBalanceView = () => {
                         transactionId={selectedTransaction.transaction.Header.DLTERPId ?? undefined}
                         transactionType={selectedTransaction.transaction.Header.TypeCode ?? undefined}
                     />
+                </div>
+            </Modal>
+        )}
+
+        {/* Rule Details Modal */}
+        {currentRuleForRecord && (
+            <Modal
+                open={ruleModalOpen}
+                onChangeOpen={(open) => {
+                    setRuleModalOpen(open);
+                    if (!open) {
+                        setCurrentRuleForRecord(null);
+                    }
+                }}
+            >
+                <div className="bg-dark" style={{ height: "80vh" }}>
+                    {loadingRuleForRecord ? (
+                        <LoadingSpinner />
+                    ) : (
+                        <div className="p-4 flex flex-col h-full">
+                            <div className="flex-initial">
+                                <TabTitle title={t('ruleDetails.title') + ' ' + currentRuleForRecord.id} />
+                            </div>
+                            <CodeView code={currentRuleForRecord} />
+                        </div>
+                    )}
                 </div>
             </Modal>
         )}

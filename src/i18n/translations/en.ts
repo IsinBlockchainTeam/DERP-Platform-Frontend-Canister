@@ -460,6 +460,9 @@ export default {
                 actions: 'Actions'
             }
         },
+        ruleDetails: {
+            title: 'Rule Details'
+        },
         defaultCategories: {
             Actives: 'Active',
             Passives: 'Passive',

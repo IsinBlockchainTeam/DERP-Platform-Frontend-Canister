@@ -7,6 +7,7 @@ import { accountingTransactionService } from '../../../../api/services/Accountin
 import LoadingSpinner from '../../../../components/Loading/LoadingSpinner';
 import { DownloadIcon } from '../../../../components/Icons/Icons';
 import { AccountingTransaction, AccountingTransactionType } from '@derp/company-canister';
+import CodeView from '../../../../components/CodeView';
 
 export interface AccountingTransactionDetailsProps {
     transactionId?: string;
@@ -99,15 +100,7 @@ const AccountingTransactionDetails = (props: AccountingTransactionDetailsProps) 
                         </a>
                     }
                 </div>
-                <div className="max-w-4xl w-full flex-1 overflow-auto bg-stone-600 text-stone-100 p-4 rounded-md">
-                    <div className="h-full">
-                        <pre className='h-full'>
-                            <code>
-                                {JSON.stringify(transaction, null, 2)}
-                            </code>
-                        </pre>
-                    </div>
-                </div>
+                <CodeView code={transaction} />
             </div>
         }
     </div>

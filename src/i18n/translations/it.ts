@@ -454,6 +454,9 @@ export default {
                 actions: 'Azioni'
             }
         },
+        ruleDetails: {
+            title: 'Dettagli Regola'
+        },
         defaultCategories: {
             Actives: 'Attivi',
             Passives: 'Passivi',

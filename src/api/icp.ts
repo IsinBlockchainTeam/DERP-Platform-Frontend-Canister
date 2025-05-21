@@ -1,10 +1,7 @@
-import { StatementItemsClient, AccountingTransactionClient } from "@derp/company-canister";
+import { StatementItemsClient, AccountingTransactionClient, DispatchRulesClient } from "@derp/company-canister";
 import { productsService } from "./services/Products";
 import { StatementItemCategory } from "@derp/company-canister";
 import i18n from "i18next"
-
-// TODO: This must be done ONLY WHEN IN LOCAL NETWORK
-//agent.fetchRootKey();
 
 const icpUrl = process.env.REACT_APP_ICP_URL;
 if (!icpUrl) {
@@ -20,8 +17,8 @@ export const accountingTransactionClient = new AccountingTransactionClient(icpUr
 const statementItemsClientOriginal = new StatementItemsClient(icpUrl, canisterId);
 
 
-// Proxy to add a custom method when reading categories/category
-// handles the translation of the category name
+// Proxy (middleware) to add a custom logic when reading categories/category
+// handles the translation of the category name with i18n
 export const statementItemsClient = new Proxy(statementItemsClientOriginal, {
     get(target, prop, receiver) {
         if (prop === 'getStatementItemsCategories') {
@@ -43,3 +40,5 @@ export const statementItemsClient = new Proxy(statementItemsClientOriginal, {
         return target[prop as keyof StatementItemsClient];
     }
 })
+
+export const dispatchRulesClient = new DispatchRulesClient(icpUrl, canisterId);
