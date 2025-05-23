@@ -346,6 +346,10 @@ export default {
         title: 'Sincronizzazione Dati',
         subtitle: 'In questa pagina puoi personallizare la cadenza delle procedure asincrone per la creazione o importazione di risorse.',
         accountingTransactions: 'Transazioni Contabili',
+        accountingTransactionsDescription: 'Sincronizza e gestisci i dati delle transazioni contabili',
+        posDataSync: 'Sincronizzazione Dati POS',
+        posDataSyncDescription: 'Configura la sincronizzazione dei dati del punto vendita',
+        clickToConfigure: 'Clicca per configurare',
         accountingTransactionsTab: {
             title: "Procedure per le Transazioni Contabili",
             subtitle: "Configura se e quanto frequentemente devono eseguire le procedure di sincronizzazione o creazione delle transazioni contabili.",
@@ -386,6 +390,35 @@ export default {
                     source: "Seleziona una sorgente",
                     cron: "Inserisci una specifica cron valida",
                     interfaceMissingTmpl: "Questa procedura è forzatamente disabilitata. Per poterla abilitare, associa prima un'interfaccia di tipo {{type}} al negozio.",
+                }
+            },
+        },
+        posSyncTab: {
+            title: "Procedure per la Sincronizzazione Dati POS",
+            subtitle: "Configura se e quanto frequentemente devono eseguire le procedure di sincronizzazione dei dati POS.",
+            addBtn: "Aggiungi Procedura",
+            addJobModalTitle: "Aggiungi Nuova Procedura",
+            editJobModalTitle: "Modifica Procedura",
+            tableHeaders: {
+                enabled: "Abilitato",
+                cron: "Specifica Cron",
+                lastRun: "Ultima Esecuzione",
+                nextRun: "Prossima Esecuzione",
+            },
+            form: {
+                cron: "Con quanta frequenza deve eseguire la procedura?",
+                cronLocale: LOCALE_IT,
+                enabled: "La procedura sarà abilitata?",
+                enabledLabel: "Abilita",
+                cancel: "Annulla",
+                submit: "Crea",
+                update: "Aggiorna",
+                nextTime: "Prossima Esecuzione",
+                disabled: "La procedura è disabilitata",
+                errors: {
+                    cron: "Inserisci una specifica cron valida",
+                    interfaceMissing: "Questa procedura è forzatamente disabilitata. Per poterla abilitare, associa prima un'interfaccia POS al negozio.",
+                    unknown: "Si è verificato un errore sconosciuto durante l'operazione.",
                 }
             },
         }

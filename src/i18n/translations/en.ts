@@ -349,6 +349,10 @@ export default {
         title: 'Data Synchronization',
         subtitle: 'You can schedule jobs that generate reports or synchronize new data from this page.',
         accountingTransactions: 'Accounting Transactions',
+        accountingTransactionsDescription: 'Sync and manage accounting transaction data',
+        posDataSync: 'Pos Data Synchronization',
+        posDataSyncDescription: 'Configure point of sale data synchronization',
+        clickToConfigure: 'Click to configure',
         accountingTransactionsTab: {
             title: "Accounting Transaction Procedures",
             subtitle: "Configure when and how frequently the accounting transactions should be synchronized or created.",
@@ -391,6 +395,35 @@ export default {
                     cron: "Insert a valid cron specification",
                     source: "Select a valid source",
                     interfaceMissingTmpl: "The job is being forced to disabled. In order to enable it, you need first to associate an interface of type {{type}} to this store.",
+                }
+            },
+        },
+        posSyncTab: {
+            title: "POS Data Synchronization Procedures",
+            subtitle: "Configure when and how frequently the POS data should be synchronized.",
+            addBtn: "Add New Job",
+            addJobModalTitle: "Add New Job",
+            editJobModalTitle: "Edit Job",
+            tableHeaders: {
+                enabled: "Enabled",
+                cron: "Cron Specification",
+                lastRun: "Last Ran",
+                nextRun: "Next Run",
+            },
+            form: {
+                cron: "How frequently will the job run?",
+                cronLocale: LOCALE_EN,
+                enabled: "Is the job enabled?",
+                enabledLabel: "Enabled",
+                cancel: "Cancel",
+                submit: "Create",
+                update: "Update",
+                nextTime: "Will run next time at",
+                disabled: "The job is disabled",
+                errors: {
+                    cron: "Insert a valid cron specification",
+                    interfaceMissing: "The job is being forced to disabled. In order to enable it, you need first to associate a POS interface to this store.",
+                    unknown: "An unknown error occurred during the operation.",
                 }
             },
         }

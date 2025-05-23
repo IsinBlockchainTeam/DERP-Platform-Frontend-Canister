@@ -1,21 +1,17 @@
-import { useNavigate, useParams } from "react-router";
+import { useNavigate } from "react-router";
 import { auth } from "../../api/auth";
 import { UserRole } from "../../model/UserRole";
-import { useEffect, useMemo, useState } from "react";
 import { DEFAULT_FONT } from "../../constants";
-import { insertFontCSSRule } from "../../utils";
-import { useTranslation } from "react-i18next";
-import { GenericMenu } from "../Menu/GenericMenu";
-import { ResourceType } from "../Menu/MenuProps";
 
 interface Props {
     color?: string;
     storeName?: string;
-    
+
     // The path that the logo should link to when clicked
     homeUrl?: string;
     textColor?: string;
     font?: string;
+    role?: UserRole;
 }
 
 function Header({
@@ -24,12 +20,10 @@ function Header({
     homeUrl = "/",
     textColor = "black",
     font = DEFAULT_FONT,
+    role,
 }: Props) {
     const navigate = useNavigate();
-    const [role, setRole] = useState<UserRole>();
     const colorRegex = new RegExp("[#][a-fA-F0-9]{6}");
-    const { t } = useTranslation(undefined, { keyPrefix: "menu" });
-    const { merchantId, resellerId } = useParams();
 
     const logout = () => {
         auth.logout()
@@ -41,32 +35,6 @@ function Header({
             });
     };
 
-    useEffect(() => {
-        try {
-            console.log("Getting supplier data");
-            const data = auth.getSupplierData();
-            const roleFromAuth = data.role;
-            console.log(data)
-            setRole(roleFromAuth);
-        } catch (e) {
-            console.error("Error getting supplier data:", e);
-        }
-
-        insertFontCSSRule(font);
-    }, [font]);
-
-    const currentResource: ResourceType = useMemo(() => {
-        if (merchantId) {
-            return "merchant";
-        }
-
-        if (resellerId) {
-            return "reseller";
-        }
-
-        return "admin";
-    }, [merchantId, resellerId]);
-
     return (
         <div
             className={`top-0 z-10 navbar bg-primary h-16`}
@@ -77,7 +45,23 @@ function Header({
             }
         >
             <div className="navbar-start">
-                <GenericMenu role={role} resourceType={currentResource} />
+                { /* Hamburger menu */ }
+                <label tabIndex={0} className="btn btn-ghost btn-circle text-white" htmlFor="derp-drawer">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M4 6h16M4 12h16M4 18h7"
+                        />
+                    </svg>
+                </label>
             </div>
             <div className="navbar-center">
                 <a

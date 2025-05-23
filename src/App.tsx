@@ -49,6 +49,7 @@ import BalanceTab from './pages/Merchant/Balance/BalanceTab';
 import MonthlyBalanceView from './pages/Merchant/Balance/MonthlyBalanceView';
 import DailyBalanceView from './pages/Merchant/Balance/DailyBalanceView';
 import DailyDetailBalanceView from './pages/Merchant/Balance/DailyDetailBalanceView';
+import DataSyncPosSync from './pages/Stores/Tabs/DataSyncTab/DataSyncPosSync';
 
 
 function App() {
@@ -137,6 +138,7 @@ function App() {
                     <Route path={"data-sync"} element={<DataSyncTab />}>
                         <Route index element={<DataSyncHome />}></Route>
                         <Route path={"accounting-transactions"} element={<DataSyncAccountingTransactions />}></Route>
+                        <Route path={"pos"} element={<DataSyncPosSync />}></Route>
                     </Route>
                     <Route path="offers" element={<OffersTab />}>
                         <Route index element={<OfferList />} />
