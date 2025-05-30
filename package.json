@@ -38,6 +38,7 @@
         "antd": "^5.21.6",
         "axios": "^1.2.1",
         "cron-parser": "^4.9.0",
+        "cronstrue": "^2.61.0",
         "ethers": "^6.3.0",
         "handlebars": "^4.7.8",
         "i18next": "^23.8.2",

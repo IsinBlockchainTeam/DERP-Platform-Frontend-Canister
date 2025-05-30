@@ -16,6 +16,7 @@ import { LOCALE_IT } from "../../../../i18n/translations/cron_it";
 import Handlebars from "handlebars";
 import { interfacesService } from "../../../../api/services/Interfaces";
 import { AssociationResponseDto, InterfaceType } from "../../../../dto/ErpInterfacesDto";
+import CronEditor from "../../../../components/Cron/CronEditor";
 
 const defaultNewJob: Partial<TransactionSyncJobDtoWithId> = {
     cron: '* * * * *',
@@ -39,6 +40,7 @@ const DataSyncAccountingTransactions = () => {
     const [createNew, setCreateNew] = useState(false);
     const [errors, setErrors] = useState<string[]>([]);
     const [cronLocale, setCronLocale] = useState<DefaultLocale>(LOCALE_EN);
+    const [isCronValid, setIsCronValid] = useState(true);
 
     const formatTimeToHHmm = (time: string): string | undefined => {
         if (!time) return undefined;
@@ -82,7 +84,7 @@ const DataSyncAccountingTransactions = () => {
         },
         {
             header: t('tableHeaders.nextRun'),
-            accessor: (row) => row.cron ? parseExpression(row.cron).next().toDate().toLocaleString() : 'Never'
+            accessor: (row) => row.cron ? getNextRunTime(row.cron) : 'Never'
         },
         {
             header: t('tableHeaders.lastRun'),
@@ -215,6 +217,9 @@ const DataSyncAccountingTransactions = () => {
         if (!formJob.cron) {
             errors.push(t('form.errors.cron'));
         }
+        if (!isCronValid) {
+            errors.push('Invalid cron expression');
+        }
         if (!formJob.type) {
             errors.push(t('form.errors.source'));
         }
@@ -265,6 +270,15 @@ const DataSyncAccountingTransactions = () => {
         }
     }
 
+    // Safe cron parsing function
+    const getNextRunTime = (cron: string): string => {
+        try {
+            return parseExpression(cron).next().toDate().toLocaleString();
+        } catch {
+            return 'Invalid expression';
+        }
+    };
+
     return <>
         <TabTitle
             title={t('title')}
@@ -292,11 +306,12 @@ const DataSyncAccountingTransactions = () => {
             </div>
             <div className="modal-body">
                 <div className="mt-5 flex flex-col">
-                    <span className="text-xl mb-3">{t('form.cron')}</span>
-                    <Cron
+                    <CronEditor
                         value={formJob?.cron || '* * * * *'}
-                        locale={cronLocale}
-                        setValue={(v: string) => setFormJob(old => ({ ...old, cron: v }))} />
+                        onChange={(v: string) => setFormJob(old => ({ ...old, cron: v }))}
+                        onValidationChange={setIsCronValid}
+                        title={t('form.cron')}
+                    />
                     <hr className="mt-3" />
 
                     <span className="text-xl mt-5 mb-3">{t('form.source')}</span>
@@ -346,7 +361,7 @@ const DataSyncAccountingTransactions = () => {
 
                 <div className="modal-action flex flex-col col justify-center items-center w-full">
                     <div>
-                        {formJob.cron &&
+                        {formJob.cron && isCronValid &&
                             <span className={`italic font-bold text-primary text-center ${formJob.enabled ? '' : 'line-through'}`}>
                                 <p>
                                     {
@@ -354,8 +369,14 @@ const DataSyncAccountingTransactions = () => {
                                     }:
                                 </p>
                                 {
-                                    parseExpression(formJob.cron).next().toDate().toLocaleString()
+                                    getNextRunTime(formJob.cron)
                                 }
+                            </span>
+                        }
+
+                        {formJob.cron && !isCronValid &&
+                            <span className="italic font-bold text-error text-center">
+                                <p>Invalid cron expression</p>
                             </span>
                         }
 

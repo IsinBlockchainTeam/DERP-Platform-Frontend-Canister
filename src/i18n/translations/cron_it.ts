@@ -75,3 +75,79 @@ export const LOCALE_IT: DefaultLocale = {
     'DIC',
   ],
 };
+
+export const CRON_IT = {
+  tabs: {
+    guided: 'Guidata',
+    advanced: 'Avanzata'
+  },
+  guided: {
+    runEvery: 'Esegui ogni:',
+    addConstraint: '+ Aggiungi',
+    timeUnits: {
+      second: 'Secondo',
+      minute: 'Minuto',
+      hour: 'Ora',
+      day: 'Giorno',
+      week: 'Settimana',
+      weekday: 'Giorno della settimana',
+      month: 'Mese'
+    },
+    intervalTypes: {
+      at: 'è',
+      every: 'Ogni'
+    },
+    timeLabels: {
+      seconds: 'secondo/i',
+      minutes: 'minuto/i',
+      hours: 'ora/e',
+      days: 'giorno/i',
+      weeks: 'settimana/e',
+      months: 'mese/i'
+    },
+    dayTypes: {
+      ofTheMonth: 'del mese',
+      ofTheWeek: 'della settimana'
+    }
+  },
+  advanced: {
+    cronExpression: 'Espressione Cron:',
+    placeholder: '0 0 8 * * *',
+    formatInfo: {
+      format: 'Formato:',
+      formatDescription: 'secondo minuto ora giorno mese giorno_settimana',
+      examples: 'Esempi:',
+      example1: 'Ogni giorno alle 8:00',
+      example2: 'Ogni lunedì alle 9:30',
+      example3: 'Ogni 30 secondi alle 8:00 quotidianamente',
+      example4: 'Ogni 2 ore'
+    }
+  },
+  weekdays: [
+    'Domenica',
+    'Lunedì',
+    'Martedì',
+    'Mercoledì',
+    'Giovedì',
+    'Venerdì',
+    'Sabato'
+  ],
+  months: [
+    'Gennaio',
+    'Febbraio',
+    'Marzo',
+    'Aprile',
+    'Maggio',
+    'Giugno',
+    'Luglio',
+    'Agosto',
+    'Settembre',
+    'Ottobre',
+    'Novembre',
+    'Dicembre'
+  ],
+  errors: {
+    invalidCron: 'Espressione cron non valida',
+    invalidExpression: 'Espressione Non Valida'
+  }
+};

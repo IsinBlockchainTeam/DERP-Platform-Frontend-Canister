@@ -1,4 +1,5 @@
 import { LOCALE_EN } from './cron_en';
+import { CRON_EN } from './cron_en';
 
 export default {
     adminDashboard: {
@@ -966,4 +967,5 @@ export default {
         next: 'Next',
         previous: 'Previous',
     },
+    cron: CRON_EN,
 };

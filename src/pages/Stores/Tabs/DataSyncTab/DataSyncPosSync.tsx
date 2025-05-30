@@ -7,15 +7,15 @@ import { PosSyncJobDto, PosSyncJobDtoWithId } from "../../../../dto/PosSync";
 import { posDataSynchronizationService } from "../../../../api/services/DataSynchronization";
 import FormLoader from "../../../../components/Loading/FormLoader";
 import { Modal } from "../../../../components/Modal/Modal";
-import { Cron, DefaultLocale } from "react-js-cron";
+import { DefaultLocale } from "react-js-cron";
 import { parseExpression } from 'cron-parser';
 import 'react-js-cron/dist/styles.css';
 import i18next from "i18next";
 import { LOCALE_EN } from "../../../../i18n/translations/cron_en";
 import { LOCALE_IT } from "../../../../i18n/translations/cron_it";
-import Handlebars from "handlebars";
 import { interfacesService } from "../../../../api/services/Interfaces";
 import { AssociationResponseDto, InterfaceType } from "../../../../dto/ErpInterfacesDto";
+import  CronEditor  from "../../../../components/Cron/CronEditor";
 
 const defaultNewJob: Partial<PosSyncJobDtoWithId> = {
     cron: '* * * * *',
@@ -36,6 +36,16 @@ const DataSyncPosSync = () => {
     const [createNew, setCreateNew] = useState(false);
     const [errors, setErrors] = useState<string[]>([]);
     const [cronLocale, setCronLocale] = useState<DefaultLocale>(LOCALE_EN);
+    const [isCronValid, setIsCronValid] = useState(true);
+
+    // Safe cron parsing function
+    const getNextRunTime = (cron: string): string => {
+        try {
+            return parseExpression(cron).next().toDate().toLocaleString();
+        } catch {
+            return 'Invalid expression';
+        }
+    };
 
     const tableColumns: GenericTableColumn<PosSyncJobDtoWithId>[] = [
         {
@@ -58,7 +68,7 @@ const DataSyncPosSync = () => {
         },
         {
             header: t('tableHeaders.nextRun'),
-            accessor: (row) => row.cron ? parseExpression(row.cron).next().toDate().toLocaleString() : 'Never'
+            accessor: (row) => row.cron ? getNextRunTime(row.cron) : 'Never'
         },
         {
             header: t('tableHeaders.lastRun'),
@@ -149,6 +159,9 @@ const DataSyncPosSync = () => {
         if (!formJob.cron) {
             errors.push(t('form.errors.cron'));
         }
+        if (!isCronValid) {
+            errors.push('Invalid cron expression');
+        }
 
         if (errors.length > 0) {
             setErrors(errors);
@@ -203,11 +216,12 @@ const DataSyncPosSync = () => {
             </div>
             <div className="modal-body">
                 <div className="mt-5 flex flex-col">
-                    <span className="text-xl mb-3">{t('form.cron')}</span>
-                    <Cron
+                    <CronEditor
                         value={formJob?.cron || '* * * * *'}
-                        locale={cronLocale}
-                        setValue={(v: string) => setFormJob(old => ({ ...old, cron: v }))} />
+                        onChange={(v: string) => setFormJob(old => ({ ...old, cron: v }))}
+                        onValidationChange={setIsCronValid}
+                        title={t('form.cron')}
+                    />
                     <hr className="mt-3" />
 
                     <div className="form-control mt-5 max-w-xs">
@@ -232,7 +246,7 @@ const DataSyncPosSync = () => {
 
                 <div className="modal-action flex flex-col col justify-center items-center w-full">
                     <div>
-                        {formJob.cron &&
+                        {formJob.cron && isCronValid &&
                             <span className={`italic font-bold text-primary text-center ${formJob.enabled ? '' : 'line-through'}`}>
                                 <p>
                                     {
@@ -240,8 +254,14 @@ const DataSyncPosSync = () => {
                                     }:
                                 </p>
                                 {
-                                    parseExpression(formJob.cron).next().toDate().toLocaleString()
+                                    getNextRunTime(formJob.cron)
                                 }
+                            </span>
+                        }
+
+                        {formJob.cron && !isCronValid &&
+                            <span className="italic font-bold text-error text-center">
+                                <p>Invalid cron expression</p>
                             </span>
                         }
 
