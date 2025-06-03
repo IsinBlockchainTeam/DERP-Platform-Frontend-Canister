@@ -9,6 +9,7 @@ type InputNode = {
     type: 'text' | 'email' | 'number' | 'password' | 'url' | 'tel';
     placeholder: string;
     maxLength?: number;
+    disabled?: boolean;
 }
 
 type SelectNode = {
@@ -99,7 +100,8 @@ function GenericForm(props: FormProps) {
                                     className="w-2/3 input input-bordered grow"
                                     placeholder={field.typeNode.placeholder}
                                     maxLength={field.typeNode.maxLength}
-                                    required={field.isRequired} />
+                                    required={field.isRequired}
+                                    disabled={field.typeNode.disabled} />
                             </label>
                         case 'select':
                             return <label key={field.name} className="label" style={{ justifyContent: "normal" }}>

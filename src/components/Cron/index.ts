@@ -9,7 +9,7 @@ export { TabSwitcher } from './TabSwitcher';
 export { CronStatus } from './CronStatus';
 
 // Types
-export type * from './types';
+export * from './types';
 
 // Utilities
 export * from './utils';

@@ -8,27 +8,29 @@ import { StatementItem } from "@derp/company-canister"
 interface Props {
     isOpen: boolean
     onChangeOpen: (open: boolean) => void
-    onItemCreated?: () => void // Optional callback for when item is successfully created
+    item: StatementItem | null
+    onItemUpdated?: () => void // Optional callback for when item is successfully updated
 }
 
-const AddItemModal = ({ isOpen, onChangeOpen, onItemCreated}: Props) => {
+const EditItemModal = ({ isOpen, onChangeOpen, item, onItemUpdated}: Props) => {
     const { t } = useTranslation(undefined, { keyPrefix: 'merchantBalance.balanceSettings.addItemModal' });
     const [loading, setLoading] = useState(false)
 
     const onSubmit = async (data: StatementItemData) => {
+        if (!item) return
+        
         setLoading(true)
         try {
-            console.log(data)
-            const statementItem = new StatementItem(
+            const updatedStatementItem = new StatementItem(
                 parseInt(data.id),
                 data.name,
                 data.currency,
                 parseInt(data.category),
             )
-            await statementItemsClient.storeStatementItem(statementItem)
+            await statementItemsClient.updateStatementItem(item.id, updatedStatementItem)
             
-            // Only close modal and trigger callback after successful creation
-            onItemCreated?.()
+            // Only close modal and trigger callback after successful update
+            onItemUpdated?.()
             onChangeOpen(false)
         } catch (error) {
             console.error(error)
@@ -44,6 +46,14 @@ const AddItemModal = ({ isOpen, onChangeOpen, onItemCreated}: Props) => {
         }
     }
 
+    // Convert StatementItem to StatementItemData for the form
+    const itemData: StatementItemData | undefined = item ? {
+        category: item.category?.toString() || '',
+        id: item.id.toString(),
+        name: item.name,
+        currency: item.currency,
+    } : undefined
+
     return <Modal
         open={isOpen}
         onChangeOpen={(open) => {
@@ -53,12 +63,15 @@ const AddItemModal = ({ isOpen, onChangeOpen, onItemCreated}: Props) => {
         }}
         closeButton={false}
     >
-        <StatementItemForm
-            onSubmit={onSubmit}
-            onCancel={onCancel}
-            loading={loading}
-        />
+        {item && (
+            <StatementItemForm
+                item={itemData}
+                onSubmit={onSubmit}
+                onCancel={onCancel}
+                loading={loading}
+            />
+        )}
     </Modal>
 }
 
-export default AddItemModal;
+export default EditItemModal;
