@@ -521,7 +521,8 @@ export default {
         balanceSettings: {
             title: 'Impostazioni Bilancio',
             year: 'Anno',
-            chooseCategory: 'Scegli una categoria',
+            allCategories: 'Tutte',
+            noCategory: 'Non categorizzati',
             categories: 'Categorie di Bilancio',
             items: 'Voci di Bilancio',
             addCategory: 'Aggiungi Categoria',

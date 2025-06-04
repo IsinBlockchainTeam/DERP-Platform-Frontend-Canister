@@ -527,7 +527,8 @@ export default {
         balanceSettings: {
             title: 'Balance Statement Settings',
             year: 'Year',
-            chooseCategory: 'Choose a category',
+            allCategories: 'All',
+            noCategory: 'Uncategorized',
             categories: 'Statement Categories',
             items: 'Statement Items',
             noCategorySelected: 'Please select a category to view the statement items',

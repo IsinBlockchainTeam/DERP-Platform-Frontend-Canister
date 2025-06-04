@@ -23,13 +23,23 @@ const BalanceSettingsItems = () => {
     }
 
     const fetchStatementItems = async () => {
-        if (!selectedCategory)
-            throw new Error("No category selected");
-
         setLoading(true);
         try {
-        const statementItems = await statementItemsClient.getStatementItems(selectedCategory);
-        setStatementItems(statementItems as StatementItem[]);
+            let allStatementItems: StatementItem[] = [];
+            if (selectedCategory === 0) {
+                for (const category of catgeories) {
+                    const statementItems = await statementItemsClient.getStatementItems(category.id);
+                    allStatementItems = allStatementItems.concat(statementItems);
+                }
+            } else {
+                const statementItems = await statementItemsClient.getStatementItems(selectedCategory);
+                allStatementItems = allStatementItems.concat(statementItems);
+            }
+
+            setStatementItems(allStatementItems);
+        } catch (error) {
+            console.error(error);
+            setStatementItems([]);
         } finally {
             setLoading(false);
         }
@@ -102,7 +112,8 @@ const BalanceSettingsItems = () => {
                 <select className="select select-bordered w-full max-w-xs"
                     onChange={(e) => setSelectedCategory(Number(e.target.value))}
                 >
-                    <option disabled selected>{t('chooseCategory')}</option>
+                    <option value={0}>{t('allCategories')}</option>
+                    <option value={undefined}>{t('noCategory')}</option>
                     {
                         catgeories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)
                     }
