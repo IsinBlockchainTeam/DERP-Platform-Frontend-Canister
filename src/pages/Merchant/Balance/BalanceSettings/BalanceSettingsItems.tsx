@@ -26,8 +26,13 @@ const BalanceSettingsItems = () => {
         if (!selectedCategory)
             throw new Error("No category selected");
 
+        setLoading(true);
+        try {
         const statementItems = await statementItemsClient.getStatementItems(selectedCategory);
         setStatementItems(statementItems as StatementItem[]);
+        } finally {
+            setLoading(false);
+        }
     }
 
     useEffect(() => {

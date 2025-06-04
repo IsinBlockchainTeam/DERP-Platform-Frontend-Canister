@@ -478,6 +478,7 @@ export default {
         noCategories: 'Non sono ancora state configurate le categorie di bilancio.',
         uncategorized: 'Non categorizzato',
         settings: 'Impostazioni',
+        moveToStatement: 'Muovi entrata',
         dailyDetail: {
             title: 'Lista transazioni giornaliera',
             table: {
@@ -496,6 +497,18 @@ export default {
             Passives: 'Passivi',
             Incomes: 'Ricavi',
             Expenses: 'Spese',
+        },
+        selectStatementItemModal: {
+            title: 'Seleziona Voce di Bilancio',
+            chooseItem: 'Scegli una voce di bilancio',
+            noItemsFound: 'Nessuna voce di bilancio trovata',
+            loading: 'Caricamento voci...',
+            processing: 'Elaborazione...',
+            cancel: 'Annulla',
+            submit: 'Seleziona',
+            selectItemPlaceholder: 'Seleziona una voce...',
+            searchPlaceholder: 'Cerca per nome, categoria, valuta o ID...',
+            noMatchingItems: 'Nessun elemento corrisponde alla ricerca',
         },
         balanceSettings: {
             title: 'Impostazioni Bilancio',

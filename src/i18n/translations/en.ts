@@ -484,6 +484,7 @@ export default {
         noCategories: 'Balance statement has not been configured yet.',
         uncategorized: 'Uncategorized',
         settings: 'Settings',
+        moveToStatement: 'Move record',
         dailyDetail: {
             title: 'Daily Transactions List',
             table: {
@@ -503,6 +504,17 @@ export default {
             Incomes: 'Incomes',
             Expenses: 'Expenses',
         },
+        selectStatementItemModal: {
+            chooseItem: 'Choose a statement item',
+            noItemsFound: 'No statement items found',
+            loading: 'Loading items...',
+            processing: 'Processing...',
+            cancel: 'Cancel',
+            submit: 'Select',
+            selectItemPlaceholder: 'Select an item...',
+            searchPlaceholder: 'Search by name, category, currency or ID...',
+            noMatchingItems: 'No items match your search',
+        },
         balanceSettings: {
             title: 'Balance Statement Settings',
             year: 'Year',
@@ -510,7 +522,7 @@ export default {
             categories: 'Statement Categories',
             items: 'Statement Items',
             noCategorySelected: 'Please select a category to view the statement items',
-            addStatementItem: 'Aggiungi Voce',
+            addStatementItem: 'Add Statement Item',
             addCategory: 'Add Category',
             setupDefaultCategories: 'Setup Default Categories',
             setupDefaultCategoriesModal: {
