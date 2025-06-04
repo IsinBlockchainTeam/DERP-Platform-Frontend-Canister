@@ -1,5 +1,5 @@
-import { AccountingTransaction, AccountingTransactionType, DailyTransactionRecord, DispatchRule, StatementItem } from "@derp/company-canister";
-import { ChevronLeft, Code, Download, ExternalLink, Eye, ScrollText, X, ListTree } from 'lucide-react';
+import { AccountingOperation, AccountingTransaction, AccountingTransactionType, BankAccountingTransaction, CounterpartDispatchRule, DailyTransactionRecord, DispatchRule, DispatchRuleType, StatementItem } from "@derp/company-canister";
+import { ChevronLeft, Eye, ScrollText, UserPlus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from 'react-router-dom';
@@ -22,7 +22,9 @@ const DailyDetailBalanceView = () => {
     const [ruleModalOpen, setRuleModalOpen] = useState(false);
     const [loadingRuleForRecord, setLoadingRuleForRecord] = useState(false);
     const [currentRuleForRecord, setCurrentRuleForRecord] = useState<DispatchRule | null>(null);
-    
+
+    const [addCounterpartRuleModalOpen, setAddCounterpartRuleModalOpen] = useState(false);
+    const [addCounterpartRuleLoadingTransactionId, setAddCounterpartRuleLoadingTransactionId] = useState<string | null>(null);
     const [selectItemModalOpen, setSelectItemModalOpen] = useState(false);
     const [transactionDetailsModalOpen, setTransactionDetailsModalOpen] = useState(false);
     const [moveOperationLoading, setMoveOperationLoading] = useState(false);
@@ -106,7 +108,7 @@ const DailyDetailBalanceView = () => {
         setRuleModalOpen(true);
         fetchRuleForRecord(record);
     }
-    
+
     const handleOpenTransactionDetailsModal = (record: DailyTransactionRecord, transaction: AccountingTransaction) => {
         setTransactionDetailsModalOpen(true);
         setSelectedTransaction({
@@ -114,14 +116,54 @@ const DailyDetailBalanceView = () => {
             transaction: transaction
         });
     }
-    
-    const handleOpenSelectItemModal = (record: DailyTransactionRecord, transaction: AccountingTransaction) => {
+
+    const handleOpenMoveToItemModal = (record: DailyTransactionRecord, transaction: AccountingTransaction) => {
         setSelectedTransaction({
             record: record,
             transaction: transaction
         });
 
         setSelectItemModalOpen(true);
+    }
+
+    const handleOpenAddCounterpartRuleModal = async (record: DailyTransactionRecord, transaction: AccountingTransaction) => {
+        if (!isBankTransaction(transaction) || !transaction.Counterpart?.Name) {
+            return;
+        }
+
+        const transactionId = transaction.Header.DLTERPId;
+        if (!transactionId) {
+            return;
+        }
+
+        setAddCounterpartRuleLoadingTransactionId(transactionId);
+
+        try {
+            const rules = await dispatchRulesClient.getDispatchRules();
+            const existingRule = rules.find(rule => isCounterpartRule(rule) && rule.counterpartName === transaction.Counterpart?.Name);
+            if (existingRule) {
+                const targetItems = existingRule.statementItemIDs.find(() => true);
+                if (!targetItems) {
+                    throw new Error("No target items found");
+                }
+
+                await statementItemsClient.moveStatementItemRecord(record.id, targetItems);
+                await fetchData();
+                setSelectedTransaction(null);
+                setAddCounterpartRuleModalOpen(false);
+            } else {
+                setSelectedTransaction({
+                    record: record,
+                    transaction: transaction
+                });
+                setAddCounterpartRuleModalOpen(true);
+            }
+        } catch (error) {
+            console.error('Error adding counterpart rule:', error);
+            // TODO: Show error message to user
+        } finally {
+            setAddCounterpartRuleLoadingTransactionId(null);
+        }
     }
 
     const handleMoveTargetStatementItemSelected = async (item: StatementItem) => {
@@ -141,6 +183,41 @@ const DailyDetailBalanceView = () => {
         } finally {
             setMoveOperationLoading(false);
         }
+    }
+
+    const handleAddCounterpartRule = async (item: StatementItem) => {
+        const trx = selectedTransaction?.transaction;
+        if (!trx || !isBankTransaction(trx) || !trx.Counterpart?.Name) {
+            return;
+        }
+
+        try {
+            setAddCounterpartRuleLoadingTransactionId(trx.Header.DLTERPId || null);
+            const rule = new CounterpartDispatchRule(undefined as unknown as number,
+                [item.id],
+                AccountingOperation.CREDIT,
+                trx.Counterpart.Name,
+            )
+
+            await dispatchRulesClient.createDispatchRule(rule);
+            await statementItemsClient.moveStatementItemRecord(selectedTransaction.record.id, item.id);
+            await fetchData();
+            setSelectedTransaction(null);
+            setAddCounterpartRuleModalOpen(false);
+        } catch (error) {
+            console.error('Error adding counterpart rule:', error);
+            // TODO: Show error message to user
+        } finally {
+            setAddCounterpartRuleLoadingTransactionId(null);
+        }
+    }
+
+    const isBankTransaction = (transaction?: AccountingTransaction | null): transaction is BankAccountingTransaction => {
+        return transaction?.Header.TypeCode === AccountingTransactionType.BANK_TRX;
+    }
+
+    const isCounterpartRule = (rule: DispatchRule): rule is CounterpartDispatchRule => {
+        return rule.ruleType === DispatchRuleType.BANK_COUNTERPART;
     }
 
     return <div className="min-h-screen bg-base-100/50">
@@ -199,27 +276,48 @@ const DailyDetailBalanceView = () => {
                                         {transaction.transaction.Header.Currency} {transaction.record.total.toFixed(2)}
                                     </td>
                                     <td className="px-6 py-3 text-center">
-                                        <button className="btn btn-soft btn-disabled btn-sm p-1 hover:bg-base-100 rounded-full disabled mx-2">
+                                        <button 
+                                            className="btn btn-soft btn-disabled btn-sm p-1 hover:bg-base-100 rounded-full disabled mx-2 tooltip"
+                                            data-tip={t('dailyDetail.tooltips.downloadDocument')}
+                                        >
                                             <ScrollText className="h-5 w-5 text-neutral" />
                                         </button>
                                         <button
-                                            className="btn btn-soft btn-sm p-1 rounded-full mx-2"
+                                            className="btn btn-soft btn-sm p-1 rounded-full mx-2 tooltip"
                                             onClick={() => openRuleModal(transaction.record)}
+                                            data-tip={t('dailyDetail.tooltips.showRule')}
                                         >
                                             <DocumentCurrencyDollarIcon className="h-5 w-5" />
                                         </button>
                                         <button
-                                            className="btn btn-soft btn-sm p-1 rounded-full mx-2"
+                                            className="btn btn-soft btn-sm p-1 rounded-full mx-2 tooltip"
                                             onClick={() => handleOpenTransactionDetailsModal(transaction.record, transaction.transaction)}
+                                            data-tip={t('dailyDetail.tooltips.showTransactionDetails')}
                                         >
                                             <Eye className="h-5 w-5" />
                                         </button>
                                         <button
-                                            className="btn btn-soft btn-sm p-1 rounded-full mx-2"
-                                            onClick={() => handleOpenSelectItemModal(transaction.record, transaction.transaction)}
+                                            className="btn btn-soft btn-sm p-1 rounded-full mx-2 tooltip"
+                                            onClick={() => handleOpenMoveToItemModal(transaction.record, transaction.transaction)}
+                                            data-tip={t('dailyDetail.tooltips.moveRecord')}
                                         >
                                             <ArrowsPointingOutIcon className="h-5 w-5" />
                                         </button>
+                                        {
+                                            (!parseInt(categoryId ?? '0') && isBankTransaction(transaction.transaction) && transaction.transaction.Counterpart?.Name) && (
+                                                <button
+                                                    className={`btn btn-soft btn-sm p-1 rounded-full mx-2 tooltip ${addCounterpartRuleLoadingTransactionId === transaction.transaction.Header.DLTERPId ? 'btn-disabled' : ''}`}
+                                                    onClick={() => handleOpenAddCounterpartRuleModal(transaction.record, transaction.transaction)}
+                                                    data-tip={t('dailyDetail.tooltips.addCounterpartRule') + ' ' + transaction.transaction.Counterpart?.Name}
+                                                >
+                                                    {addCounterpartRuleLoadingTransactionId === transaction.transaction.Header.DLTERPId ? (
+                                                        <LoadingSpinner width={20} height={20} />
+                                                    ) : (
+                                                        <UserPlus className="h-5 w-5" />
+                                                    )}
+                                                </button>
+                                            )
+                                        }
                                     </td>
                                 </tr>
                             ))}
@@ -275,13 +373,24 @@ const DailyDetailBalanceView = () => {
             </Modal>
         )}
 
-        {/* Select Statement Item Modal */}
+        {/* Move Record to Statement Item Modal */}
         <SelectStatementItemModal
             isOpen={selectItemModalOpen}
             onChangeOpen={(open) => setSelectItemModalOpen(open)}
             onItemSelected={handleMoveTargetStatementItemSelected}
             externalLoading={moveOperationLoading}
             title={t('moveToStatement')}
+            description={t('moveToStatementDescription')}
+        />
+
+        {/* Add Counterpart Rule Modal */}
+        <SelectStatementItemModal
+            isOpen={addCounterpartRuleModalOpen}
+            onChangeOpen={(open) => setAddCounterpartRuleModalOpen(open)}
+            onItemSelected={handleAddCounterpartRule}
+            externalLoading={addCounterpartRuleLoadingTransactionId !== null}
+            title={t('addCounterpartRule')}
+            description={t('addCounterpartRuleDescription', { counterpart: isBankTransaction(selectedTransaction?.transaction!) ? selectedTransaction?.transaction.Counterpart?.Name ?? '' : '' })}
         />
     </div>
 }

@@ -479,6 +479,9 @@ export default {
         uncategorized: 'Non categorizzato',
         settings: 'Impostazioni',
         moveToStatement: 'Muovi entrata',
+        moveToStatementDescription: 'Seleziona una voce di destinazione',
+        addCounterpartRule: 'Aggiungi Regola',
+        addCounterpartRuleDescription: 'Seleziona una voce verso la quale smistare le transazioni che coinvolgono {{counterpart}}',
         dailyDetail: {
             title: 'Lista transazioni giornaliera',
             table: {
@@ -487,6 +490,13 @@ export default {
                 externalId: 'ID Esterno',
                 amount: 'Importo',
                 actions: 'Azioni'
+            },
+            tooltips: {
+                downloadDocument: 'Scarica documento',
+                showRule: 'Mostra regola',
+                showTransactionDetails: 'Mostra dettagli transazione',
+                moveRecord: 'Sposta record',
+                addCounterpartRule: 'Aggiungi regola controparte'
             }
         },
         ruleDetails: {
@@ -499,8 +509,6 @@ export default {
             Expenses: 'Spese',
         },
         selectStatementItemModal: {
-            title: 'Seleziona Voce di Bilancio',
-            chooseItem: 'Scegli una voce di bilancio',
             noItemsFound: 'Nessuna voce di bilancio trovata',
             loading: 'Caricamento voci...',
             processing: 'Elaborazione...',

@@ -8,12 +8,13 @@ import LoadingSpinner from "../../../components/Loading/LoadingSpinner";
 interface Props {
     isOpen: boolean;
     title: string;
+    description: string;
     onChangeOpen: (open: boolean) => void;
     onItemSelected?: (item: StatementItem) => void;
     externalLoading?: boolean;
 }
 
-const SelectStatementItemModal = ({ isOpen, onChangeOpen, onItemSelected, title, externalLoading = false }: Props) => {
+const SelectStatementItemModal = ({ isOpen, onChangeOpen, onItemSelected, title, description, externalLoading = false }: Props) => {
     const { t } = useTranslation(undefined, { keyPrefix: 'merchantBalance.selectStatementItemModal' });
     const [loading, setLoading] = useState(false);
     const [allStatementItems, setAllStatementItems] = useState<StatementItem[]>([]);
@@ -114,6 +115,7 @@ const SelectStatementItemModal = ({ isOpen, onChangeOpen, onItemSelected, title,
         >
             <div className="modal-header">
                 <h3 className="text-3xl font-light">{title}</h3>
+                <p className="text-sm text-gray-500">{description}</p>
             </div>
 
             <div className="modal-body mt-4">
@@ -124,8 +126,6 @@ const SelectStatementItemModal = ({ isOpen, onChangeOpen, onItemSelected, title,
                     </div>
                 ) : (
                     <div className="space-y-4">
-                        <p>{t('chooseItem')}</p>
-                        
                         {allStatementItems.length === 0 ? (
                             <div className="text-gray-500 italic">
                                 {t('noItemsFound')}
@@ -177,14 +177,12 @@ const SelectStatementItemModal = ({ isOpen, onChangeOpen, onItemSelected, title,
                                 </div>
                                 
                                 {/* Selected Item Display */}
-                                {selectedItem && (
-                                    <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg">
-                                        <div className="text-sm text-gray-600">Selected:</div>
-                                        <div className="font-medium">
-                                            {selectedItem.name} ({getCategoryName(selectedItem.category)} - {selectedItem.currency})
-                                        </div>
+                                <div className={`p-3 bg-primary/5 border border-primary/20 rounded-lg ${selectedItem ? 'visible' : 'invisible'}`}>
+                                    <div className="text-sm text-gray-600">Selected:</div>
+                                    <div className="font-medium">
+                                        {selectedItem ? `${selectedItem.name} (${getCategoryName(selectedItem.category)} - ${selectedItem.currency})` : 'No item selected'}
                                     </div>
-                                )}
+                                </div>
                             </div>
                         )}
                     </div>

@@ -485,6 +485,9 @@ export default {
         uncategorized: 'Uncategorized',
         settings: 'Settings',
         moveToStatement: 'Move record',
+        moveToStatementDescription: 'Select a destination statement item',
+        addCounterpartRule: 'Add Counterpart Rule',
+        addCounterpartRuleDescription: 'Select a statement item to dispatch transactions involving {{counterpart}}',
         dailyDetail: {
             title: 'Daily Transactions List',
             table: {
@@ -493,6 +496,13 @@ export default {
                 externalId: 'External ID',
                 amount: 'Amount',
                 actions: 'Actions'
+            },
+            tooltips: {
+                downloadDocument: 'Download document',
+                showRule: 'Show rule',
+                showTransactionDetails: 'Show transaction details',
+                moveRecord: 'Move record',
+                addCounterpartRule: 'Add counterpart rule'
             }
         },
         ruleDetails: {
@@ -505,7 +515,6 @@ export default {
             Expenses: 'Expenses',
         },
         selectStatementItemModal: {
-            chooseItem: 'Choose a statement item',
             noItemsFound: 'No statement items found',
             loading: 'Loading items...',
             processing: 'Processing...',
