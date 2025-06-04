@@ -1,5 +1,5 @@
-import { AccountingTransaction, DailyTransactionRecord, DispatchRule, DispatchRulesClient, StatementItem } from "@derp/company-canister";
-import { ChevronLeft, Code, Download, ExternalLink, Eye, ScrollText, X } from 'lucide-react';
+import { AccountingTransaction, AccountingTransactionType, DailyTransactionRecord, DispatchRule, StatementItem } from "@derp/company-canister";
+import { ChevronLeft, Code, Download, ExternalLink, Eye, ScrollText, X, ListTree } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from 'react-router-dom';
@@ -8,8 +8,9 @@ import AccountingTransactionDetails from '../../Stores/Tabs/AccountingTransactio
 import { Modal } from '../../../components/Modal/Modal';
 import CodeView from "../../../components/CodeView";
 import LoadingSpinner from "../../../components/Loading/LoadingSpinner";
-import { DocumentCurrencyDollarIcon } from "@heroicons/react/24/outline";
+import { ArrowsPointingOutIcon, DocumentCurrencyDollarIcon } from "@heroicons/react/24/outline";
 import TabTitle from "../../../components/Tabs/TabTitle";
+import SelectStatementItemModal from "./SelectStatementItemModal";
 
 const DailyDetailBalanceView = () => {
     const { itemId, categoryId, merchantId, year, monthId, day } = useParams();
@@ -21,6 +22,10 @@ const DailyDetailBalanceView = () => {
     const [ruleModalOpen, setRuleModalOpen] = useState(false);
     const [loadingRuleForRecord, setLoadingRuleForRecord] = useState(false);
     const [currentRuleForRecord, setCurrentRuleForRecord] = useState<DispatchRule | null>(null);
+    
+    const [selectItemModalOpen, setSelectItemModalOpen] = useState(false);
+    const [transactionDetailsModalOpen, setTransactionDetailsModalOpen] = useState(false);
+    const [moveOperationLoading, setMoveOperationLoading] = useState(false);
 
     const { i18n, t } = useTranslation(undefined, { keyPrefix: 'merchantBalance' });
     const navigate = useNavigate();
@@ -101,6 +106,42 @@ const DailyDetailBalanceView = () => {
         setRuleModalOpen(true);
         fetchRuleForRecord(record);
     }
+    
+    const handleOpenTransactionDetailsModal = (record: DailyTransactionRecord, transaction: AccountingTransaction) => {
+        setTransactionDetailsModalOpen(true);
+        setSelectedTransaction({
+            record: record,
+            transaction: transaction
+        });
+    }
+    
+    const handleOpenSelectItemModal = (record: DailyTransactionRecord, transaction: AccountingTransaction) => {
+        setSelectedTransaction({
+            record: record,
+            transaction: transaction
+        });
+
+        setSelectItemModalOpen(true);
+    }
+
+    const handleMoveTargetStatementItemSelected = async (item: StatementItem) => {
+        if (!selectedTransaction) {
+            return;
+        }
+
+        try {
+            setMoveOperationLoading(true);
+            await statementItemsClient.moveStatementItemRecord(selectedTransaction.record.id, item.id);
+            await fetchData();
+            setSelectedTransaction(null);
+            setSelectItemModalOpen(false);
+        } catch (error) {
+            console.error('Error moving statement item record:', error);
+            // TODO: Show error message to user
+        } finally {
+            setMoveOperationLoading(false);
+        }
+    }
 
     return <div className="min-h-screen bg-base-100/50">
         <div className="mb-4">
@@ -169,9 +210,15 @@ const DailyDetailBalanceView = () => {
                                         </button>
                                         <button
                                             className="btn btn-soft btn-sm p-1 rounded-full mx-2"
-                                            onClick={() => setSelectedTransaction(transaction)}
+                                            onClick={() => handleOpenTransactionDetailsModal(transaction.record, transaction.transaction)}
                                         >
                                             <Eye className="h-5 w-5" />
+                                        </button>
+                                        <button
+                                            className="btn btn-soft btn-sm p-1 rounded-full mx-2"
+                                            onClick={() => handleOpenSelectItemModal(transaction.record, transaction.transaction)}
+                                        >
+                                            <ArrowsPointingOutIcon className="h-5 w-5" />
                                         </button>
                                     </td>
                                 </tr>
@@ -185,8 +232,13 @@ const DailyDetailBalanceView = () => {
         {/* Transaction Details Modal */}
         {selectedTransaction && (
             <Modal
-                open={!!selectedTransaction}
-                onChangeOpen={(open) => !open && setSelectedTransaction(null)}
+                open={transactionDetailsModalOpen}
+                onChangeOpen={(open) => {
+                    setTransactionDetailsModalOpen(open);
+                    if (!open) {
+                        setSelectedTransaction(null);
+                    }
+                }}
             >
                 <div className="bg-dark" style={{ height: "80vh" }}>
                     <AccountingTransactionDetails
@@ -222,6 +274,15 @@ const DailyDetailBalanceView = () => {
                 </div>
             </Modal>
         )}
+
+        {/* Select Statement Item Modal */}
+        <SelectStatementItemModal
+            isOpen={selectItemModalOpen}
+            onChangeOpen={(open) => setSelectItemModalOpen(open)}
+            onItemSelected={handleMoveTargetStatementItemSelected}
+            externalLoading={moveOperationLoading}
+            title={t('moveToStatement')}
+        />
     </div>
 }
 
