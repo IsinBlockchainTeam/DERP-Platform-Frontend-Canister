@@ -19,6 +19,11 @@ const BalanceSettings = () => {
             label: t('items'),
             path: 'balance/settings/items',
             name: 'items'
+        },
+        {
+            label: t('rules'),
+            path: 'balance/settings/rules',
+            name: 'rules'
         }
     ]
 

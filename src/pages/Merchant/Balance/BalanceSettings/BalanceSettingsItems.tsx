@@ -13,6 +13,7 @@ const BalanceSettingsItems = () => {
     const [catgeories, setCategories] = useState<StatementItemCategory[]>([]);
     const [statementItems, setStatementItems] = useState<StatementItem[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<number | undefined>(undefined);
+    const [searchTerm, setSearchTerm] = useState<string>('');
     const [addItemModalOpen, setAddItemModalOpen] = useState<boolean>(false);
     const [editItemModalOpen, setEditItemModalOpen] = useState<boolean>(false);
     const [selectedItem, setSelectedItem] = useState<StatementItem | null>(null);
@@ -31,11 +32,19 @@ const BalanceSettingsItems = () => {
                     const statementItems = await statementItemsClient.getStatementItems(category.id);
                     allStatementItems = allStatementItems.concat(statementItems);
                 }
-            } else {
+                
+                const uncategorizedStatementItems = await statementItemsClient.getStatementItems();
+                allStatementItems = allStatementItems.concat(uncategorizedStatementItems);
+
+            } else if (selectedCategory) {
                 const statementItems = await statementItemsClient.getStatementItems(selectedCategory);
+                allStatementItems = allStatementItems.concat(statementItems);
+            } else {
+                const statementItems = await statementItemsClient.getStatementItems();
                 allStatementItems = allStatementItems.concat(statementItems);
             }
 
+            allStatementItems = allStatementItems.sort((a, b) => a.name.localeCompare(b.name));
             setStatementItems(allStatementItems);
         } catch (error) {
             console.error(error);
@@ -45,13 +54,30 @@ const BalanceSettingsItems = () => {
         }
     }
 
+    const getFilteredItems = () => {
+        if (!searchTerm.trim()) return statementItems;
+        
+        const lowercaseSearch = searchTerm.toLowerCase();
+        return statementItems.filter(item => {
+            const itemName = item.name.toLowerCase();
+            const currency = item.currency.toLowerCase();
+            const categoryDisplay = catgeories.find((category) => category.id === item.category)?.name?.toLowerCase() || '';
+            
+            return itemName.includes(lowercaseSearch) || 
+                   currency.includes(lowercaseSearch) ||
+                   categoryDisplay.includes(lowercaseSearch) ||
+                   item.id.toString().includes(lowercaseSearch);
+        });
+    };
+
     useEffect(() => {
-        if (selectedCategory)
-            fetchStatementItems();
+        fetchStatementItems();
     }, [selectedCategory])
 
     useEffect(() => {
-        fetchCategories();
+        fetchCategories().then(() => {
+            setSelectedCategory(0);
+        });
     }, [])
 
     const columns: GenericTableColumn<StatementItem>[] = [
@@ -106,9 +132,11 @@ const BalanceSettingsItems = () => {
         setEditItemModalOpen(true);
     }
 
+    const filteredItems = getFilteredItems();
+
     return <div className="flex flex-col items-start">
-        <div className="flex flex-row">
-            <label className="form-control ml-2">
+        <div className="flex flex-row items-center gap-2 w-full">
+            <label className="form-control">
                 <select className="select select-bordered w-full max-w-xs"
                     onChange={(e) => setSelectedCategory(Number(e.target.value))}
                 >
@@ -120,17 +148,23 @@ const BalanceSettingsItems = () => {
                 </select>
             </label>
 
-            <button className="btn btn-primary ml-2" onClick={() => setAddItemModalOpen(true)}>{t('addStatementItem')}</button>
+            <input
+                type="text"
+                placeholder={t('searchItems')}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="input input-bordered flex-1"
+            />
 
+            <button className="btn btn-primary" onClick={() => setAddItemModalOpen(true)}>{t('addStatementItem')}</button>
         </div>
         <div className="w-full mt-2">
             {
                 loading ? <LoadingSpinner /> :
-                    selectedCategory ?
                         <GenericTable
-                            data={statementItems}
+                            data={filteredItems}
                             columns={columns}
-                        /> : <div className="w-full italic text-gray-800 mt-4">{t('noCategorySelected')}</div>
+                        />
             }
         </div>
 

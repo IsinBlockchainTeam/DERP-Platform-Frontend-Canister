@@ -2,7 +2,7 @@ import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { statementItemsClient } from "../../../../api/icp"
 import { Modal } from "../../../../components/Modal/Modal"
-import StatementItemForm, { StatementItemData } from "../../../../components/Form/StatementItemForm"
+import StatementItemForm, { StatementItemData } from "../../../../components/StatementItem/StatementItemForm"
 import { StatementItem } from "@derp/company-canister"
 
 interface Props {

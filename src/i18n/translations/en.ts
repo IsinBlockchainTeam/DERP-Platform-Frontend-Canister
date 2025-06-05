@@ -1,5 +1,7 @@
+import { AccountingOperation, BankTransactionType, DispatchRuleType } from '@derp/company-canister';
 import { LOCALE_EN } from './cron_en';
 import { CRON_EN } from './cron_en';
+import { BankAccountingTransactionDTO } from '@derp/company-canister/dist/src/models/types/accounting-transaction/BankAccountingTransactionDto';
 
 export default {
     adminDashboard: {
@@ -523,6 +525,11 @@ export default {
             selectItemPlaceholder: 'Select an item...',
             searchPlaceholder: 'Search by name, category, currency or ID...',
             noMatchingItems: 'No items match your search',
+            unknown: 'Uncategorized',
+            categoryFallback: 'Category {{categoryId}}',
+            selected: 'Selected:',
+            noItemsSelected: 'No items selected',
+            noItemSelected: 'No item selected',
         },
         balanceSettings: {
             title: 'Balance Statement Settings',
@@ -531,6 +538,100 @@ export default {
             noCategory: 'Uncategorized',
             categories: 'Statement Categories',
             items: 'Statement Items',
+            rules: 'Balance Statement Rules',
+            addRule: 'Add Rule',
+            searchItems: 'Search items...',
+            searchRules: 'Search rules...',
+            rulesTable: {
+                id: 'ID',
+                type: 'Rule Type',
+                statementItemIDs: 'Statement Items',
+                accountingOperation: 'Accounting Operation',
+                validDates: 'Valid From/To',
+            },
+            rulesForm: {
+                type: {
+                    types: {
+                        [DispatchRuleType.GROUP]: {
+                            label: "Based on product group",
+                            description: "Applied to all TICKET transactions involving the selected product group. Will extract the total amount for the selected product group.",
+                            fields: {
+                                group: 'Product Group',
+                                groupPlaceholder: 'Select a product group',
+                                store: 'Store',
+                                storePlaceholder: 'Select a store',
+                            }
+                        },
+                        [DispatchRuleType.VAT_GROUP]: {
+                            label: "Based on VAT group",
+                            description: "Applied to all TICKET transactions involving the selected VAT group. Will extract the total vats for the selected VAT group.",
+                            fields: {
+                                vatGroup: 'VAT Group',
+                                vatGroupPlaceholder: 'Select a VAT group',
+                                store: 'Store',
+                                storePlaceholder: 'Select a store',
+                            }
+                        },
+                        [DispatchRuleType.PAYMENT_METHOD]: {
+                            label: "Based on payment method",
+                            description: "Applied to all TICKET transactions involving the selected payment method. Will extract the total amount for the selected payment method.",
+                            fields: {
+                                paymentMethod: 'Payment Method',
+                                paymentMethodPlaceholder: 'Select a payment method',
+                                store: 'Store',
+                                storePlaceholder: 'Select a store',
+                            }
+                        },
+                        [DispatchRuleType.BANK_ACCOUNT]: {
+                            label: "Based on bank account",
+                            description: "Applied to all BANK transactions involving the selected bank account. Will extract total amount.",
+                            fields: {
+                                bankAccount: 'Bank Account IBAN (Exact match)',
+                                bankAccountPlaceholder: 'Insert bank account IBAN',
+                            }
+                        },
+                        [DispatchRuleType.BANK_CAUSAL]: {
+                            label: "Based on bank causal",
+                            description: "Applied to all BANK transactions involving the selected bank causal. Will extract total amount.",
+                            fields: {
+                                bankCausal: 'Bank Causal (Exact match)',
+                                bankCausalPlaceholder: 'Insert bank causal',
+                            }
+                        },
+                        [DispatchRuleType.BANK_COUNTERPART]: {
+                            label: "Based on bank counterpart",
+                            description: "Applied to all BANK transactions involving the selected bank counterpart. Will extract total amount.",
+                            fields: {
+                                bankCounterpart: 'Bank Counterpart Name (Exact match)',
+                                bankCounterpartPlaceholder: 'Insert counterpart name',
+                            }
+                        },
+                        [DispatchRuleType.BANK_MOVEMENT_TYPE]: {
+                            label: "Based on bank movement type",
+                            description: "Applied to all BANK transactions involving the selected bank movement type. Will extract total amount.",
+                            fields: {
+                                bankMovementType: 'Bank Movement Type',
+                                bankMovementTypePlaceholder: 'Select a bank movement type',
+                                bankMovementTypes: {
+                                    [BankTransactionType.DEBIT]: 'Debit',
+                                    [BankTransactionType.CREDIT]: 'Credit',
+                                }
+                            }
+                        },
+                    }
+                },
+                accountingOperation: 'Accounting Operation',
+                accountingOperations: {
+                    [AccountingOperation.DEBIT]: 'Debit',
+                    [AccountingOperation.CREDIT]: 'Credit',
+                },
+                validFrom: 'Valid From',
+                validTo: 'Valid To',
+                selectDate: '∞',
+                submitCreate: 'Create',
+                submitUpdate: 'Save',
+                cancel: 'Cancel',
+            },
             noCategorySelected: 'Please select a category to view the statement items',
             addStatementItem: 'Add Statement Item',
             addCategory: 'Add Category',
@@ -571,6 +672,12 @@ export default {
                 category: 'Category',
                 currency: 'Currency',
             }
+        },
+        balanceSettingsRules: {
+            title: 'Balance Statement Rules',
+            noRules: 'No rules found',
+            addRule: 'Add Rule',
+            addRuleDescription: 'Add a new rule to the balance statement',
         },
         table: {
             id: 'ID',
@@ -990,4 +1097,14 @@ export default {
         previous: 'Previous',
     },
     cron: CRON_EN,
+    dispatchRuleForm: {
+        tabs: {
+            targetItems: 'Target statement items',
+            type: 'Rule type',
+            details: 'Rule details',
+        },
+        validation: {
+            completeAllFields: 'Please complete all required fields to enable submission.',
+        },
+    },
 };

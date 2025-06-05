@@ -1,3 +1,4 @@
+import { AccountingOperation, BankTransactionType, DispatchRuleType } from "@derp/company-canister";
 import { LOCALE_IT } from "./cron_it";
 import { CRON_IT } from './cron_it';
 
@@ -517,6 +518,11 @@ export default {
             selectItemPlaceholder: 'Seleziona una voce...',
             searchPlaceholder: 'Cerca per nome, categoria, valuta o ID...',
             noMatchingItems: 'Nessun elemento corrisponde alla ricerca',
+            unknown: 'Non categorizzato',
+            categoryFallback: 'Categoria {{categoryId}}',
+            selected: 'Selezionato:',
+            noItemsSelected: 'Nessuna voce selezionata',
+            noItemSelected: 'Nessuna voce selezionata',
         },
         balanceSettings: {
             title: 'Impostazioni Bilancio',
@@ -525,6 +531,100 @@ export default {
             noCategory: 'Non categorizzati',
             categories: 'Categorie di Bilancio',
             items: 'Voci di Bilancio',
+            rules: 'Regole di Bilancio',
+            addRule: 'Aggiungi Regola',
+            searchItems: 'Cerca voci...',
+            searchRules: 'Cerca regole...',
+            rulesTable: {
+                id: 'ID',
+                type: 'Tipo Regola',
+                statementItemIDs: 'Voci di Bilancio',
+                accountingOperation: 'Operazione Contabile',
+                validDates: 'Valido da/a',
+            },
+            rulesForm: {
+                type: {
+                    types: {
+                        [DispatchRuleType.GROUP]: {
+                            label: "Basata sul gruppo di prodotti",
+                            description: "Applicata a tutte le transazioni TICKET che coinvolgono il gruppo di prodotti selezionato. Estrae il totale per il gruppo di prodotti selezionato.",
+                            fields: {
+                                group: 'Gruppo di Prodotti',
+                                groupPlaceholder: 'Seleziona un gruppo di prodotti',
+                                store: 'Negozio',
+                                storePlaceholder: 'Seleziona un negozio',
+                            }
+                        },
+                        [DispatchRuleType.VAT_GROUP]: {
+                            label: "Basata sul gruppo IVA",
+                            description: "Applicata a tutte le transazioni TICKET che coinvolgono il gruppo IVA selezionato. Estrae il totale degli IVA per il gruppo IVA selezionato.",
+                            fields: {
+                                vatGroup: 'Gruppo IVA',
+                                vatGroupPlaceholder: 'Seleziona un gruppo IVA',
+                                store: 'Negozio',
+                                storePlaceholder: 'Seleziona un negozio',
+                            }
+                        },
+                        [DispatchRuleType.PAYMENT_METHOD]: {
+                            label: "Basata sul metodo di pagamento",
+                            description: "Applicata a tutte le transazioni TICKET che coinvolgono il metodo di pagamento selezionato. Estrae il totale per il metodo di pagamento selezionato.",
+                            fields: {
+                                paymentMethod: 'Metodo di Pagamento',
+                                paymentMethodPlaceholder: 'Seleziona un metodo di pagamento',
+                                store: 'Negozio',
+                                storePlaceholder: 'Seleziona un negozio',
+                            }
+                        },
+                        [DispatchRuleType.BANK_ACCOUNT]: {
+                            label: "Basata sul conto bancario",
+                            description: "Applicata a tutte le transazioni BANK che coinvolgono il conto bancario selezionato. Estrae il totale.",
+                            fields: {
+                                bankAccount: 'IBAN Conto Bancario (Corrispondenza esatta)',
+                                bankAccountPlaceholder: 'Inserisci l\'IBAN del conto bancario',
+                            }
+                        },
+                        [DispatchRuleType.BANK_CAUSAL]: {
+                            label: "Basata sul causale bancario",
+                            description: "Applicata a tutte le transazioni BANK che coinvolgono il causale bancario selezionato. Estrae il totale.",
+                            fields: {
+                                bankCausal: 'Causale Bancaria (Corrispondenza esatta)',
+                                bankCausalPlaceholder: 'Inserisci una causale bancaria',
+                            }
+                        },
+                        [DispatchRuleType.BANK_COUNTERPART]: {
+                            label: "Basata sul controparte bancaria",
+                            description: "Applicata a tutte le transazioni BANK che coinvolgono la controparte bancaria selezionata. Estrae il totale.",
+                            fields: {
+                                bankCounterpart: 'Nome Controparte Bancaria (Corrispondenza esatta)',
+                                bankCounterpartPlaceholder: 'Inserisci una controparte bancaria',
+                            }
+                        },
+                        [DispatchRuleType.BANK_MOVEMENT_TYPE]: {
+                            label: "Basata sul tipo di movimento bancario",
+                            description: "Applicata a tutte le transazioni BANK che coinvolgono il tipo di movimento bancario selezionato. Estrae il totale.",
+                            fields: {
+                                bankMovementType: 'Tipo di Movimento Bancario',
+                                bankMovementTypePlaceholder: 'Seleziona un tipo di movimento bancario',
+                                bankMovementTypes: {
+                                    [BankTransactionType.DEBIT]: 'Dare',
+                                    [BankTransactionType.CREDIT]: 'Avere',
+                                }
+                            }
+                        },
+                    }
+                },
+                accountingOperation: 'Operazione Contabile',
+                accountingOperations: {
+                    [AccountingOperation.DEBIT]: 'Dare',
+                    [AccountingOperation.CREDIT]: 'Avere',
+                },
+                validFrom: 'Valida da',
+                validTo: 'Valida a',
+                selectDate: '∞',
+                submitCreate: 'Crea',
+                submitUpdate: 'Salva',
+                cancel: 'Annulla',
+            },
             addCategory: 'Aggiungi Categoria',
             addStatementItem: 'Aggiungi Voce',
             noCategorySelected: 'Please select a category to view the statement items',
@@ -565,6 +665,12 @@ export default {
                 category: 'Categoria',
                 currency: 'Divisa',
             }
+        },
+        balanceSettingsRules: {
+            title: 'Regole Bilancio',
+            noRules: 'Nessuna regola trovata',
+            addRule: 'Aggiungi Regola',
+            addRuleDescription: 'Aggiungi una nuova regola di bilancio',
         },
         table: {
             id: 'ID',
@@ -984,4 +1090,14 @@ export default {
         previous: 'Precedente',
     },
     cron: CRON_IT,
+    dispatchRuleForm: {
+        tabs: {
+            targetItems: 'Voci di destinazione',
+            type: 'Tipo di regola',
+            details: 'Dettagli regola',
+        },
+        validation: {
+            completeAllFields: 'Completa tutti i campi obbligatori per abilitare l\'invio.',
+        },
+    },
 };

@@ -2,7 +2,7 @@ import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { statementItemsClient } from "../../../../api/icp"
 import { Modal } from "../../../../components/Modal/Modal"
-import StatementItemForm, { StatementItemData } from "../../../../components/Form/StatementItemForm"
+import StatementItemForm, { StatementItemData } from "../../../../components/StatementItem/StatementItemForm"
 import { StatementItem } from "@derp/company-canister"
 
 interface Props {
@@ -25,8 +25,10 @@ const EditItemModal = ({ isOpen, onChangeOpen, item, onItemUpdated}: Props) => {
                 parseInt(data.id),
                 data.name,
                 data.currency,
-                parseInt(data.category),
+                data.category ? parseInt(data.category) : undefined,
             )
+
+            console.log(updatedStatementItem)
             await statementItemsClient.updateStatementItem(item.id, updatedStatementItem)
             
             // Only close modal and trigger callback after successful update

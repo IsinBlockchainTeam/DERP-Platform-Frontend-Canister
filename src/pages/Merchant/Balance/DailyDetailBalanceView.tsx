@@ -10,7 +10,8 @@ import CodeView from "../../../components/CodeView";
 import LoadingSpinner from "../../../components/Loading/LoadingSpinner";
 import { ArrowsPointingOutIcon, DocumentCurrencyDollarIcon } from "@heroicons/react/24/outline";
 import TabTitle from "../../../components/Tabs/TabTitle";
-import SelectStatementItemModal from "./SelectStatementItemModal";
+import SelectStatementItemModal from "../../../components/StatementItem/SelectStatementItemModal";
+import DispatchRuleView from "../../../components/DispatchRule/DispatchRuleView";
 
 const DailyDetailBalanceView = () => {
     const { itemId, categoryId, merchantId, year, monthId, day } = useParams();
@@ -77,6 +78,10 @@ const DailyDetailBalanceView = () => {
     const fetchRuleForRecord = async (record: DailyTransactionRecord) => {
         setLoadingRuleForRecord(true);
         try {
+            if (!record.originalRuleId) {
+                return;
+            }
+
             const rule = await dispatchRulesClient.getDispatchRule(record.originalRuleId);
             setCurrentRuleForRecord(rule);
         } catch (error) {
@@ -147,7 +152,7 @@ const DailyDetailBalanceView = () => {
                     throw new Error("No target items found");
                 }
 
-                await statementItemsClient.moveStatementItemRecord(record.id, targetItems);
+                await statementItemsClient.moveStatementItemRecord(record.id, targetItems, existingRule.id);
                 await fetchData();
                 setSelectedTransaction(null);
                 setAddCounterpartRuleModalOpen(false);
@@ -166,7 +171,10 @@ const DailyDetailBalanceView = () => {
         }
     }
 
-    const handleMoveTargetStatementItemSelected = async (item: StatementItem) => {
+    const handleMoveTargetStatementItemSelected = async (item: StatementItem | StatementItem[]) => {
+        if (Array.isArray(item)) {
+            throw new Error("Moving multiple statement items is not supported");
+        }
         if (!selectedTransaction) {
             return;
         }
@@ -185,7 +193,11 @@ const DailyDetailBalanceView = () => {
         }
     }
 
-    const handleAddCounterpartRule = async (item: StatementItem) => {
+    const handleAddCounterpartRule = async (item: StatementItem | StatementItem[]) => {
+        if (Array.isArray(item)) {
+            throw new Error("Adding multiple statement items is not supported");
+        }
+
         const trx = selectedTransaction?.transaction;
         if (!trx || !isBankTransaction(trx) || !trx.Counterpart?.Name) {
             return;
@@ -199,8 +211,8 @@ const DailyDetailBalanceView = () => {
                 trx.Counterpart.Name,
             )
 
-            await dispatchRulesClient.createDispatchRule(rule);
-            await statementItemsClient.moveStatementItemRecord(selectedTransaction.record.id, item.id);
+            const createdRule = await dispatchRulesClient.createDispatchRule(rule);
+            await statementItemsClient.moveStatementItemRecord(selectedTransaction.record.id, item.id, createdRule.id);
             await fetchData();
             setSelectedTransaction(null);
             setAddCounterpartRuleModalOpen(false);
@@ -283,7 +295,7 @@ const DailyDetailBalanceView = () => {
                                             <ScrollText className="h-5 w-5 text-neutral" />
                                         </button>
                                         <button
-                                            className="btn btn-soft btn-sm p-1 rounded-full mx-2 tooltip"
+                                            className={`btn btn-soft btn-sm p-1 rounded-full mx-2 tooltip ${transaction.record.originalRuleId ? '' : 'btn-disabled'}`}
                                             onClick={() => openRuleModal(transaction.record)}
                                             data-tip={t('dailyDetail.tooltips.showRule')}
                                         >
@@ -358,18 +370,7 @@ const DailyDetailBalanceView = () => {
                     }
                 }}
             >
-                <div className="bg-dark" style={{ height: "80vh" }}>
-                    {loadingRuleForRecord ? (
-                        <LoadingSpinner />
-                    ) : (
-                        <div className="p-4 flex flex-col h-full">
-                            <div className="flex-initial">
-                                <TabTitle title={t('ruleDetails.title') + ' ' + currentRuleForRecord.id} />
-                            </div>
-                            <CodeView code={currentRuleForRecord} />
-                        </div>
-                    )}
-                </div>
+                <DispatchRuleView rule={currentRuleForRecord} />
             </Modal>
         )}
 
@@ -390,7 +391,7 @@ const DailyDetailBalanceView = () => {
             onItemSelected={handleAddCounterpartRule}
             externalLoading={addCounterpartRuleLoadingTransactionId !== null}
             title={t('addCounterpartRule')}
-            description={t('addCounterpartRuleDescription', { counterpart: isBankTransaction(selectedTransaction?.transaction!) ? selectedTransaction?.transaction.Counterpart?.Name ?? '' : '' })}
+            description={t('addCounterpartRuleDescription', { counterpart: isBankTransaction(selectedTransaction?.transaction) ? selectedTransaction?.transaction.Counterpart?.Name ?? '' : '' })}
         />
     </div>
 }

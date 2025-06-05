@@ -2,6 +2,7 @@ import { t } from "i18next";
 import { PaymentDto } from "../../dto/OrderPaymentDto";
 import api from "../api"
 import { auth } from "../auth";
+import { PaymentMethodDto } from "../../dto/PaymentMethod";
 
 export const paymentsService = {
     async getOrderPayments(orderId: number): Promise<PaymentDto[]> {
@@ -25,5 +26,16 @@ export const paymentsService = {
         }
             
         return res.data[0]
+    },
+    
+    async getPaymentMethods(storeId: number): Promise<PaymentMethodDto[]> {
+        const res = await api.get<PaymentMethodDto[]>('/payment-methods', {
+            headers: await auth.authenticatedHeaders(),
+            params: {
+                storeId
+            }
+        });
+
+        return res.data;
     }
 }

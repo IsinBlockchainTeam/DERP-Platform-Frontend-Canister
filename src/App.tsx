@@ -50,6 +50,7 @@ import MonthlyBalanceView from './pages/Merchant/Balance/MonthlyBalanceView';
 import DailyBalanceView from './pages/Merchant/Balance/DailyBalanceView';
 import DailyDetailBalanceView from './pages/Merchant/Balance/DailyDetailBalanceView';
 import DataSyncPosSync from './pages/Stores/Tabs/DataSyncTab/DataSyncPosSync';
+import BalanceSettingsRules from './pages/Merchant/Balance/BalanceSettings/BalanceSettingsRules';
 
 
 function App() {
@@ -114,6 +115,7 @@ function App() {
                         <Route index element={<Navigate to="categories" />} />
                         <Route path="categories" element={<BalanceSettingsCategories />} />
                         <Route path="items" element={<BalanceSettingsItems />} />
+                        <Route path="rules" element={<BalanceSettingsRules />} />
                     </Route>
                     <Route path="stores" element={<StoresTab />}></Route>
                     <Route path="interfaces" element={<InterfacesTab />}>

@@ -2,11 +2,11 @@ import { StatementItemCategory } from "@derp/company-canister"
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { statementItemsClient } from "../../api/icp"
-import GenericForm, { GenericFormField, GenericFormData } from "./GenericForm"
+import GenericForm, { GenericFormField, GenericFormData } from "../Form/GenericForm"
 import LoadingSpinner from "../Loading/LoadingSpinner"
 
 export interface StatementItemData {
-    category: string
+    category: string | undefined
     id: string
     name: string
     currency: string
@@ -49,7 +49,7 @@ const StatementItemForm = ({
             setCategories(categories)
 
             const initialFormData: GenericFormData = item ? {
-                category: item.category,
+                category: item.category || '',
                 id: item.id,
                 name: item.name,
                 currency: item.currency,
@@ -71,11 +71,18 @@ const StatementItemForm = ({
                     typeNode: {
                         type: 'select',
                         typeNodeName: 'select',
-                        options: categories.map(category => ({
-                            key: category.id.toString(),
-                            value: category.id.toString(),
-                            label: category.name
-                        })),
+                        options: [
+                            {
+                                key: '',
+                                value: '',
+                                label: t('uncategorized', 'Uncategorized')
+                            },
+                            ...categories.map(category => ({
+                                key: category.id.toString(),
+                                value: category.id.toString(),
+                                label: category.name
+                            }))
+                        ],
                         placeholder: t('category'),
                     },
                     isRequired: true
@@ -122,7 +129,7 @@ const StatementItemForm = ({
             setInternalLoading(true)
             // Convert GenericFormData to StatementItemData
             const statementItemData: StatementItemData = {
-                category: data.category,
+                category: data.category || undefined,
                 id: data.id,
                 name: data.name,
                 currency: data.currency,
