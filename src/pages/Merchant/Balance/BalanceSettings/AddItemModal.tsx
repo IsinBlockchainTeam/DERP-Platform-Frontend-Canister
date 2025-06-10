@@ -23,7 +23,7 @@ const AddItemModal = ({ isOpen, onChangeOpen, onItemCreated}: Props) => {
                 parseInt(data.id),
                 data.name,
                 data.currency,
-                parseInt(data.category),
+                data.category ? parseInt(data.category) : undefined,
             )
             await statementItemsClient.storeStatementItem(statementItem)
             
