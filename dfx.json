@@ -1,10 +1,16 @@
 {
     "canisters": {
-        "derp-platform-frontend": {
+        "derp-platform-frontend-development": {
             "source": [
                 "build"
             ],
             "type": "assets"
-        }
+        },
+        "derp-platform-frontend-production": {
+          "source": [
+            "build"
+          ],
+          "type": "assets"
+      }
     }
 }

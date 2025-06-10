@@ -1,5 +1,8 @@
 {
-  "derp-platform-frontend": {
+  "derp-platform-frontend-development": {
     "ic": "ysuxn-liaaa-aaaad-aajha-cai"
+  },
+  "derp-platform-frontend-production": {
+    "ic": "rvpa4-miaaa-aaaai-atilq-cai"
   }
 }
