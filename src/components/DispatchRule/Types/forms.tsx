@@ -5,6 +5,8 @@ import { BankAccountDispatchRuleFormElement } from "./BankAccount/BankAccountDis
 import { BankCausalDispatchRuleFormElement } from "./BankCausal/BankCausalDispatchRuleFormElement";
 import { BankCounterpartDispatchRuleFormElement } from "./BankCounterpart/BankCounterpartDispatchRuleFormElement";
 import { BankMovementTypeDispatchRuleFormElement } from "./BankMovementType/BankMovementTypeDispatchRuleFormElement";
+import { InvoiceIssuerDispatchRuleFormElement } from "./InvoiceIssuer/InvoiceIssuerDispatchRuleFormElement";
+import { InvoiceRecipientDispatchRuleFormElement } from "./InvoiceRecipient/InvoiceRecipientDispatchRuleFormElement";
 import { DispatchRuleTypeFormElement } from "./types";
 
 
@@ -16,6 +18,8 @@ export const forms: DispatchRuleTypeFormElement[] = [
     BankCausalDispatchRuleFormElement,
     BankCounterpartDispatchRuleFormElement,
     BankMovementTypeDispatchRuleFormElement,
+    InvoiceIssuerDispatchRuleFormElement,
+    InvoiceRecipientDispatchRuleFormElement,
     // {
     //     value: DispatchRuleType.PAYMENT_METHOD,
     // },

@@ -611,6 +611,28 @@ export default {
                                 }
                             }
                         },
+                        [DispatchRuleType.INVOICE_ISSUER]: {
+                            label: "Basata sul mittente della fattura",
+                            description: "Applicata a tutte le transazioni FATTURA che coinvolgono il mittente selezionato. Estrae il totale.",
+                            fields: {
+                                id: 'ID Mittente',
+                                idPlaceholder: 'Inserisci l\'ID del mittente',
+                                name: 'Nome Mittente',
+                                namePlaceholder: 'Inserisci il nome del mittente',
+                            },
+                            or: 'OPPURE'
+                        },
+                        [DispatchRuleType.INVOICE_RECIPIENT]: {
+                            label: "Basata sul destinatario della fattura",
+                            description: "Applicata a tutte le transazioni FATTURA che coinvolgono il destinatario selezionato. Estrae il totale.",
+                            fields: {
+                                id: 'ID Destinatario',
+                                idPlaceholder: 'Inserisci l\'ID del destinatario',
+                                name: 'Nome Destinatario',
+                                namePlaceholder: 'Inserisci il nome del destinatario',
+                            },
+                            or: 'OPPURE'
+                        },
                     }
                 },
                 accountingOperation: 'Operazione Contabile',

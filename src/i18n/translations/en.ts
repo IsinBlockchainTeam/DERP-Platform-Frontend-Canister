@@ -618,6 +618,28 @@ export default {
                                 }
                             }
                         },
+                        [DispatchRuleType.INVOICE_ISSUER]: {
+                            label: "Based on invoice issuer",
+                            description: "Applied to all INVOICE transactions involving the selected issuer. Will extract total amount.",
+                            fields: {
+                                id: 'Issuer ID',
+                                idPlaceholder: 'Enter issuer ID',
+                                name: 'Issuer Name',
+                                namePlaceholder: 'Enter issuer name',
+                            },
+                            or: 'OR'
+                        },
+                        [DispatchRuleType.INVOICE_RECIPIENT]: {
+                            label: "Based on invoice recipient",
+                            description: "Applied to all INVOICE transactions involving the selected recipient. Will extract total amount.",
+                            fields: {
+                                id: 'Recipient ID',
+                                idPlaceholder: 'Enter recipient ID',
+                                name: 'Recipient Name',
+                                namePlaceholder: 'Enter recipient name',
+                            },
+                            or: 'OR'
+                        },
                     }
                 },
                 accountingOperation: 'Accounting Operation',
