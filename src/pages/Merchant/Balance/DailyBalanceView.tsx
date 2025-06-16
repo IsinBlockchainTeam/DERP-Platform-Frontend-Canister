@@ -57,7 +57,7 @@ const DailyBalanceView = () => {
         if(item.month === undefined || item.day === undefined) return item.year;
 
         const lang = i18n.language;
-        const date = new Date(item.year, item.month, item.day);
+        const date = new Date(Date.UTC(item.year, item.month, item.day));
 
         if (short)
             return new Intl.DateTimeFormat(lang, { day: 'numeric' }).format(date);
@@ -71,7 +71,7 @@ const DailyBalanceView = () => {
         }
 
         const lang = i18n.language;
-        const date = new Date(2020, monthIndex); // Year and day are arbitrary; monthIndex is 0-based
+        const date = new Date(Date.UTC(2020, monthIndex)); // Year and day are arbitrary; monthIndex is 0-based
         return new Intl.DateTimeFormat(lang, { month: 'long' }).format(date);
     }
 
@@ -82,21 +82,21 @@ const DailyBalanceView = () => {
     //TODO move to utils file
     const fillDailyStatementItems = (items: StatementItemAggregate[], monthId: number, parentId: number) => {
         // count days in the month by getting the number of the last day of the month
-        const daysInMonth = new Date(yearNum, monthId + 1, 0).getDate();
+        const daysInMonth = new Date(Date.UTC(yearNum, monthId + 1, 0)).getUTCDate();
 
         // start from the first day of the month
-        const date = new Date(yearNum, monthId, 1);
+        const date = new Date(Date.UTC(yearNum, monthId, 1));
         // iterate through the days of the month
         for (let i = 0; i < daysInMonth; i++) {
             // for each day, check if there is an item in the list
-            const item = items.find(it => it.year === date.getFullYear() && it.month === date.getMonth() && it.day === date.getDate());
+            const item = items.find(it => it.year === date.getUTCFullYear() && it.month === date.getUTCMonth() && it.day === date.getUTCDate());
             if (!item) {
                 items.push(new StatementItemAggregate(
                     parentId,
                     0,
-                    date.getFullYear(),
-                    date.getMonth(),
-                    date.getDate(),
+                    date.getUTCFullYear(),
+                    date.getUTCMonth(),
+                    date.getUTCDate(),
                 ));
             }
 
@@ -109,7 +109,7 @@ const DailyBalanceView = () => {
             if(a.month === undefined || a.day === undefined) return -1;
             if(b.month === undefined || b.day === undefined) return 1;
 
-            return new Date(a.year, a.month, a.day).getTime() - new Date(b.year, b.month, b.day).getTime();
+            return new Date(Date.UTC(a.year, a.month, a.day)).getTime() - new Date(Date.UTC(b.year, b.month, b.day)).getTime();
         });
     }
     //TODO move to utils file

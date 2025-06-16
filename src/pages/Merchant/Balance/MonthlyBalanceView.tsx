@@ -52,7 +52,7 @@ const MonthlyBalanceView = () => {
         }
 
         const lang = i18n.language;
-        const date = new Date(2020, monthIndex); // Year and day are arbitrary; monthIndex is 0-based
+        const date = new Date(Date.UTC(2020, monthIndex)); // Year and day are arbitrary; monthIndex is 0-based
         return new Intl.DateTimeFormat(lang, { month: 'long' }).format(date);
     }
 

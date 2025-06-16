@@ -58,7 +58,7 @@ const DailyDetailBalanceView = () => {
         setLoading(true);
 
         try {
-            const currentDate = new Date(yearNum, monthIdNumber.valueOf(), dayNumber.valueOf());
+            const currentDate = new Date(Date.UTC(yearNum, monthIdNumber.valueOf(), dayNumber.valueOf()));
             console.log("Current date: " + currentDate);
 
             const originalStatementItem = await statementItemsClient.getStatementItem(itemIdNumber.valueOf());
@@ -101,7 +101,7 @@ const DailyDetailBalanceView = () => {
         }
 
         const lang = i18n.language;
-        const date = new Date(2020, monthIndex);
+        const date = new Date(Date.UTC(2020, monthIndex));
         return new Intl.DateTimeFormat(lang, { month: 'long' }).format(date);
     }
 
