@@ -1,10 +1,12 @@
-import { BarChart, Calendar, ChevronDown, ChevronRight, Settings } from 'lucide-react';
+import {BarChart, Calendar, ChevronDown, ChevronRight, Download, Settings} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 import { statementItemsClient } from '../../../api/icp';
 import { StatementItem, StatementItemAggregate, StatementItemCategory } from '@derp/company-canister';
+import {convertTransactionsToCSV, downloadCSVFromArray} from "../../../utility/FileManagement";
+import ExportStatementItemsModal from "../../../components/ExportStatementItemModal/ExportStatementItemsModal";
 
 const CHART_COLORS = [
     '#d04b3d',  // primary
@@ -29,7 +31,7 @@ const BalanceTab = () => {
     const [categories, setCategories] = useState<(StatementItemCategory | { id: undefined, name: string })[]>([])
     const [statementItemsByCategoryMap, setStatementItemsByCategoryMap] = useState<Map<number | undefined, StatementItem[]>>(new Map());
     const [statementAggregatesByStatementItemMap, setStatementAggregatesByStatementItemMap] = useState<Map<number, StatementItemAggregate>>(new Map());
-
+    const [isExportCSVModalOpen, setIsExportCSVModalOpen] = useState(false);
 
     const fetchData = async () => {
         try {
@@ -193,6 +195,12 @@ const BalanceTab = () => {
         );
     };
 
+
+    const toggleExportCSVModal = () => {
+        setIsExportCSVModalOpen(!isExportCSVModalOpen);
+    }
+
+
     return (
         <div className="min-h-screen bg-base-350">
             {/* Header */}
@@ -202,12 +210,23 @@ const BalanceTab = () => {
                     <p className="text-gray-600 mt-1">Panoramica categorie</p>
                 </div>
                 <div>
+                    <ExportStatementItemsModal isOpen={isExportCSVModalOpen}
+                                               statementItemByCategoryMap={statementItemsByCategoryMap}
+                                               onClose={toggleExportCSVModal}
+                                               title={"Export All Statement Items"} />
+                    <button
+                        onClick={() => toggleExportCSVModal()}
+                        className="btn btn-ghost btn-circle mr-4"
+                        aria-label="Export CSV"
+                    >
+                        <Download className="h-5 w-5"/>
+                    </button>
                     <button
                         onClick={() => navigate(`/merchant/${merchantId}/balance/settings`)}
                         className="btn btn-ghost btn-circle mr-4"
                         aria-label="Impostazioni"
                     >
-                        <Settings className="h-5 w-5" />
+                        <Settings className="h-5 w-5"/>
                     </button>
                     <select
                         value={yearNumber}

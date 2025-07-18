@@ -1,7 +1,6 @@
 import { AccountingOperation, BankTransactionType, DispatchRuleType } from '@derp/company-canister';
 import { LOCALE_EN } from './cron_en';
 import { CRON_EN } from './cron_en';
-import { BankAccountingTransactionDTO } from '@derp/company-canister/dist/src/models/types/accounting-transaction/BankAccountingTransactionDto';
 
 export default {
     adminDashboard: {
