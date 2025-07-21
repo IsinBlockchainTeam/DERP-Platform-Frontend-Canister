@@ -1,4 +1,5 @@
 import { AccountingTransaction, AccountingTransactionWithTotals, DailyTransactionRecord } from "@derp/company-canister";
+import {dispatchRulesClient, statementItemsClient} from "../api/icp";
 
 
 export const downloadCSV = (csvContent: string, filename = 'transactions.csv'): void => {
@@ -49,14 +50,15 @@ interface TransactionData {
 // Tipo per una riga CSV
 interface TransactionCSVRow {
     record_id: number;
-    statement_item_id: number;
+    statement_item: string;
     record_date: string;
     issue_date: string;
     value_date: string;
     total: number;
     dlterp_id: string;
     txType: string;
-    dispatch_rule_id: string;
+    dispatch_rule_type: string;
+    dispatch_rule_operation: string;
     currency: string;
     source: string;
     storeId: number;
@@ -71,21 +73,26 @@ interface TransactionCSVRow {
 // Builder per costruire una riga CSV da TransactionData
 class TransactionCSVRowBuilder {
 
-    static build(data: TransactionData): TransactionCSVRow {
+    static async build(data: TransactionData): Promise<TransactionCSVRow> {
         const { record, transaction } = data;
         const header = transaction.Header;
-
+        const statementItem = await statementItemsClient.getStatementItem(record.parentStatementItemId);
+        let dispatchRule = null;
+        if(record.originalRuleId !== undefined || true) {
+            dispatchRule = await dispatchRulesClient.getDispatchRule(Number(record.originalRuleId));
+        }
         const row: TransactionCSVRow = {
             // Campi da DailyTransactionRecord
             record_id: record.id,
-            statement_item_id: record.parentStatementItemId,
+            statement_item: statementItem.name,
             record_date: this.formatDate(record.date),
             issue_date: this.formatOptionalDate(header.IssueDate),
             value_date: this.formatOptionalDate(header.ValueDate),
             total: record.total,
             dlterp_id: record.transactionId,
             txType: record.txType,
-            dispatch_rule_id: this.formatOptionalNumber(record.originalRuleId),
+            dispatch_rule_type: dispatchRule.ruleType,
+            dispatch_rule_operation: dispatchRule.accountingOperation,
             currency: this.formatOptionalString(header.Currency),
             source: this.formatOptionalString(header.Source),
             storeId: header.StoreId,
@@ -156,14 +163,15 @@ export const escapeCsvValue = (value: any): string => {
 // Definizione delle colonne del CSV nell'ordine desiderato
 export const CSV_COLUMNS: (keyof TransactionCSVRow)[] = [
     "record_id",
-    "statement_item_id",
+    "statement_item",
     "record_date",
     "issue_date",
     "value_date",
     "total",
     "dlterp_id",
     "txType",
-    "dispatch_rule_id",
+    "dispatch_rule_type",
+    "dispatch_rule_operation",
     "currency",
     "source",
     "storeId",
@@ -175,13 +183,13 @@ export const CSV_COLUMNS: (keyof TransactionCSVRow)[] = [
     "total_incl_tax"
 ];
 
-export const convertTransactionsToCSV = (data: TransactionData[]): string => {
+export const convertTransactionsToCSV = async (data: TransactionData[]): Promise<string> => {
     if (data.length === 0) {
         return '';
     }
 
     // Costruisci le righe CSV usando il builder
-    const csvRows = data.map(item => TransactionCSVRowBuilder.build(item));
+    const csvRows = await Promise.all(data.map(item => TransactionCSVRowBuilder.build(item)));
 
     // Crea l'header del CSV
     // const csvHeader = CSV_COLUMNS.map(column => escapeCsvValue(column)).join(',');
