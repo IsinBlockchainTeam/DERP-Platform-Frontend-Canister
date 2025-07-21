@@ -5,7 +5,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import {ArrowDown, ArrowUp, ChevronLeft, Download, Eye, TrendingUp} from 'lucide-react';
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { statementItemsClient } from '../../../api/icp';
-import {downloadCSV} from "../../../utility/FileManagement";
 
 interface DailyChartData {
     day: number;
@@ -54,27 +53,6 @@ const DailyBalanceView = () => {
         }
     }
 
-
-    const getCSVDetail = async (day: number | undefined) =>{
-        if(!day) return;
-        // const csvData = await statementItemsClient.getStatementItemRecordsCSV(Number(itemId), new Date(Date.UTC(yearNum, Number(monthId), day)));
-        // if (!csvData) {
-        //     console.error("CSV data is empty or undefined");
-        //     return;
-        // }
-        // downloadCSV(csvData);
-    }
-
-    const dateFormat = (item: StatementItemAggregate, short = false) => {
-        if(item.month === undefined || item.day === undefined) return item.year;
-
-        const lang = i18n.language;
-        const date = new Date(Date.UTC(item.year, item.month, item.day));
-
-        if (short)
-            return new Intl.DateTimeFormat(lang, { day: 'numeric' }).format(date);
-        return new Intl.DateTimeFormat(lang, { month: 'short', day: 'numeric' }).format(date);
-    }
 
     //TODO move to utils file
     const monthName = (monthIndex?: number) => {
@@ -283,12 +261,6 @@ const DailyBalanceView = () => {
                                         <button className="btn btn-ghost btn-sm p-1 hover:bg-base-100 rounded-full"
                                                 onClick={() => goToDailyDetails(day.day)}>
                                             <Eye className="h-4 w-4 text-neutral"/>
-                                        </button>
-                                    </td>
-                                    <td className="px-6 py-3 text-center">
-                                        <button className="btn btn-ghost btn-sm p-1 hover:bg-base-100 rounded-full"
-                                                onClick={() => getCSVDetail(day.day)}>
-                                            <Download className="h-4 w-4 text-neutral"/>
                                         </button>
                                     </td>
                                 </tr>

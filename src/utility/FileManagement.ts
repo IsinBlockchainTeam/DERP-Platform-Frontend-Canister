@@ -35,9 +35,10 @@ export const downloadCSVFromArray = (csvRows: string[], filename = 'transactions
 
     // Unisci tutte le righe con newline
     const csvContent = csvRows.join('\n');
-
+    const header = CSV_COLUMNS.map(column => escapeCsvValue(column)).join(',');
+    const finalCSV = header + '\n' + csvContent;
     // Riutilizza il metodo esistente
-    downloadCSV(csvContent, filename);
+    downloadCSV(finalCSV, filename);
 };
 
 interface TransactionData {
@@ -183,7 +184,7 @@ export const convertTransactionsToCSV = (data: TransactionData[]): string => {
     const csvRows = data.map(item => TransactionCSVRowBuilder.build(item));
 
     // Crea l'header del CSV
-    const csvHeader = CSV_COLUMNS.map(column => escapeCsvValue(column)).join(',');
+    // const csvHeader = CSV_COLUMNS.map(column => escapeCsvValue(column)).join(',');
 
     // Crea le righe dati del CSV
     const csvDataRows = csvRows.map(row => {
@@ -191,5 +192,5 @@ export const convertTransactionsToCSV = (data: TransactionData[]): string => {
     });
 
     // Combina header e righe
-    return [csvHeader, ...csvDataRows].join('\n');
+    return [...csvDataRows].join('\n');
 };
