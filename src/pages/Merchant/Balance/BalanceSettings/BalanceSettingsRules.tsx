@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { dispatchRulesClient, statementItemsClient } from "../../../../api/icp";
-import { DispatchRule } from "@derp/company-canister";
+import {DispatchRule, StatementItem} from "@derp/company-canister";
 import { useTranslation } from "react-i18next";
 import { GenericTableAction, GenericTableColumn } from "../../../../components/Table/GenericTable";
 import GenericTable from "../../../../components/Table/GenericTable";
@@ -8,7 +8,6 @@ import LoadingSpinner from "../../../../components/Loading/LoadingSpinner";
 import { EditIcon } from "lucide-react";
 import DispatchRuleForm from "../../../../components/DispatchRule/DispatchRuleForm";
 import { Modal } from "../../../../components/Modal/Modal";
-import { StatementItem } from "@derp/company-canister/models/types/statement-items/StatementItem";
 
 export default function BalanceSettingsRules() {
     const { t } = useTranslation(undefined, { keyPrefix: "merchantBalance.balanceSettings" });

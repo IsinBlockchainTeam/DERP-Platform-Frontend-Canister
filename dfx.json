@@ -1,6 +1,6 @@
 {
     "canisters": {
-        "derp-platform-frontend-development": {
+        "derp-platform-frontend-staging": {
             "source": [
                 "build"
             ],
