@@ -69,7 +69,7 @@ function Header({
                     className="btn btn-ghost normal-case text-xl"
                     style={{ color: textColor, fontFamily: font }}
                 >
-                    <img src="/derp-logo.png" alt="DERP Logo" className="w-full h-full" />
+                    <img src="/datashaker-logo.png" alt="DERP Logo" className="w-full h-full" />
                 </a>
             </div>
             <div className="navbar-end">

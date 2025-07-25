@@ -5,8 +5,9 @@ import { UserRole } from '../../model/UserRole';
 import { useTranslation } from "react-i18next";
 import { UserInfoDto } from '../../dto/UserInfoDto';
 import { AuthClient } from '@dfinity/auth-client';
-import { User, Lock, ArrowRight } from 'lucide-react';
+import {User, Lock, Shield, Zap, TrendingUp, ChevronRight, EyeOff, Eye} from 'lucide-react';
 import { companyService } from '../../api/services/Company';
+import styles from './LoginPage.module.css';
 
 
 const identityProvider = () => {
@@ -22,6 +23,7 @@ const identityProvider = () => {
 function LoginPage() {
     const [username, setUsername] = useState<string>('');
     const [password, setPassword] = useState<string>('');
+    const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>('');
     const [userData, setUserData] = useState<UserInfoDto | null>(null);
@@ -45,16 +47,6 @@ function LoginPage() {
             },
         });
     }
-
-    //TODO change this shit, for the demo we use always admin credentials to authenticate with the backend
-    // const fakeLogin = async () => {
-    //     setLoading(true);
-    //     clearErrorMessage();
-    //     await auth.login(username, password);
-    //     const uData = await auth.getMe();
-    //     setUserData(uData);
-    //     navigate(`/merchant/${uData.companyId}/balance`);
-    // }
 
     const submitLogin = async () => {
         setLoading(true);
@@ -147,94 +139,182 @@ function LoginPage() {
     }, [])
 
     return (
-        <main>
-            <div className="h-screen flex flex-col items-center justify-center">
-                <div className="relative w-full max-w-xl">
+        <div className={styles.loginPage}>
+            <div className={styles.backgroundElements}>
+                <div className={styles.floatingCircle}></div>
+                <div className={styles.floatingCircle}></div>
+                <div className={styles.floatingCircle}></div>
+                <div className={styles.floatingCircle}></div>
+            </div>
 
-                    {/* Login Card */}
-                    <div className="bg-primary border-4 border-gray-700 rounded-lg overflow-hidden">
-                        <div className="p-8">
-                            <div className="flex justify-center mb-1">
-                                <img src="derp-logo.png" alt="DERP Logo" className="h-32" />
-                            </div>
-                            <form className="space-y-6">
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        name="username"
-                                        placeholder="Username"
-                                        className="input w-full h-12 px-4 pl-12 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:border-transparent transition duration-200"
-                                        value={username}
-                                        onChange={e => {
-                                            setUsername(e.target.value);
-                                        }}
-                                    />
-                                    <User className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />
-                                </div>
-
-                                <div className="relative">
-                                    <input
-                                        type="password"
-                                        name="password"
-                                        placeholder="Password"
-                                        className="input w-full h-12 px-4 pl-12 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:border-transparent transition duration-200"
-                                        value={password}
-                                        onChange={e => setPassword(e.target.value)}
-                                    />
-                                    <Lock className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />
-                                </div>
-
-                                {errorMessage && (
-                                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                                        <span className="block sm:inline">{errorMessage}</span>
-                                    </div>
-                                )}
-
-                                <div className="space-y-4">
-                                    <button
-                                        type="submit"
-                                        className="w-full h-12 bg-white rounded-lg font-semibold shadow-lg transform hover:-translate-y-0.5 transition duration-200 flex items-center justify-center gap-2"
-                                        onClick={e => {
-                                            e.preventDefault();
-                                            submitLogin();
-                                        }}
-                                    >
-                                        Login
-                                    </button>
-
-                                    <div className="relative py-4">
-                                        <div className="absolute inset-0 flex items-center">
-                                            <div className="w-full border-t border-gray-200"></div>
-                                        </div>
-                                        <div className="relative flex justify-center text-sm">
-                                            <span className="px-4 bg-secondary ">Or continue with</span>
-                                        </div>
-                                    </div>
-
-                                    <button
-                                        type="button"
-                                        onClick={e => {
-                                            e.preventDefault();
-                                            submitICPLogin();
-                                        }}
-                                        className="w-full h-12 bg-gray-50 rounded-lg text-gray-700 font-semibold border border-gray-200 hover:bg-gray-100 transform hover:-translate-y-0.5 transition duration-200"
-                                    >
-                                        Internet Identity
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-
-
+            <div className={styles.loginCard}>
+                {/* Brand Section */}
+                <div className={styles.brandSection}>
+                    <div className={styles.brandBgElements}>
+                        <div className={styles.brandCircle}></div>
+                        <div className={styles.brandCircle}></div>
+                        <div className={styles.brandCircle}></div>
                     </div>
 
-                    {/* Bottom Text */}
-                    <p className="text-center text-sm mt-6">
-                        © 2025 DERP. All rights reserved.
+                    <div className={styles.brandContent}>
+                        <div className={styles.brandLogo}>
+                            <div className={styles.logoIcon}>
+                                <div className={styles.logoInner}>D</div>
+                            </div>
+                            <div className={styles.brandText}>
+                                <h1>DATASHAKER</h1>
+                                <p>enjoy your data</p>
+                            </div>
+                        </div>
+
+                        <h2 className={styles.brandDescription}>
+                            The decentralised connector of SME's financial flows
+                        </h2>
+                        <p className={styles.brandTagline}>
+                            Transform your back-office operations into an automated, blockchain-secured financial management system.
+                        </p>
+
+                        <div className={styles.featuresList}>
+                            <div className={styles.featureItem}>
+                                <div className={styles.featureIcon}>
+                                    <Shield size={16} color="white" />
+                                </div>
+                                <span><strong>Blockchain Security:</strong> Immutable transactions on ICP</span>
+                            </div>
+                            <div className={styles.featureItem}>
+                                <div className={styles.featureIcon}>
+                                    <Zap size={16} color="white" />
+                                </div>
+                                <span><strong>One-Click Automation:</strong> Auto reconciliation & accounting</span>
+                            </div>
+                            <div className={styles.featureItem}>
+                                <div className={styles.featureIcon}>
+                                    <TrendingUp size={16} color="white" />
+                                </div>
+                                <span><strong>Reduce Costs:</strong> Cut operating expenses by 7-10%</span>
+                            </div>
+                        </div>
+
+                        <div className={styles.statsGrid}>
+                            <div className={styles.statItem}>
+                                <span className={styles.statValue}>7-10%</span>
+                                <div className={styles.statLabel}>Cost Reduction</div>
+                            </div>
+                            <div className={styles.statItem}>
+                                <span className={styles.statValue}>1-Click</span>
+                                <div className={styles.statLabel}>Processing</div>
+                            </div>
+                            <div className={styles.statItem}>
+                                <span className={styles.statValue}>100%</span>
+                                <div className={styles.statLabel}>Secured</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Form Section */}
+                <div className={styles.formSection}>
+                    <div className={styles.formHeader}>
+                        <img src="datashaker-logo.png" alt="DERP Logo" className="h-16"/>
+                        <p className={styles.formSubtitle}>Access your financial data dashboard</p>
+                    </div>
+
+                    <div>
+                        <div className={styles.formGroup}>
+                            <label className={styles.formLabel}>Username</label>
+                            <div className={styles.inputWrapper}>
+                                <User className={styles.inputIcon} />
+                                <input
+                                    type="text"
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)}
+                                    className={styles.formInput}
+                                    placeholder="Enter your username"
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div className={styles.formGroup}>
+                            <label className={styles.formLabel}>Password</label>
+                            <div className={styles.inputWrapper}>
+                                <Lock className={styles.inputIcon} />
+                                <input
+                                    type={showPassword ? 'text' : 'password'}
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className={styles.formInput}
+                                    placeholder="Enter your password"
+                                    required
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className={styles.passwordToggle}
+                                >
+                                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                </button>
+                            </div>
+                        </div>
+
+                        {errorMessage && (
+                            <div className={styles.errorMessage}>
+                                {errorMessage}
+                            </div>
+                        )}
+
+                        <button
+                            onClick={submitLogin}
+                            disabled={loading || !username || !password}
+                            className={styles.loginButton}
+                        >
+                            {loading ? (
+                                <div className={styles.spinner}></div>
+                            ) : (
+                                <>
+                                    <span>Sign In</span>
+                                    <ChevronRight size={16} />
+                                </>
+                            )}
+                        </button>
+
+                        <div className={styles.divider}>
+                            <span className={styles.dividerText}>Or continue with</span>
+                        </div>
+
+                        <button
+                            onClick={submitICPLogin}
+                            disabled={loading}
+                            className={styles.icpButton}
+                        >
+                            {loading ? (
+                                <div className={`${styles.spinner} ${styles.spinnerOrange}`}></div>
+                            ) : (
+                                <>
+                                    <div className={styles.icpIcon}></div>
+                                    <span>Internet Identity</span>
+                                </>
+                            )}
+                        </button>
+                    </div>
+
+                    <div className={styles.trustIndicators}>
+                        <div className={styles.trustItem}>
+                            <Shield size={14} />
+                            <span>Blockchain Secured</span>
+                        </div>
+                        <div className={styles.trustItem}>
+                            <div style={{width: 14, height: 14, background: '#FE9C00', borderRadius: '50%'}}></div>
+                            <span>ICP Network</span>
+                        </div>
+                    </div>
+
+                    <p className={styles.copyright}>
+                        © 2025 DATASHAKER. All rights reserved.
                     </p>
                 </div>
             </div>
-        </main>
+        </div>
     );
 }
 

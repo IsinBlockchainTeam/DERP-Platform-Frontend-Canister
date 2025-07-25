@@ -1,0 +1,900 @@
+/* LoginPage.module.css - All styles in one file for CSS Modules */
+
+/* Base Styles */
+.loginPage {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #F9EFED 0%, #e8d5d1 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.backgroundElements {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.floatingCircle {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.05;
+    animation: float 8s ease-in-out infinite;
+}
+
+.floatingCircle:nth-child(1) {
+    top: 10%;
+    left: 10%;
+    width: 120px;
+    height: 120px;
+    background: #FE9C00;
+    animation-delay: 0s;
+}
+
+.floatingCircle:nth-child(2) {
+    top: 20%;
+    right: 15%;
+    width: 80px;
+    height: 80px;
+    background: #E82600;
+    animation-delay: 2s;
+}
+
+.floatingCircle:nth-child(3) {
+    bottom: 20%;
+    left: 15%;
+    width: 100px;
+    height: 100px;
+    background: #1B2BD3;
+    animation-delay: 4s;
+}
+
+.floatingCircle:nth-child(4) {
+    bottom: 10%;
+    right: 10%;
+    width: 90px;
+    height: 90px;
+    background: #000038;
+    animation-delay: 6s;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-15px) rotate(120deg); }
+    66% { transform: translateY(15px) rotate(240deg); }
+}
+
+.loginCard {
+    width: 100%;
+    max-width: 1000px;
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    display: flex;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Brand Section */
+.brandSection {
+    flex: 1;
+    background: linear-gradient(135deg, #000038 0%, #1B2BD3 100%);
+    color: white;
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.brandBgElements {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.brandCircle {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.1;
+}
+
+.brandCircle:nth-child(1) {
+    top: 1rem;
+    right: 1rem;
+    width: 60px;
+    height: 60px;
+    background: #FE9C00;
+}
+
+.brandCircle:nth-child(2) {
+    bottom: 1rem;
+    left: 1rem;
+    width: 40px;
+    height: 40px;
+    background: #E82600;
+}
+
+.brandCircle:nth-child(3) {
+    top: 50%;
+    left: 0;
+    width: 80px;
+    height: 80px;
+    background: #FE9C00;
+    transform: translateX(-50%);
+}
+
+.brandContent {
+    position: relative;
+    z-index: 10;
+}
+
+.brandLogo {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.logoIcon {
+    width: 48px;
+    height: 48px;
+    background: #F9EFED;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.logoInner {
+    width: 36px;
+    height: 36px;
+    background: #000038;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FE9C00;
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.brandText h1 {
+    font-size: 1.75rem;
+    font-weight: bold;
+    margin: 0 0 0.25rem 0;
+    background: linear-gradient(to right, white, #e5e7eb);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.brandText p {
+    color: #FE9C00;
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+.brandDescription {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+}
+
+.brandTagline {
+    font-size: 0.875rem;
+    opacity: 0.9;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+
+.featuresList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.featureItem {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.875rem;
+}
+
+.featureIcon {
+    width: 28px;
+    height: 28px;
+    background: #FE9C00;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    text-align: center;
+}
+
+.statItem {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 0.75rem 0.5rem;
+}
+
+.statValue {
+    color: #FE9C00;
+    font-size: 1.125rem;
+    font-weight: bold;
+    display: block;
+}
+
+.statLabel {
+    font-size: 0.625rem;
+    opacity: 0.7;
+    margin-top: 0.125rem;
+}
+
+/* Form Section */
+.formSection {
+    flex: 1;
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.formHeader {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.formTitle {
+    color: #000038;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0 0 0.5rem 0;
+}
+
+.formSubtitle {
+    color: #6b7280;
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+.formGroup {
+    margin-bottom: 1.25rem;
+}
+
+.formLabel {
+    display: block;
+    color: #000038;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.inputWrapper {
+    position: relative;
+}
+
+.inputIcon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+    width: 18px;
+    height: 18px;
+    z-index: 2;
+}
+
+.formInput {
+    width: 100%;
+    padding: 12px 12px 12px 40px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: #f9fafb;
+    transition: all 0.2s ease;
+    font-size: 0.875rem;
+    box-sizing: border-box;
+}
+
+.formInput:hover {
+    background: white;
+    border-color: #d1d5db;
+}
+
+.formInput:focus {
+    outline: none;
+    background: white;
+    border-color: #1B2BD3;
+    box-shadow: 0 0 0 3px rgba(27, 43, 211, 0.1);
+}
+
+.passwordToggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #9ca3af;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    z-index: 2;
+}
+
+.passwordToggle:hover {
+    color: #6b7280;
+    background: #f3f4f6;
+}
+
+.errorMessage {
+    background: #E82600;
+    color: white;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    margin-bottom: 1.25rem;
+    border-left: 3px solid white;
+    animation: shake 0.3s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+}
+
+.loginButton {
+    width: 100%;
+    background: #1B2BD3;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 6px -1px rgba(27, 43, 211, 0.2);
+    margin-bottom: 1rem;
+}
+
+.loginButton:hover:not(:disabled) {
+    background: #1a27c7;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 12px -1px rgba(27, 43, 211, 0.3);
+}
+
+.loginButton:active {
+    transform: translateY(0);
+}
+
+.loginButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: #666;
+}
+
+.divider {
+    position: relative;
+    margin: 1rem 0;
+    text-align: center;
+}
+
+.divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #e5e7eb;
+}
+
+.dividerText {
+    background: white;
+    color: #6b7280;
+    padding: 0 1rem;
+    font-size: 0.8rem;
+}
+
+.icpButton {
+    width: 100%;
+    background: white;
+    color: #FE9C00;
+    border: 2px solid #FE9C00;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 2px 4px rgba(254, 156, 0, 0.1);
+}
+
+.icpButton:hover:not(:disabled) {
+    background: #FE9C00;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(254, 156, 0, 0.2);
+}
+
+.icpButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.icpIcon {
+    width: 18px;
+    height: 18px;
+    background: #FE9C00;
+    border-radius: 50%;
+    transition: background 0.2s ease;
+}
+
+.icpButton:hover:not(:disabled) .icpIcon {
+    background: white;
+}
+
+.trustIndicators {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f3f4f6;
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.trustItem {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.spinnerOrange {
+    border-color: rgba(254, 156, 0, 0.3);
+    border-top-color: #FE9C00;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.copyright {
+    text-align: center;
+    font-size: 0.75rem;
+    color: #9ca3af;
+    margin-top: 1rem;
+}
+
+/* ========================================
+   MOBILE STYLES
+   ======================================== */
+
+@media (max-width: 768px) {
+    .loginPage {
+        padding: 1rem;
+        align-items: center;
+        min-height: 100vh;
+        justify-content: center;
+    }
+
+    .loginCard {
+        flex-direction: column;
+        max-width: 400px;
+        width: 100%;
+        border-radius: 16px;
+    }
+
+    /* Brand Section - Minimized for mobile */
+    .brandSection {
+        padding: 1rem;
+        text-align: center;
+        order: 1;
+        flex-shrink: 0;
+    }
+
+    .brandLogo {
+        justify-content: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .logoIcon {
+        width: 36px;
+        height: 36px;
+        margin-right: 0.75rem;
+    }
+
+    .logoInner {
+        width: 28px;
+        height: 28px;
+        font-size: 0.9rem;
+    }
+
+    .brandText h1 {
+        font-size: 1.25rem;
+        margin-bottom: 0.125rem;
+    }
+
+    .brandText p {
+        font-size: 0.75rem;
+    }
+
+    /* Hide description and tagline on mobile */
+    .brandDescription {
+        display: none;
+    }
+
+    .brandTagline {
+        display: none;
+    }
+
+    /* Hide features list on mobile */
+    .featuresList {
+        display: none;
+    }
+
+    /* Simplify stats to single line */
+    .statsGrid {
+        display: flex;
+        flex-direction: row;
+        gap: 0.75rem;
+        justify-content: center;
+        margin-top: 0.5rem;
+        grid-template-columns: none;
+    }
+
+    .statItem {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 6px;
+        padding: 0.4rem 0.6rem;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .statValue {
+        font-size: 0.75rem;
+        font-weight: bold;
+    }
+
+    .statLabel {
+        font-size: 0.6rem;
+        opacity: 0.8;
+    }
+
+    /* Form Section - Maximum space */
+    .formSection {
+        padding: 2rem 1.5rem;
+        order: 2;
+        flex-shrink: 0;
+        flex-grow: 1;
+    }
+
+    .formHeader {
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .formTitle {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .formSubtitle {
+        font-size: 0.875rem;
+    }
+
+    .formGroup {
+        margin-bottom: 1.25rem;
+    }
+
+    .formLabel {
+        font-size: 0.875rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .formInput {
+        padding: 14px 14px 14px 42px;
+        font-size: 16px; /* Prevents zoom on iOS */
+        border-radius: 12px;
+        min-height: 50px;
+    }
+
+    .inputIcon {
+        left: 14px;
+        width: 18px;
+        height: 18px;
+    }
+
+    .passwordToggle {
+        right: 14px;
+        padding: 8px;
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    .errorMessage {
+        padding: 12px;
+        font-size: 0.875rem;
+        margin-bottom: 1.25rem;
+        border-radius: 10px;
+    }
+
+    .loginButton {
+        padding: 16px;
+        font-size: 1rem;
+        border-radius: 12px;
+        min-height: 52px;
+        margin-bottom: 1.25rem;
+    }
+
+    .divider {
+        margin: 1.25rem 0;
+    }
+
+    .dividerText {
+        font-size: 0.875rem;
+        padding: 0 1rem;
+    }
+
+    .icpButton {
+        padding: 16px;
+        font-size: 1rem;
+        border-radius: 12px;
+        min-height: 52px;
+    }
+
+    .trustIndicators {
+        margin-top: 1.5rem;
+        padding-top: 1rem;
+        gap: 1rem;
+        justify-content: center;
+    }
+
+    .trustItem {
+        font-size: 0.75rem;
+    }
+
+    .copyright {
+        margin-top: 1rem;
+        font-size: 0.75rem;
+    }
+
+    .floatingCircle {
+        display: none;
+    }
+
+    /* Disable animations on mobile for better performance */
+    .brandCircle {
+        animation: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .loginPage {
+        padding: 0.75rem;
+    }
+
+    .loginCard {
+        width: 100%;
+        border-radius: 12px;
+    }
+
+    /* Even more minimal brand section */
+    .brandSection {
+        display: none;
+    }
+
+    .logoIcon {
+        width: 32px;
+        height: 32px;
+        margin-right: 0.5rem;
+    }
+
+    .logoInner {
+        width: 24px;
+        height: 24px;
+        font-size: 0.8rem;
+    }
+
+    .brandText h1 {
+        font-size: 1.125rem;
+    }
+
+    .brandText p {
+        font-size: 0.7rem;
+    }
+
+    /* Hide stats on very small screens */
+    .statsGrid {
+        display: none;
+    }
+
+    /* Maximize form space */
+    .formSection {
+        padding: 1.5rem 1.25rem;
+    }
+
+    .formHeader {
+        margin-bottom: 1.25rem;
+    }
+
+    .formTitle {
+        font-size: 1.25rem;
+    }
+
+    .formSubtitle {
+        font-size: 0.8rem;
+    }
+
+    .formGroup {
+        margin-bottom: 1rem;
+    }
+
+    .formInput {
+        padding: 12px 12px 12px 40px;
+        min-height: 48px;
+    }
+
+    .inputIcon {
+        left: 12px;
+        width: 16px;
+        height: 16px;
+    }
+
+    .passwordToggle {
+        right: 12px;
+        min-width: 40px;
+        min-height: 40px;
+    }
+
+    .loginButton {
+        min-height: 48px;
+        font-size: 0.9rem;
+        padding: 14px;
+    }
+
+    .icpButton {
+        min-height: 48px;
+        font-size: 0.9rem;
+        padding: 14px;
+    }
+
+    .trustIndicators {
+        margin-top: 1rem;
+        gap: 0.75rem;
+    }
+
+    .trustItem {
+        font-size: 0.7rem;
+    }
+
+    .copyright {
+        font-size: 0.7rem;
+    }
+}
+
+/* ========================================
+   DESKTOP STYLES
+   ======================================== */
+
+@media (min-width: 769px) {
+    .loginCard {
+        flex-direction: row;
+        min-height: 600px;
+    }
+
+    .brandSection {
+        flex: 1;
+        padding: 2.5rem;
+    }
+
+    .brandLogo {
+        justify-content: flex-start;
+    }
+
+    .brandDescription {
+        font-size: 1.125rem;
+        text-align: left;
+    }
+
+    .brandTagline {
+        text-align: left;
+    }
+
+    .featuresList {
+        align-items: flex-start;
+    }
+
+    .featureItem {
+        justify-content: flex-start;
+        text-align: left;
+    }
+
+    .statsGrid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .formSection {
+        flex: 1;
+        padding: 2.5rem;
+    }
+
+    .floatingCircle {
+        display: block;
+    }
+
+    /* Enhanced desktop interactions */
+    .brandLogo:hover .logoInner {
+        transform: scale(1.1) rotate(5deg);
+        transition: transform 0.3s ease;
+    }
+
+    .featureItem:hover {
+        transform: translateX(5px);
+        transition: transform 0.2s ease;
+    }
+
+    .featureItem:hover .featureIcon {
+        transform: scale(1.1);
+        box-shadow: 0 4px 8px rgba(254, 156, 0, 0.3);
+        transition: all 0.2s ease;
+    }
+
+    .statItem:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateY(-2px);
+        transition: all 0.2s ease;
+    }
+
+    /* Desktop form enhancements */
+    .formInput:focus {
+        transform: translateY(-1px);
+        box-shadow: 0 0 0 3px rgba(27, 43, 211, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .loginButton:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 15px -3px rgba(27, 43, 211, 0.3);
+    }
+
+    .icpButton:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(254, 156, 0, 0.25);
+    }
+}
