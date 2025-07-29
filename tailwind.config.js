@@ -24,20 +24,20 @@ module.exports = {
         {
         derp: {
             ...require("daisyui/src/theming/themes")["[data-theme=emerald]"],
-            "primary": "#d04b3d",
-            "primary-focus": "#b83d30",
-            "primary-content": "#ffffff",
+            "primary": "#FE9C00",
+            "primary-focus": "#1B2BD3",
+            "primary-content": "#F9EFED",
 
-            "secondary": "#ede333",
-            "accent": "#8b5cf6",
+            "secondary": "#1B2BD3",
+            "accent": "#000038",
             "neutral": "#737373",
-            "base-100": "#f8fafc",
+            "base-100": "#F9EFED",
 
             // Optional: Add these for a complete theme
-            "info": "#0ea5e9",
+            "info": "#1B2BD3",
             "success": "#22c55e",
-            "warning": "#f59e0b",
-            "error": "#ef4444",
+            "warning": "#FE9C00",
+            "error": "#E82600",
         },
     },]
   }

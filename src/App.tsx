@@ -51,6 +51,7 @@ import DailyBalanceView from './pages/Merchant/Balance/DailyBalanceView';
 import DailyDetailBalanceView from './pages/Merchant/Balance/DailyDetailBalanceView';
 import DataSyncPosSync from './pages/Stores/Tabs/DataSyncTab/DataSyncPosSync';
 import BalanceSettingsRules from './pages/Merchant/Balance/BalanceSettings/BalanceSettingsRules';
+import AnalyticsComingSoon from "./components/Analytics/AnalyticsComingSoon";
 
 
 function App() {
@@ -93,30 +94,17 @@ function App() {
                     <Route index element={<Navigate to="balance" />}></Route>
                     <Route path="balance" element={<Navigate to={`${new Date().getFullYear()}`} />} />
                     <Route path="balance/:year" element={<Navigate to="categories" />} />
-                    {/*<Route path="balance/:year/categories" element={<BalanceTabDEMO />}>*/}
-                    {/*    <Route index element={<BalanceView />} />*/}
-                    {/*    <Route path=":categoryId" element={<Navigate to="items" />} />*/}
-                    {/*    <Route path=":categoryId/items" element={<BalanceView />} />*/}
-                    {/*    <Route path=":categoryId/items/:itemId" element={<Navigate to="months" />} />*/}
-                    {/*    <Route path=":categoryId/items/:itemId/months" element={<MonthlyBalanceView />} />*/}
-                    {/*    <Route path=":categoryId/items/:itemId/months/:monthId" element={<Navigate to="days" />} />*/}
-                    {/*    <Route path=":categoryId/items/:itemId/months/:monthId/days" element={<DailyBalanceView />} />*/}
-                    {/*    <Route path=":categoryId/items/:itemId/months/:monthId/days/:day" element={<Navigate to="transactions" />} />*/}
-                    {/*    <Route path=":categoryId/items/:itemId/months/:monthId/days/:day/transactions" element={<DailyDetailBalanceView/>} />*/}
-                    {/*</Route>*/}
                     <Route path="balance/:year/categories/:categoryId/items/:itemId/months" element={<MonthlyBalanceView />} />
                     <Route path="balance/:year/categories/:categoryId/items/:itemId/months/:monthId/days" element={<DailyBalanceView />} />
                     <Route path="balance/:year/categories/:categoryId/items/:itemId/months/:monthId/days/:day/transactions" element={<DailyDetailBalanceView/>} />
-                    <Route path="balance/:year/categories" element={<BalanceTab />}>
-                        {/*<Route path=":categoryId/items/:itemId/months/:monthId" element={<Navigate to="days" />} />*/}
-                        {/*<Route path=":categoryId/items/:itemId/months/:monthId/days/:day" element={<Navigate to="transactions" />} />*/}
-                    </Route>
+                    <Route path="balance/:year/categories" element={<BalanceTab />} />
                     <Route path="balance/settings" element={<BalanceSettings />}>
                         <Route index element={<Navigate to="categories" />} />
                         <Route path="categories" element={<BalanceSettingsCategories />} />
                         <Route path="items" element={<BalanceSettingsItems />} />
                         <Route path="rules" element={<BalanceSettingsRules />} />
                     </Route>
+                    <Route path="analytics" element={<AnalyticsComingSoon />} />
                     <Route path="stores" element={<StoresTab />}></Route>
                     <Route path="interfaces" element={<InterfacesTab />}>
                         <Route index element={<InterfacesDashboard />} />

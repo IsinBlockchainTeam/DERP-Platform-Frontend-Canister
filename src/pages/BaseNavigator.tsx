@@ -5,6 +5,7 @@ import { ResourceType } from "../components/Menu/MenuProps";
 import { useEffect, useMemo, useState } from "react";
 import { auth } from "../api/auth";
 import { UserRole } from "../model/UserRole";
+import Sidebar from "../components/SideBar/Sidebar";
 
 function BaseNavigator() {
     const [role, setRole] = useState<UserRole>();
@@ -36,7 +37,7 @@ function BaseNavigator() {
 
     return (
         <main>
-            <Header role={role} />
+            {/*<Header role={role} />*/}
             <div className="drawer">
                 <input id="derp-drawer" type="checkbox" className="drawer-toggle" />
                 <div className="drawer-content">
@@ -44,12 +45,7 @@ function BaseNavigator() {
                         <Outlet />
                     </div>
                 </div>
-                <div className="drawer-side">
-                    <label htmlFor="derp-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
-                    <ul className="menu bg-base-200 text-base-content min-h-full w-80 p-4">
-                        <GenericMenuContent role={role} resourceType={currentResource} />
-                    </ul>
-                </div>
+                <Sidebar role={role} resourceType={currentResource} />
             </div>
         </main>
     );
