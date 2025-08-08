@@ -57,17 +57,14 @@ interface TransactionCSVRow {
     total: number;
     dlterp_id: string;
     txType: string;
-    dispatch_rule_type: string;
-    dispatch_rule_operation: string;
+    dispatch_rule_type: string | undefined;
+    dispatch_rule_operation: string | undefined;
     currency: string;
     source: string;
     storeId: number;
     type_key: string;
     external_reference_number: string;
     description: string;
-    total_tax_amount: string;
-    total_excl_tax: string;
-    total_incl_tax: string;
 }
 
 // Builder per costruire una riga CSV da TransactionData
@@ -78,7 +75,8 @@ class TransactionCSVRowBuilder {
         const header = transaction.Header;
         const statementItem = await statementItemsClient.getStatementItem(record.parentStatementItemId);
         let dispatchRule = null;
-        if(record.originalRuleId !== undefined || true) {
+        if(record.originalRuleId !== undefined && record.originalRuleId !== null) {
+            console.log(`Fetching dispatch rule for originalRuleId: ${record.originalRuleId}`);
             dispatchRule = await dispatchRulesClient.getDispatchRule(Number(record.originalRuleId));
         }
         const row: TransactionCSVRow = {
@@ -91,26 +89,15 @@ class TransactionCSVRowBuilder {
             total: record.total,
             dlterp_id: record.transactionId,
             txType: record.txType,
-            dispatch_rule_type: dispatchRule.ruleType,
-            dispatch_rule_operation: dispatchRule.accountingOperation,
+            dispatch_rule_type: dispatchRule?.ruleType,
+            dispatch_rule_operation: dispatchRule?.accountingOperation,
             currency: this.formatOptionalString(header.Currency),
             source: this.formatOptionalString(header.Source),
             storeId: header.StoreId,
             type_key: this.formatOptionalString(header.TypeKey),
             external_reference_number: this.formatOptionalString(header.ExternalReferenceNumber),
             description: this.formatOptionalString(header.Description),
-            total_tax_amount: '',
-            total_excl_tax: '',
-            total_incl_tax: ''
         };
-
-        // Se è un AccountingTransactionWithTotals, aggiungi i totali
-        if (this.isAccountingTransactionWithTotals(transaction)) {
-            const totals = transaction.Totals;
-            row.total_tax_amount = this.formatNumber(totals.TotalTaxAmount);
-            row.total_excl_tax = this.formatNumber(totals.TotalExclTax);
-            row.total_incl_tax = this.formatNumber(totals.TotalInclTax);
-        }
 
         return row;
     }
@@ -127,19 +114,6 @@ class TransactionCSVRowBuilder {
         return value ?? '';
     }
 
-    private static formatOptionalNumber(value: number | null | undefined): string {
-        return value !== null && value !== undefined ? value.toString() : '';
-    }
-
-    private static formatNumber(value: number): string {
-        return value.toString();
-    }
-
-    private static isAccountingTransactionWithTotals(
-        transaction: AccountingTransaction
-    ): transaction is AccountingTransactionWithTotals {
-        return 'Totals' in transaction;
-    }
 }
 
 // Funzione per convertire un valore in stringa sicura per CSV
@@ -178,9 +152,6 @@ export const CSV_COLUMNS: (keyof TransactionCSVRow)[] = [
     "type_key",
     "external_reference_number",
     "description",
-    "total_tax_amount",
-    "total_excl_tax",
-    "total_incl_tax"
 ];
 
 export const convertTransactionsToCSV = async (data: TransactionData[]): Promise<string> => {

@@ -6,15 +6,25 @@ export interface MenuProps {
 
 export type ResourceType = 'admin' | 'merchant' | 'reseller';
 
+export type MenuRouteCategory = {
+    id: string;
+    name: string;
+    icon: React.ReactNode;
+    routes: MenuRouteConfig[];
+    roles: UserRole[];
+    resourceTypes: Array<ResourceType | 'common'>;
+}
+
 export type MenuRouteConfig = {
     name: string;
     url: string | ((id?: string) => string);
     icon: React.ReactNode;
-    show?: (role: UserRole, resourceType: ResourceType) => boolean;
+    roles: UserRole[];
     resourceTypes: Array<ResourceType | 'common'>;
 };
 
 export interface GenericMenuProps {
     role?: UserRole;
     resourceType: ResourceType;
+    behaviorAfterClick?: () => void;
 }
