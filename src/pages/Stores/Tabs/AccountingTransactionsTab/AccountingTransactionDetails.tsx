@@ -34,6 +34,8 @@ const AccountingTransactionDetails = (props: AccountingTransactionDetailsProps) 
 
         setLoading(true);
         const transaction = await accountingTransactionService.getAccountingTransaction({ type: actualTransactionType }, actualTransactionId);
+        console.log("Fetched transaction");
+        console.log(transaction);
         setTransaction(transaction);
         setLoading(false);
     }
