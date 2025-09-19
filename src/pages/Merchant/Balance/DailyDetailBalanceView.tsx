@@ -207,7 +207,6 @@ const DailyDetailBalanceView = () => {
             setAddCounterpartRuleLoadingTransactionId(trx.Header.DLTERPId || null);
             const rule = new CounterpartDispatchRule(undefined as unknown as number,
                 [item.id],
-                AccountingOperation.CREDIT,
                 trx.Counterpart.Name,
             )
 

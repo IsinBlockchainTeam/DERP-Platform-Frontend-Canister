@@ -27,33 +27,8 @@ export default function BaseFieldsForm({ value, onChange }: BaseFieldsFormProps)
         }
     };
 
-    const handleAccountingOperationChange = (operation: AccountingOperation) => {
-        onChange({
-            ...value,
-            accountingOperation: operation
-        });
-    };
-
     return (
         <div className="flex flex-col gap-4">
-            {/* Accounting Operation */}
-            <div className="form-control">
-                <label className="label">
-                    <span className="label-text">{t('accountingOperation')}</span>
-                </label>
-                <select 
-                    className="select select-bordered w-full"
-                    value={value.accountingOperation}
-                    onChange={(e) => handleAccountingOperationChange(e.target.value as AccountingOperation)}
-                >
-                    {Object.values(AccountingOperation).map((op) => (
-                        <option key={op} value={op}>
-                            {t(`accountingOperations.${op}`)}
-                        </option>
-                    ))}
-                </select>
-            </div>
-
             {/* Validity Dates */}
             <div className="grid grid-cols-2 gap-4">
                 <div className="form-control">

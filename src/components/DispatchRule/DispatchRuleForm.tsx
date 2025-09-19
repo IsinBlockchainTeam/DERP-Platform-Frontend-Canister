@@ -1,4 +1,4 @@
-import { AccountingOperation, DispatchRule, DispatchRuleDto, DispatchRuleEntityMapper, DispatchRuleType, StatementItem } from "@derp/company-canister";
+import { DispatchRule, DispatchRuleDto, DispatchRuleEntityMapper, DispatchRuleType, StatementItem } from "@derp/company-canister";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { StatementItemSelector, useStatementItems } from "../StatementItem/StatementItemSelector";
@@ -24,7 +24,7 @@ const getDefaultRuleState = (): DispatchRuleDto => ({
     statementItemIDs: [],
     rules: [],
     ruleType: DispatchRuleType.GROUP,
-    accountingOperation: AccountingOperation.DEBIT,
+    accountingOperation: [],
     validFrom: [],
     validTo: [],
     txType: [],
@@ -109,10 +109,7 @@ export default function DispatchRuleForm({ onCancel, onSubmit, submitLabel, canc
     const valid = useMemo(() => {
         if (!rule.ruleType) return false;
         if (rule.statementItemIDs.length < 1) return false;
-        if (rule.accountingOperation === undefined) return false;
-        if (!formElement?.validate(rule)) return false;
-
-        return true;
+        return formElement?.validate(rule);
     }, [rule]);
 
     return (
