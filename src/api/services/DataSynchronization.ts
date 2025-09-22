@@ -2,10 +2,19 @@ import { PosSyncJobDto, PosSyncJobDtoWithId } from "../../dto/PosSync";
 import { TransactionSyncJobDto, TransactionSyncJobDtoWithId } from "../../dto/TransactionSyncJobDto";
 import api from "../api";
 import { auth } from "../auth";
+import { RunTransactionSyncJobDto } from '../../dto/sync-job/RunTransactionSyncJobDTO';
 
 export const transactionsDataSynchronizationService = {
-    runNow: async (scheduleId: string) => {
-        const response = await api.post(`/sync-jobs/transactions/${scheduleId}/run`, {}, {
+    run: async (scheduleId: string,fromDate?:Date,toDate?:Date) => {
+        let body = {};
+        if(fromDate && toDate){
+            body = {
+                from: fromDate.toISOString(),
+                to: toDate.toISOString()
+            } as RunTransactionSyncJobDto
+        }
+
+        const response = await api.post(`/sync-jobs/transactions/${scheduleId}/run`, body, {
             headers: await auth.authenticatedHeaders(),
         });
 

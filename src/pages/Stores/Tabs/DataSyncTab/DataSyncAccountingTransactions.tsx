@@ -17,6 +17,8 @@ import Handlebars from "handlebars";
 import { interfacesService } from "../../../../api/services/Interfaces";
 import { AssociationResponseDto, InterfaceType } from "../../../../dto/ErpInterfacesDto";
 import CronEditor from "../../../../components/Cron/CronEditor";
+import DecisionModal from '../../../../components/DecisionModal/DecisionModal';
+import DateRangeSelectionModal from '../../../../components/DateRangeSelectionModal/DateRangeSelectionModal';
 
 const defaultNewJob: Partial<TransactionSyncJobDtoWithId> = {
     cron: '* * * * *',
@@ -36,6 +38,11 @@ const DataSyncAccountingTransactions = () => {
     const POLLING_INTERVAL = 5000; // 5 seconds
 
     const [modalOpen, setModalOpen] = useState(false);
+    const [isDecisionModalOpen, setIsDecisionModalOpen] = useState(false);
+    const [isDateRangeSelectionOpen, setIsDateRangeSelectionOpen] = useState(false);
+
+    const [jobSelected,setJobSelected] = useState<TransactionSyncJobDtoWithId | null>(null);
+
     const [formJob, setFormJob] = useState<Partial<TransactionSyncJobDtoWithId>>(defaultNewJob);
     const [createNew, setCreateNew] = useState(false);
     const [errors, setErrors] = useState<string[]>([]);
@@ -92,6 +99,37 @@ const DataSyncAccountingTransactions = () => {
         },
     ]
 
+    const runJob = async (job: TransactionSyncJobDtoWithId,  fromDate?: Date, toDate?: Date) => {
+        try {
+            setRunningJobs(prev => ({ ...prev, [job.id]: 'loading' }));
+            await transactionsDataSynchronizationService.run(job.id,fromDate,toDate);
+            setRunningJobs(prev => ({ ...prev, [job.id]: 'success' }));
+            setTimeout(() => {
+                setRunningJobs(prev => {
+                    const newState = { ...prev };
+                    delete newState[job.id];
+                    return newState;
+                });
+            }, 3000);
+        } catch (e) {
+            console.error(e);
+            setRunningJobs(prev => {
+                const newState = { ...prev };
+                delete newState[job.id];
+                return newState;
+            });
+        }
+    }
+
+
+    const toggleDecisionModal = () => {
+        setIsDecisionModalOpen(!isDecisionModalOpen);
+    }
+
+    const toggleDateRangeSelectionModal = () => {
+        setIsDateRangeSelectionOpen(!isDateRangeSelectionOpen);
+    }
+
     const tableActions: GenericTableAction<TransactionSyncJobDtoWithId>[] = [
         {
             label: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6">
@@ -124,25 +162,8 @@ const DataSyncAccountingTransactions = () => {
                 );
             },
             onClick: async (row: TransactionSyncJobDtoWithId) => {
-                try {
-                    setRunningJobs(prev => ({ ...prev, [row.id]: 'loading' }));
-                    await transactionsDataSynchronizationService.runNow(row.id);
-                    setRunningJobs(prev => ({ ...prev, [row.id]: 'success' }));
-                    setTimeout(() => {
-                        setRunningJobs(prev => {
-                            const newState = { ...prev };
-                            delete newState[row.id];
-                            return newState;
-                        });
-                    }, 3000);
-                } catch (e) {
-                    console.error(e);
-                    setRunningJobs(prev => {
-                        const newState = { ...prev };
-                        delete newState[row.id];
-                        return newState;
-                    });
-                }
+                setJobSelected(row);
+                toggleDecisionModal();
             }
         }
     ]
@@ -398,6 +419,29 @@ const DataSyncAccountingTransactions = () => {
                 </div>
             </div>
         </Modal>
+        <DecisionModal
+            isOpen={isDecisionModalOpen}
+            onClose={toggleDecisionModal}
+            onOption1={async () => {
+                    if(jobSelected)
+                        await runJob(jobSelected)
+                    else
+                        console.error("No job selected")
+                }}
+            labelOption1={'Run now'}
+            labelOption2={'Select Date Range'}
+            onOption2={toggleDateRangeSelectionModal} />
+        <DateRangeSelectionModal
+            isOpen={isDateRangeSelectionOpen}
+            onClose={toggleDateRangeSelectionModal}
+            title={"Run sync job"}
+            confirmButtonText={"Run Job"}
+            onSubmit={async (fromDate, toDate) => {
+                if(jobSelected)
+                    await runJob(jobSelected,fromDate,toDate)
+                else
+                    console.error("No job selected")
+            }} />
     </>
 }
 

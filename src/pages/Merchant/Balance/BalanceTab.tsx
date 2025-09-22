@@ -24,18 +24,17 @@ const BalanceTab = () => {
     const { merchantId, year } = useParams();
     const navigate = useNavigate();
 
-    const [loading, setLoading] = useState(true);
+    const [isLoading, setisLoading] = useState(true);
     const { t } = useTranslation(undefined, { keyPrefix: 'merchantBalance' })
     const [expandedCategory, setExpandedCategory] = useState<(number | undefined)[]>([]);
     const [selectedCategory, setSelectedCateogry] = useState<number | null | undefined>(null);
     const [categories, setCategories] = useState<(StatementItemCategory | { id: undefined, name: string })[]>([])
     const [statementItemsByCategoryMap, setStatementItemsByCategoryMap] = useState<Map<number | undefined, StatementItem[]>>(new Map());
     const [statementAggregatesByStatementItemMap, setStatementAggregatesByStatementItemMap] = useState<Map<number, StatementItemAggregate>>(new Map());
-    const [isExportCSVModalOpen, setIsExportCSVModalOpen] = useState(false);
 
     const fetchData = async () => {
         try {
-            setLoading(true);
+            setisLoading(true);
             // Fetch data here
             const categories = await statementItemsClient.getStatementItemsCategories();
             const uncategorizedCategory = { id: undefined, name: t('uncategorized') }
@@ -62,7 +61,7 @@ const BalanceTab = () => {
         } catch (error) {
             console.log(error);
         } finally {
-            setLoading(false);
+            setisLoading(false);
         }
     }
 
@@ -196,10 +195,6 @@ const BalanceTab = () => {
     };
 
 
-    const toggleExportCSVModal = () => {
-        setIsExportCSVModalOpen(!isExportCSVModalOpen);
-    }
-
 
     return (
         <div className="min-h-screen bg-base-350">
@@ -210,17 +205,8 @@ const BalanceTab = () => {
                     <p className="text-gray-600 mt-1">Panoramica categorie</p>
                 </div>
                 <div>
-                    <ExportStatementItemsModal isOpen={isExportCSVModalOpen}
-                                               statementItemByCategoryMap={statementItemsByCategoryMap}
-                                               onClose={toggleExportCSVModal}
-                                               title={"Export All Statement Items"} />
-                    <button
-                        onClick={() => toggleExportCSVModal()}
-                        className="btn btn-ghost btn-circle mr-4"
-                        aria-label="Export CSV"
-                    >
-                        <Download className="h-5 w-5"/>
-                    </button>
+                    <ExportStatementItemsModal
+                        statementItemByCategoryMap={statementItemsByCategoryMap} />
                     <button
                         onClick={() => navigate(`/merchant/${merchantId}/balance/settings`)}
                         className="btn btn-ghost btn-circle mr-4"
@@ -242,8 +228,9 @@ const BalanceTab = () => {
 
             {/* Main Content */}
             <div className="grid grid-cols-5 gap-6">
+                {isLoading && <div className="justify-center loading loading-spinner loading-lg"></div>}
                 {/* Groups and Accounts List */}
-                <div className="col-span-3 space-y-4">
+                {!isLoading && <div className="col-span-3 space-y-4">
                     {categories.map(category => (
                         <div
                             key={category.id ?? 'uncategorized'}
@@ -295,7 +282,7 @@ const BalanceTab = () => {
                             )}
                         </div>
                     ))}
-                </div>
+                </div>}
                 <div className="col-span-2 ">
                     <div className="card card-bordered border-2 bg-base-100 shadow-lg sticky top-6">
                         <div className="card-body">
