@@ -2,9 +2,10 @@ import { useTranslation } from "react-i18next";
 import { InvoiceWithStore } from "../../dto/Invoices";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import GenericTable, { GenericTableColumn, GenericTableAction } from "../Table/GenericTable";
+import { InvoiceAccountingTransaction } from '@derp/company-canister';
 
 export interface Props {
-    invoices: InvoiceWithStore[];
+    invoices: InvoiceAccountingTransaction[];
 }
 
 export const InvoicesTable = ({ invoices }: Props) => {
@@ -20,30 +21,22 @@ export const InvoicesTable = ({ invoices }: Props) => {
         navigate(`/merchant/${companyId}/stores/store/invoices/invoice?` + urlParams.toString())
     }
 
-    const invoiceColumns: GenericTableColumn<InvoiceWithStore>[] = [
+    const invoiceColumns: GenericTableColumn<InvoiceAccountingTransaction>[] = [
         {
             header: t('idLabel'),
-            accessor: (invoice) => invoice.id.toString()
+            accessor: (invoice) => invoice.Header.DLTERPId?.toString()
         },
         {
             header: t('supplierLabel'),
-            accessor: (invoice) => invoice.store?.name
+            accessor: (invoice) => invoice.Buyer.Name
         },
         {
             header: t('issuedLabel'),
-            accessor: (invoice) => invoice.issueDate.toLocaleDateString()
-        },
-        {
-            header: t('expirationLabel'),
-            accessor: (invoice) => invoice.expiryDate.toLocaleDateString()
-        },
-        {
-            header: t('totalLabel'),
-            accessor: (invoice) => invoice.totalGross.toString()
+            accessor: (invoice) => invoice.Header.IssueDate?.toLocaleDateString()
         }
     ]
 
-    const invoiceActions: GenericTableAction<InvoiceWithStore>[] = [
+    const invoiceActions: GenericTableAction<InvoiceAccountingTransaction>[] = [
         {
             label: <>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5}
@@ -54,7 +47,8 @@ export const InvoicesTable = ({ invoices }: Props) => {
                         d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                 </svg>
             </>,
-            onClick: (invoice) => onPreviewInvoice(invoice)
+            // onClick: (invoice) => onPreviewInvoice(invoice)
+            onClick: () => console.log("Preview clicked")
         }
     ]
 

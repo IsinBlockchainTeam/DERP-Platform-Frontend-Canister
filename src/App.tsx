@@ -52,6 +52,8 @@ import DailyDetailBalanceView from './pages/Merchant/Balance/DailyDetailBalanceV
 import DataSyncPosSync from './pages/Stores/Tabs/DataSyncTab/DataSyncPosSync';
 import BalanceSettingsRules from './pages/Merchant/Balance/BalanceSettings/BalanceSettingsRules';
 import AnalyticsComingSoon from "./components/Analytics/AnalyticsComingSoon";
+import InvoiceOverview from './pages/Invoices/InvoiceOverview';
+import StoreManagementPage from './pages/Stores/StoreManagementPage';
 
 
 function App() {
@@ -110,35 +112,39 @@ function App() {
                         <Route index element={<InterfacesDashboard />} />
                     </Route>
                 </Route>
-                <Route path="merchant/:merchantId/stores/store" element={<StoreDetails />} >
-                    <Route index element={<TablesTab />}></Route>
-                    <Route path="style" element={<AppearanceTab />}></Route>
-                    <Route path="chains" element={<ChainsTab />}>
-                        <Route index element={<ChainList />}></Route>
-                        <Route path="chain" element={<ChainDetails />}></Route>
-                    </Route>
-                    <Route path="suppliers" element={<SuppliersTab />}></Route>
-                    <Route path="customers" element={<CustomersTab />}></Route>
-                    <Route path="transactions" element={<AccountingTransactionsTab />}>
-                        <Route index element={<AccountingTransactionsList />}></Route>
-                        <Route path=":transactionType/:transactionId" element={<AccountingTransactionDetails />}></Route>
-                    </Route>
-                    <Route path={"invoices"} element={<SupplierInvoicesTab />}></Route>
-                    <Route path={"invoices/invoice"} element={<InvoicePage />}></Route>
-                    <Route path={"data-sync"} element={<DataSyncTab />}>
-                        <Route index element={<DataSyncHome />}></Route>
-                        <Route path={"accounting-transactions"} element={<DataSyncAccountingTransactions />}></Route>
-                        <Route path={"pos"} element={<DataSyncPosSync />}></Route>
-                    </Route>
-                    <Route path="offers" element={<OffersTab />}>
-                        <Route index element={<OfferList />} />
-                        <Route path=":offerId" element={<OfferLines />} />
-                    </Route>
-                    <Route path="interfaces" element={<StoreInterfacesTab />}>
-                        <Route index element={<InterfacesHome />} />
-                    </Route>
-                    <Route path="products" element={<ProductsTab />}></Route>
-                </Route>
+
+                { /* Store Paths */}
+                <Route path="merchant/:merchantId/stores/store" element={<StoreManagementPage />} />
+                <Route path="merchant/:merchantId/stores/store/invoices" element={<InvoiceOverview />} />
+                {/*<Route path="merchant/:merchantId/stores/store" element={<StoreDetails />} >*/}
+                {/*    <Route index element={<TablesTab />}></Route>*/}
+                {/*    <Route path="style" element={<AppearanceTab />}></Route>*/}
+                {/*    <Route path="chains" element={<ChainsTab />}>*/}
+                {/*        <Route index element={<ChainList />}></Route>*/}
+                {/*        <Route path="chain" element={<ChainDetails />}></Route>*/}
+                {/*    </Route>*/}
+                {/*    <Route path="suppliers" element={<SuppliersTab />}></Route>*/}
+                {/*    <Route path="customers" element={<CustomersTab />}></Route>*/}
+                {/*    <Route path="transactions" element={<AccountingTransactionsTab />}>*/}
+                {/*        <Route index element={<AccountingTransactionsList />}></Route>*/}
+                {/*        <Route path=":transactionType/:transactionId" element={<AccountingTransactionDetails />}></Route>*/}
+                {/*    </Route>*/}
+                {/*    <Route path={"invoices"} element={<InvoiceOverview />}></Route>*/}
+                {/*    <Route path={"invoices/invoice"} element={<InvoicePage />}></Route>*/}
+                {/*    <Route path={"data-sync"} element={<DataSyncTab />}>*/}
+                {/*        <Route index element={<DataSyncHome />}></Route>*/}
+                {/*        <Route path={"accounting-transactions"} element={<DataSyncAccountingTransactions />}></Route>*/}
+                {/*        <Route path={"pos"} element={<DataSyncPosSync />}></Route>*/}
+                {/*    </Route>*/}
+                {/*    <Route path="offers" element={<OffersTab />}>*/}
+                {/*        <Route index element={<OfferList />} />*/}
+                {/*        <Route path=":offerId" element={<OfferLines />} />*/}
+                {/*    </Route>*/}
+                {/*    <Route path="interfaces" element={<StoreInterfacesTab />}>*/}
+                {/*        <Route index element={<InterfacesHome />} />*/}
+                {/*    </Route>*/}
+                {/*    <Route path="products" element={<ProductsTab />}></Route>*/}
+                {/*</Route>*/}
 
                 { /* Reseller Paths */}
                 <Route path="reseller/:resellerId/" element={<ResellerPage />}>

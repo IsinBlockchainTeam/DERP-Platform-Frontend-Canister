@@ -9,32 +9,34 @@ import { useSearchParams } from "react-router-dom";
 import { storeService } from "../../../../api/services/Store";
 import { GenericTableColumn } from "../../../../components/Table/GenericTable";
 import TabTitle from "../../../../components/Tabs/TabTitle";
+import { accountingTransactionService } from '../../../../api/services/AccountingTransactions';
+import { InvoiceAccountingTransaction } from '@derp/company-canister';
 
 export const SupplierInvoicesTab = () => {
     const storeId = useStoreId();
     const [searchParams] = useSearchParams();
     const [loading, setLoading] = useState<boolean>(false);
-    const [invoices, setInvoices] = useState<InvoiceWithStore[]>([]);
+    const [invoices, setInvoices] = useState<InvoiceAccountingTransaction[]>([]);
     const { t } = useTranslation(undefined, { keyPrefix: 'supplierInvoices' });
 
 
     useEffect(() => {
         const fetchInvoices = async () => {
-            const invoices = await invoicesService.listMyInvoices(storeId) as InvoiceDto[];
-            const stores = await Promise.all(
-                invoices.map(async invoice => {
-                    return await storeService.getStore(invoice.storeId);
-                })
-            )
+            const invoices = await accountingTransactionService.listMyInvoices();
+            // const stores = await Promise.all(
+            //     invoices.map(async invoice => {
+            //         return await storeService.getStore(invoice.storeId);
+            //     })
+            // )
+            //
+            // const processedInvoices = invoices.map(invoice => {
+            //     return {
+            //         ...invoice,
+            //         store: stores.find(s => s.id === invoice.storeId)
+            //     } as InvoiceWithStore;
+            // });
 
-            const processedInvoices = invoices.map(invoice => {
-                return {
-                    ...invoice,
-                    store: stores.find(s => s.id === invoice.storeId)
-                } as InvoiceWithStore;
-            });
-
-            setInvoices(processedInvoices);
+            setInvoices(invoices);
         }
         setLoading(true);
         fetchInvoices().finally(() => setLoading(false));

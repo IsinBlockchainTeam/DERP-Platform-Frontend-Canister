@@ -9,6 +9,7 @@ import LoadingSpinner from '../../components/Loading/LoadingSpinner';
 import { Modal } from '../../components/Modal/Modal';
 import StoreData from '../../components/StoreData/StoreData';
 import AssociatedPosFeatureGuard from '../../components/HOC/AssociatedPosFeatureGuard';
+import InvoiceAccessCard from '../../components/Invoices/InvoiceAccessCard';
 
 const enum TabNames {
     DATA = 'store-data',
@@ -183,7 +184,6 @@ export default function StoreDetails() {
                     : <LoadingSpinner />
                 }
             </div>
-
             <Modal open={storeInfoModal} onChangeOpen={setStoreInfoModal}>
                 {
                     store ? <div className="flex flex-col align-center">

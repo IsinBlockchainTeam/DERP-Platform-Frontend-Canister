@@ -1,4 +1,4 @@
-import { AccountingTransaction, AccountingTransactionType } from '@derp/company-canister';
+import { AccountingTransaction, AccountingTransactionType, InvoiceAccountingTransaction } from '@derp/company-canister';
 import { GetAccountingTransactionQuery, ListAccountingTransactionQuery } from '../../dto/AccountingTransactionDto';
 import api from '../api';
 import { auth } from '../auth';
@@ -49,6 +49,10 @@ export const accountingTransactionService = {
             ...invoiceRet,
             ...bankingRet,
         ]
+    },
+
+    async listMyInvoices(): Promise<InvoiceAccountingTransaction[]> {
+        return accountingTransactionClient.listInvoiceTransactions();
     },
     
     async getTransactionsByIDs(
