@@ -116,6 +116,7 @@ function App() {
                 { /* Store Paths */}
                 <Route path="merchant/:merchantId/stores/store" element={<StoreManagementPage />} />
                 <Route path="merchant/:merchantId/stores/store/invoices" element={<InvoiceOverview />} />
+                <Route path="merchant/:merchantId/stores/store/suppliers" element={<SuppliersTab />} />
                 {/*<Route path="merchant/:merchantId/stores/store" element={<StoreDetails />} >*/}
                 {/*    <Route index element={<TablesTab />}></Route>*/}
                 {/*    <Route path="style" element={<AppearanceTab />}></Route>*/}
