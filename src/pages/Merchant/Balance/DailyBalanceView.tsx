@@ -44,6 +44,8 @@ const DailyBalanceView = () => {
             setParentStatementItem(originalStatementItem);
 
             const items = await statementItemsClient.getAggregateStatements(itemIdNumber.valueOf(), { year: yearNum, month: monthIdNumber.valueOf() });
+            console.log("Get Aggregate Items")
+            console.log(items)
             fillDailyStatementItems(items, monthIdNumber.valueOf(), originalStatementItem.id);
             setAggregates(items);
         } catch (error) {
