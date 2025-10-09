@@ -1,4 +1,4 @@
-import InvoiceOverview from '../Invoices/InvoiceOverview';
+import InvoiceOverview from '../Invoices/SupplierInvoiceOverview';
 
 type Props = {
     feature:string

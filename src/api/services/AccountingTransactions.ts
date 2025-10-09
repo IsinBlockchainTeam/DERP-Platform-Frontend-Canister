@@ -3,6 +3,8 @@ import { GetAccountingTransactionQuery, ListAccountingTransactionQuery } from '.
 import api from '../api';
 import { auth } from '../auth';
 import { accountingTransactionClient } from '../icp';
+import Store from '../../store/store';
+import { StoreDto } from '../../dto/stores/StoreDto';
 
 export const accountingTransactionService = {
     async listAccountingTransactions(
@@ -51,8 +53,14 @@ export const accountingTransactionService = {
         ]
     },
 
-    async listMyInvoices(): Promise<InvoiceAccountingTransaction[]> {
-        return accountingTransactionClient.listInvoiceTransactions();
+    async listSuppliersInvoicesByStore(store: StoreDto): Promise<InvoiceAccountingTransaction[]> {
+        const transactions = await accountingTransactionClient.listInvoiceTransactions();
+        return transactions.filter((transaction) => Number(transaction.Buyer.ID) === store.id);
+    },
+
+    async listInvoicesByStore(store:StoreDto): Promise<InvoiceAccountingTransaction[]> {
+        const transactions = await accountingTransactionClient.listInvoiceTransactions();
+        return transactions.filter((transaction) => Number(transaction.Seller.ID) === store.id);
     },
     
     async getTransactionsByIDs(

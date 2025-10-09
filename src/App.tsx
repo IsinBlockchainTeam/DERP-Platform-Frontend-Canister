@@ -18,8 +18,6 @@ import './i18n/i18n';
 import ConfirmPayment from "./pages/ConfirmPayment/ConfirmPayment";
 import SuppliersTab from "./pages/Stores/Tabs/SuppliersTab/SuppliersTab";
 import CustomersTab from "./pages/Stores/Tabs/CustomersTab";
-import { SupplierInvoicesTab } from "./pages/Stores/Tabs/InvoicesTab/SupplierInvoicesTab";
-import { InvoicePage } from "./pages/Stores/Tabs/InvoicesTab/InvoicePage";
 import ChainList from './pages/ChainList/ChainList';
 import AccountingTransactionsTab from './pages/Stores/Tabs/AccountingTransactionsTab/AccountingTransactionsTab';
 import BaseNavigator from './pages/BaseNavigator';
@@ -52,8 +50,9 @@ import DailyDetailBalanceView from './pages/Merchant/Balance/DailyDetailBalanceV
 import DataSyncPosSync from './pages/Stores/Tabs/DataSyncTab/DataSyncPosSync';
 import BalanceSettingsRules from './pages/Merchant/Balance/BalanceSettings/BalanceSettingsRules';
 import AnalyticsComingSoon from "./components/Analytics/AnalyticsComingSoon";
-import InvoiceOverview from './pages/Invoices/InvoiceOverview';
 import StoreManagementPage from './pages/Stores/StoreManagementPage';
+import SupplierInvoiceOverview from './pages/Invoices/SupplierInvoiceOverview';
+import InvoiceOverview from './pages/Invoices/InvoiceOverview';
 
 
 function App() {
@@ -115,8 +114,16 @@ function App() {
 
                 { /* Store Paths */}
                 <Route path="merchant/:merchantId/stores/store" element={<StoreManagementPage />} />
+                <Route path="merchant/:merchantId/stores/store/supplier-invoices" element={<SupplierInvoiceOverview />} />
                 <Route path="merchant/:merchantId/stores/store/invoices" element={<InvoiceOverview />} />
                 <Route path="merchant/:merchantId/stores/store/suppliers" element={<SuppliersTab />} />
+                <Route path="merchant/:merchantId/stores/store/customers" element={<CustomersTab />} />
+                <Route path="merchant/:merchantId/stores/store/data-sync" element={<DataSyncTab />} >
+                    <Route index element={<DataSyncHome />}></Route>
+                    <Route path={"accounting-transactions"} element={<DataSyncAccountingTransactions />}></Route>
+                    <Route path={"pos"} element={<DataSyncPosSync />}></Route>
+                </Route>
+
                 {/*<Route path="merchant/:merchantId/stores/store" element={<StoreDetails />} >*/}
                 {/*    <Route index element={<TablesTab />}></Route>*/}
                 {/*    <Route path="style" element={<AppearanceTab />}></Route>*/}
