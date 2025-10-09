@@ -59,15 +59,16 @@ const DailyDetailBalanceView = () => {
 
         try {
             const currentDate = new Date(Date.UTC(yearNum, monthIdNumber.valueOf(), dayNumber.valueOf()));
-            console.log("Current date: " + currentDate);
 
             const originalStatementItem = await statementItemsClient.getStatementItem(itemIdNumber.valueOf());
             setParentStatementItem(originalStatementItem);
-
+            console.log("Original Statement Item: ", itemIdNumber.valueOf());
+            console.log("Current date: " + currentDate.toISOString());
             const transactions = await statementItemsClient.getStatementItemRecordsWithTransactions(itemIdNumber.valueOf(), currentDate);
 
             setTransactions(transactions);
-            console.log("Transactions: " + JSON.stringify(transactions));
+            console.log("Transactions: ");
+            console.log(transactions);
         } catch (error) {
             console.log(error);
         } finally {
