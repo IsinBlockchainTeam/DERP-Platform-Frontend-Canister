@@ -32,7 +32,6 @@ export const SupplierInvoiceOverview = () => {
     }, [storeId]);
 
     const fetchInvoices = async (store:StoreDto) => {
-        //TODO: filter only invoices where this store is the buyer
         const invoices = await accountingTransactionService.listSuppliersInvoicesByStore(store);
         setInvoices(invoices);
     };
