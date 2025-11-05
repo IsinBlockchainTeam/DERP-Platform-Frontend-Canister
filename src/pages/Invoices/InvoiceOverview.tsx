@@ -37,7 +37,6 @@ export const InvoiceOverview = () => {
 
     return <div className={"mx-5 pb-5"}>
         {store ? <div className={"flex flex-col gap-10"}>
-                <StoreHeader store={store} />
             <div className={'flex w-full card p-5 bordered flex-col gap-4'}>
                 <div className={'flex justify-between mb-7'}>
                     <div className={"flex flex-col gap-3"}>

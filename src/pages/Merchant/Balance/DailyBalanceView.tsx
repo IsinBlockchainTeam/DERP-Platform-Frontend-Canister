@@ -5,6 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import {ArrowDown, ArrowUp, ChevronLeft, Download, Eye, TrendingUp} from 'lucide-react';
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { statementItemsClient } from '../../../api/icp';
+import { useStatementItemsClient, useStoreData } from '../../Stores/StoreProvider';
 
 interface DailyChartData {
     day: number;
@@ -18,6 +19,8 @@ const DailyBalanceView = () => {
     const [parentStatementItem, setParentStatementItem] = useState<StatementItem | null>(null);
     const [aggregates, setAggregates] = useState<StatementItemAggregate[]>([]);
     const { i18n, t } = useTranslation(undefined, { keyPrefix: 'merchantBalance' });
+    const { client } = useStatementItemsClient();
+    const {store} = useStoreData();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -27,8 +30,11 @@ const DailyBalanceView = () => {
     const yearNum = new Number(year).valueOf();
 
     const fetchData = async () => {
+        if(!client) {
+            console.log("StatementItemsClient not available yet");
+            return;
+        }
         setLoading(true);
-
         try {
             const itemIdNumber = new Number(itemId);
             if (isNaN(itemIdNumber.valueOf())) {
@@ -40,12 +46,10 @@ const DailyBalanceView = () => {
                 throw new Error("Invalid monthId");
             }
 
-            const originalStatementItem = await statementItemsClient.getStatementItem(itemIdNumber.valueOf());
+            const originalStatementItem = await client.getStatementItem(itemIdNumber.valueOf());
             setParentStatementItem(originalStatementItem);
 
-            const items = await statementItemsClient.getAggregateStatements(itemIdNumber.valueOf(), { year: yearNum, month: monthIdNumber.valueOf() });
-            console.log("Get Aggregate Items")
-            console.log(items)
+            const items = await client.getAggregateStatements(itemIdNumber.valueOf(), { year: yearNum, month: monthIdNumber.valueOf() });
             fillDailyStatementItems(items, monthIdNumber.valueOf(), originalStatementItem.id);
             setAggregates(items);
         } catch (error) {
@@ -68,7 +72,7 @@ const DailyBalanceView = () => {
     }
 
     const goBackToAnnualDetail = () => {
-        navigate(`/merchant/${merchantId}/balance/${year}/categories/${categoryId}/items/${itemId}/months`)
+        navigate(`/merchant/${merchantId}/stores/${store?.id}/balance/${year}/categories/${categoryId}/items/${itemId}/months`)
     }
 
     //TODO move to utils file
@@ -133,7 +137,7 @@ const DailyBalanceView = () => {
 
     const goToDailyDetails = (day: number | undefined) => {
         if(!day) return;
-        navigate(`/merchant/${merchantId}/balance/${year}/categories/${categoryId}/items/${itemId}/months/${monthId}/days/${day}/transactions`);
+        navigate(`/merchant/${merchantId}/stores/${store?.id}/balance/${year}/categories/${categoryId}/items/${itemId}/months/${monthId}/days/${day}/transactions`);
     }
 
     return <div className="min-h-screen bg-base-100/50">

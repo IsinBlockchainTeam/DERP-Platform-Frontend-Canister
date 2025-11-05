@@ -5,6 +5,7 @@ import { statementItemsClient } from "../../../api/icp";
 import { ChevronLeft, Eye, TrendingUp } from 'lucide-react';
 import { StatementItem, StatementItemAggregate } from "@derp/company-canister";
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { useStatementItemsClient, useStoreData } from '../../Stores/StoreProvider';
 
 interface MonthlyData {
     month: string;
@@ -18,6 +19,8 @@ const MonthlyBalanceView = () => {
     const [parentStatementItem, setParentStatementItem] = useState<StatementItem | null>(null);
     const [monthlyAggregates, setMonthlyAggregates] = useState<StatementItemAggregate[]>([]);
     const { i18n, t } = useTranslation(undefined, { keyPrefix: 'merchantBalance' });
+    const { client } = useStatementItemsClient();
+    const {store} = useStoreData();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -27,16 +30,19 @@ const MonthlyBalanceView = () => {
     const yearNum = new Number(year).valueOf();
 
     const fetchData = async () => {
+        if(!client) {
+            console.log("StatementItemsClient not initialized");
+            return;
+        }
         setLoading(true);
-
         try {
             const itemIdNumber = Number(itemId);
             if (isNaN(itemIdNumber.valueOf())) {
                 throw new Error("Invalid itemId");
             }
 
-            const originalStatementItem = await statementItemsClient.getStatementItem(itemIdNumber.valueOf());
-            const aggregates = await statementItemsClient.getAggregateStatements(itemIdNumber.valueOf(), { year: yearNum });
+            const originalStatementItem = await client.getStatementItem(itemIdNumber.valueOf());
+            const aggregates = await client.getAggregateStatements(itemIdNumber.valueOf(), { year: yearNum });
             setMonthlyAggregates(aggregates);
             setParentStatementItem(originalStatementItem);
         } catch (error) {
@@ -76,11 +82,11 @@ const MonthlyBalanceView = () => {
     }
 
     const goBackToAnnualBalance = () => {
-        navigate(`/merchant/${merchantId}/balance/${year}/categories`)
+        navigate(`/merchant/${merchantId}/stores/${store?.id}/balance/${year}/categories`)
     }
 
     const goToMonthlyDetails = (month: number) => {
-        navigate(`/merchant/${merchantId}/balance/${year}/categories/${categoryId}/items/${itemId}/months/${month}/days`);
+        navigate(`/merchant/${merchantId}/stores/${store?.id}/balance/${year}/categories/${categoryId}/items/${itemId}/months/${month}/days`);
     }
 
 

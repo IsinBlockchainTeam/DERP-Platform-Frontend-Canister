@@ -5,7 +5,7 @@ import TabTitle from "../../../components/Tabs/TabTitle";
 
 const BalanceSettings = () => {
     const { t } = useTranslation(undefined, { keyPrefix: 'merchantBalance.balanceSettings' });
-    const { merchantId } = useParams();
+    const { merchantId, storeId } = useParams();
     const location = useLocation();
     const navigate = useNavigate()
 
@@ -28,15 +28,12 @@ const BalanceSettings = () => {
     ]
 
     const changeRoute = (name: string) => {
-        navigate(`/merchant/${merchantId}/balance/settings/${name}`);
+        navigate(`/merchant/${merchantId}/stores/${storeId}/balance/settings/${name}`);
     }
 
     const activeRoute = menuEntries.find(category => location.pathname.includes(category.path))?.name;
     return <div>
         <div className="flex flex-row col w-full p-6 items-center content-center">
-            <BackButton onGoBack={
-                () => navigate(`/merchant/${merchantId}/balance`)
-            } />
             <TabTitle title={t('title')} />
         </div>
         <div className="flex flex-row p-6">

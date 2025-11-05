@@ -53,6 +53,7 @@ import AnalyticsComingSoon from "./components/Analytics/AnalyticsComingSoon";
 import StoreManagementPage from './pages/Stores/StoreManagementPage';
 import SupplierInvoiceOverview from './pages/Invoices/SupplierInvoiceOverview';
 import InvoiceOverview from './pages/Invoices/InvoiceOverview';
+import StorePage from './pages/Stores/StorePage';
 
 
 function App() {
@@ -92,37 +93,47 @@ function App() {
 
                 {/* Merchant Paths */}
                 <Route path="merchant/:merchantId/" element={<MerchantsPage />}>
-                    <Route index element={<Navigate to="balance" />}></Route>
-                    <Route path="balance" element={<Navigate to={`${new Date().getFullYear()}`} />} />
-                    <Route path="balance/:year" element={<Navigate to="categories" />} />
-                    <Route path="balance/:year/categories/:categoryId/items/:itemId/months" element={<MonthlyBalanceView />} />
-                    <Route path="balance/:year/categories/:categoryId/items/:itemId/months/:monthId/days" element={<DailyBalanceView />} />
-                    <Route path="balance/:year/categories/:categoryId/items/:itemId/months/:monthId/days/:day/transactions" element={<DailyDetailBalanceView/>} />
-                    <Route path="balance/:year/categories" element={<BalanceTab />} />
-                    <Route path="balance/settings" element={<BalanceSettings />}>
-                        <Route index element={<Navigate to="categories" />} />
-                        <Route path="categories" element={<BalanceSettingsCategories />} />
-                        <Route path="items" element={<BalanceSettingsItems />} />
-                        <Route path="rules" element={<BalanceSettingsRules />} />
-                    </Route>
+
+
                     <Route path="analytics" element={<AnalyticsComingSoon />} />
                     <Route path="stores" element={<StoresTab />}></Route>
+                    <Route path="stores/:storeId" element={<StorePage />} >
+                        <Route index element={<StoreManagementPage />} />
+                        <Route path="balance" element={<Navigate to={`${new Date().getFullYear()}`} />} />
+                        <Route path="balance/:year" element={<Navigate to="categories" />} />
+                        <Route path="balance/:year/categories" element={<BalanceTab />} />
+                        <Route path="balance/:year/categories/:categoryId/items/:itemId/months" element={<MonthlyBalanceView />} />
+                        <Route path="balance/:year/categories/:categoryId/items/:itemId/months/:monthId/days" element={<DailyBalanceView />} />
+                        <Route path="balance/:year/categories/:categoryId/items/:itemId/months/:monthId/days/:day/transactions" element={<DailyDetailBalanceView/>} />
+                        <Route path="balance/settings" element={<BalanceSettings />}>
+                            <Route index element={<Navigate to="categories" />} />
+                            <Route path="categories" element={<BalanceSettingsCategories />} />
+                            <Route path="items" element={<BalanceSettingsItems />} />
+                            <Route path="rules" element={<BalanceSettingsRules />} />
+                        </Route>
+                        {/*<Route path="supplier-invoices" element={<SupplierInvoiceOverview />} />*/}
+                        {/*<Route path="invoices" element={<InvoiceOverview />} />*/}
+                        {/*<Route path="suppliers" element={<SuppliersTab />} />*/}
+                        {/*<Route path="customers" element={<CustomersTab />} />*/}
+                        {/*<Route path="data-sync" element={<DataSyncTab />} >*/}
+                        {/*    <Route index element={<DataSyncHome />}></Route>*/}
+                        {/*    <Route path={"accounting-transactions"} element={<DataSyncAccountingTransactions />}></Route>*/}
+                        {/*    <Route path={"pos"} element={<DataSyncPosSync />}></Route>*/}
+                        {/*</Route>*/}
+                        {/*<Route path="transactions" element={<AccountingTransactionsTab />}>*/}
+                        {/*    <Route index element={<AccountingTransactionsList />}></Route>*/}
+                        {/*    <Route path=":transactionType/:transactionId" element={<AccountingTransactionDetails />}></Route>*/}
+                        {/*</Route>*/}
+
+                    </Route>
+
                     <Route path="interfaces" element={<InterfacesTab />}>
                         <Route index element={<InterfacesDashboard />} />
                     </Route>
                 </Route>
 
                 { /* Store Paths */}
-                <Route path="merchant/:merchantId/stores/store" element={<StoreManagementPage />} />
-                <Route path="merchant/:merchantId/stores/store/supplier-invoices" element={<SupplierInvoiceOverview />} />
-                <Route path="merchant/:merchantId/stores/store/invoices" element={<InvoiceOverview />} />
-                <Route path="merchant/:merchantId/stores/store/suppliers" element={<SuppliersTab />} />
-                <Route path="merchant/:merchantId/stores/store/customers" element={<CustomersTab />} />
-                <Route path="merchant/:merchantId/stores/store/data-sync" element={<DataSyncTab />} >
-                    <Route index element={<DataSyncHome />}></Route>
-                    <Route path={"accounting-transactions"} element={<DataSyncAccountingTransactions />}></Route>
-                    <Route path={"pos"} element={<DataSyncPosSync />}></Route>
-                </Route>
+
 
                 {/*<Route path="merchant/:merchantId/stores/store" element={<StoreDetails />} >*/}
                 {/*    <Route index element={<TablesTab />}></Route>*/}
@@ -133,10 +144,7 @@ function App() {
                 {/*    </Route>*/}
                 {/*    <Route path="suppliers" element={<SuppliersTab />}></Route>*/}
                 {/*    <Route path="customers" element={<CustomersTab />}></Route>*/}
-                {/*    <Route path="transactions" element={<AccountingTransactionsTab />}>*/}
-                {/*        <Route index element={<AccountingTransactionsList />}></Route>*/}
-                {/*        <Route path=":transactionType/:transactionId" element={<AccountingTransactionDetails />}></Route>*/}
-                {/*    </Route>*/}
+
                 {/*    <Route path={"invoices"} element={<InvoiceOverview />}></Route>*/}
                 {/*    <Route path={"invoices/invoice"} element={<InvoicePage />}></Route>*/}
                 {/*    <Route path={"data-sync"} element={<DataSyncTab />}>*/}

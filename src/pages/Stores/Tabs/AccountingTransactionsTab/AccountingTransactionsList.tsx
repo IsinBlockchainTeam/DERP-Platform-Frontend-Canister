@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { accountingTransactionService } from "../../../../api/services/AccountingTransactions";
 import LoadingSpinner from "../../../../components/Loading/LoadingSpinner";
 import GenericTable, { GenericTableColumn, GenericTableAction } from "../../../../components/Table/GenericTable";
 import TabTitle from "../../../../components/Tabs/TabTitle";
@@ -11,6 +10,9 @@ import { AccountingTransaction } from "@derp/company-canister";
 import PaginationIndicator from "../../../Pagination/PaginationIndicator";
 import ReactDatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { storeService } from '../../../../api/services/Store';
+import { StoreDto } from '../../../../dto/stores/StoreDto';
+import { useAccountingTransactionService } from '../../../../hooks/icp-clients';
 
 const PAGE_SIZE = 20;
 
@@ -19,13 +21,16 @@ const AccountingTransactionsList = () => {
     const storeId = useStoreId();
     const { t } = useTranslation(undefined, { keyPrefix: 'supplierTransactions' });
     const { t: paginationT } = useTranslation(undefined, { keyPrefix: 'pagination' });
+    const [store, setStore] = useState<StoreDto | null>(null);
     const [searchParams] = useSearchParams();
     const [loading, setLoading] = useState<boolean>(false);
     const [transactions, setTransactions] = useState<AccountingTransaction[]>([]);
     const [allTransactions, setAllTransactions] = useState<AccountingTransaction[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalFilteredTransactions, setTotalFilteredTransactions] = useState(0);
-    
+
+    const {client}= useAccountingTransactionService(store?.canisterId);
+
     // Date filtering state
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Set to midnight
@@ -87,18 +92,21 @@ const AccountingTransactionsList = () => {
     const refreshData = async () => {
         setLoading(true);
         try {
+            if(store === null || client === null) {
+                setLoading(false);
+                console.log(store)
+                console.log(client)
+                console.log("Store or client not loaded");
+                return;
+            }
             // Ensure we're using midnight for both dates
             const fromDate = new Date(dateFrom);
             fromDate.setHours(0, 0, 0, 0);
             
             const toDate = new Date(dateTo);
             toDate.setHours(23, 59, 59, 999); // End of the day
-            
-            // First get all transaction IDs
-            console.log("Retrieving transaction IDs");
-            console.log(fromDate);
-            console.log(toDate);
-            const ids = await accountingTransactionService.listTransactionIDs({
+
+            const ids = await client.listTransactionIDs({
                 storeId,
                 dateFrom: fromDate,
                 dateTo: toDate
@@ -107,7 +115,7 @@ const AccountingTransactionsList = () => {
             console.log(ids);
             
             // Get all transactions for these IDs
-            const allTransactions = await accountingTransactionService.getTransactionsByIDs(
+            const allTransactions = await client.getTransactionsByIDs(
                 ids,
                 dateFrom,
                 toDate
@@ -129,10 +137,25 @@ const AccountingTransactionsList = () => {
         const pageTransactions = transactions.slice(startIndex, endIndex);
         setTransactions(pageTransactions);
     }
-    
+
+    const initializePage = async () =>{
+        const store = await storeService.getStore(storeId);
+        console.log(store)
+        setStore(store);
+        // await refreshData();
+    }
+
+    useEffect(() => {
+        initializePage();
+        if(store !== null) {
+            console.log("refresh");
+        }
+    }, []);
+
     useEffect(() => {
         refreshData();
-    }, []);
+    }, [store]);
+
 
     // Date picker change handlers
     const handleDateFromChange = (date: Date | null) => {

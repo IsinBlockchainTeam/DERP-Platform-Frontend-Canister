@@ -4,9 +4,16 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 import { statementItemsClient } from '../../../api/icp';
-import { StatementItem, StatementItemAggregate, StatementItemCategory } from '@derp/company-canister';
-import {convertTransactionsToCSV, downloadCSVFromArray} from "../../../utility/FileManagement";
+import {
+    StatementItem,
+    StatementItemAggregate,
+    StatementItemCategory,
+    StatementItemsClient,
+} from '@derp/company-canister';
 import ExportStatementItemsModal from "../../../components/ExportStatementItemModal/ExportStatementItemsModal";
+import { useStoreId } from '../../../utils';
+import { useStatementItemsClient, useStore, useStoreData } from '../../Stores/StoreProvider';
+import { useStatementItemsService } from '../../../hooks/icp-clients';
 
 const CHART_COLORS = [
     '#d04b3d',  // primary
@@ -23,7 +30,8 @@ const CHART_COLORS = [
 const BalanceTab = () => {
     const { merchantId, year } = useParams();
     const navigate = useNavigate();
-
+    const { client } = useStatementItemsClient();
+    const {store} = useStoreData();
     const [isLoading, setisLoading] = useState(true);
     const { t } = useTranslation(undefined, { keyPrefix: 'merchantBalance' })
     const [expandedCategory, setExpandedCategory] = useState<(number | undefined)[]>([]);
@@ -33,10 +41,14 @@ const BalanceTab = () => {
     const [statementAggregatesByStatementItemMap, setStatementAggregatesByStatementItemMap] = useState<Map<number, StatementItemAggregate>>(new Map());
 
     const fetchData = async () => {
+        if (!client) {
+            console.log("StatementItemsClient is not initialized");
+            return;
+        }
         try {
+            console.log('Fetching data for merchant:', merchantId, 'year:', year);
             setisLoading(true);
-            // Fetch data here
-            const categories = await statementItemsClient.getStatementItemsCategories();
+            const categories = await client.getStatementItemsCategories();
             const uncategorizedCategory = { id: undefined, name: t('uncategorized') }
             const allCategories = [...categories, uncategorizedCategory];
             setCategories(allCategories);
@@ -44,7 +56,11 @@ const BalanceTab = () => {
             const statementItemByCategoryMap = new Map<number | undefined, StatementItem[]>();
             await Promise.all(allCategories.map(async category => {
                 try {
-                    const items = await statementItemsClient.getStatementItems(category.id);
+                    if (!client) {
+                        console.log("StatementItemsClient is not initialized");
+                        return;
+                    }
+                    const items = await client.getStatementItems(category.id);
                     statementItemByCategoryMap.set(category.id, items);
                 } catch (error) {
                     console.log(error);
@@ -55,9 +71,6 @@ const BalanceTab = () => {
             const statementAggregatesByStatementItemMap = await getAllCategoriesAggregateData(allCategories, statementItemByCategoryMap);
             setStatementItemsByCategoryMap(statementItemByCategoryMap);
             setStatementAggregatesByStatementItemMap(statementAggregatesByStatementItemMap);
-            
-            console.log(statementAggregatesByStatementItemMap);
-            console.log(statementItemByCategoryMap);
         } catch (error) {
             console.log(error);
         } finally {
@@ -67,7 +80,7 @@ const BalanceTab = () => {
 
     useEffect(() => {
         fetchData();
-    }, [merchantId, year]);
+    }, [merchantId, year, client]);
 
 
     const onChangeYear = (newYear: number) => {
@@ -126,7 +139,7 @@ const BalanceTab = () => {
 
     const goToMonthlyDetail = (statementId: number, categoryId: number | undefined) => {
         console.log('Navigate to monthly detail:', statementId);
-        navigate(`/merchant/${merchantId}/balance/${year}/categories/${categoryId}/items/${statementId}/months`);
+        navigate(`/merchant/${merchantId}/stores/${store?.id}/balance/${year}/categories/${categoryId}/items/${statementId}/months`);
     };
 
     const calculateTotalByCategory = (categoryId: number | undefined) => {
@@ -208,7 +221,7 @@ const BalanceTab = () => {
                     <ExportStatementItemsModal
                         statementItemByCategoryMap={statementItemsByCategoryMap} />
                     <button
-                        onClick={() => navigate(`/merchant/${merchantId}/balance/settings`)}
+                        onClick={() => navigate(`/merchant/${merchantId}/stores/${store?.id}/balance/settings`)}
                         className="btn btn-ghost btn-circle mr-4"
                         aria-label="Impostazioni"
                     >

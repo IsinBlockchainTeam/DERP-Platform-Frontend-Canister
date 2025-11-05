@@ -25,7 +25,7 @@ const StoresTab = () => {
 
 
     const onClickShowDetails = async (store: StoreDto) => {
-        navigate(`/merchant/${merchantId}/stores/store?storeId=${store.id}`);
+        navigate(`/merchant/${merchantId}/stores/${store.id}`);
     }
 
 

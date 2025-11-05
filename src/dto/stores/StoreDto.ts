@@ -14,6 +14,7 @@ export interface WritableStoreDto {
 export interface StoreDto extends WritableStoreDto {
     id: number;
     imageUrl: string;
+    canisterId: string;
 }
 
 export interface CreateStoreDto {

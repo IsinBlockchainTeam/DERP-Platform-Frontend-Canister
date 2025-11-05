@@ -1,17 +1,16 @@
-import { AccountingOperation, AccountingTransaction, AccountingTransactionType, BankAccountingTransaction, CounterpartDispatchRule, DailyTransactionRecord, DispatchRule, DispatchRuleType, StatementItem } from "@derp/company-canister";
+import { AccountingTransaction, AccountingTransactionType, BankAccountingTransaction, CounterpartDispatchRule, DailyTransactionRecord, DispatchRule, DispatchRuleType, StatementItem } from "@derp/company-canister";
 import { ChevronLeft, Eye, ScrollText, UserPlus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from 'react-router-dom';
-import { dispatchRulesClient, statementItemsClient } from '../../../api/icp';
+import { dispatchRulesClient } from '../../../api/icp';
 import AccountingTransactionDetails from '../../Stores/Tabs/AccountingTransactionsTab/AccountingTransactionDetails';
 import { Modal } from '../../../components/Modal/Modal';
-import CodeView from "../../../components/CodeView";
 import LoadingSpinner from "../../../components/Loading/LoadingSpinner";
 import { ArrowsPointingOutIcon, DocumentCurrencyDollarIcon } from "@heroicons/react/24/outline";
-import TabTitle from "../../../components/Tabs/TabTitle";
 import SelectStatementItemModal from "../../../components/StatementItem/SelectStatementItemModal";
 import DispatchRuleView from "../../../components/DispatchRule/DispatchRuleView";
+import { useStatementItemsClient, useStoreData } from '../../Stores/StoreProvider';
 
 const DailyDetailBalanceView = () => {
     const { itemId, categoryId, merchantId, year, monthId, day } = useParams();
@@ -30,6 +29,8 @@ const DailyDetailBalanceView = () => {
     const [transactionDetailsModalOpen, setTransactionDetailsModalOpen] = useState(false);
     const [moveOperationLoading, setMoveOperationLoading] = useState(false);
 
+    const { client } = useStatementItemsClient();
+    const {store} = useStoreData();
     const { i18n, t } = useTranslation(undefined, { keyPrefix: 'merchantBalance' });
     const navigate = useNavigate();
 
@@ -55,20 +56,18 @@ const DailyDetailBalanceView = () => {
     const yearNum = new Number(year).valueOf();
 
     const fetchData = async () => {
+        if(!client){
+            console.error("StatementItemsClient is not initialized");
+            return;
+        }
         setLoading(true);
-
         try {
             const currentDate = new Date(Date.UTC(yearNum, monthIdNumber.valueOf(), dayNumber.valueOf()));
 
-            const originalStatementItem = await statementItemsClient.getStatementItem(itemIdNumber.valueOf());
+            const originalStatementItem = await client.getStatementItem(itemIdNumber.valueOf());
             setParentStatementItem(originalStatementItem);
-            console.log("Original Statement Item: ", itemIdNumber.valueOf());
-            console.log("Current date: " + currentDate.toISOString());
-            const transactions = await statementItemsClient.getStatementItemRecordsWithTransactions(itemIdNumber.valueOf(), currentDate);
-
+            const transactions = await client.getStatementItemRecordsWithTransactions(itemIdNumber.valueOf(), currentDate);
             setTransactions(transactions);
-            console.log("Transactions: ");
-            console.log(transactions);
         } catch (error) {
             console.log(error);
         } finally {
@@ -82,7 +81,6 @@ const DailyDetailBalanceView = () => {
             if (!record.originalRuleId) {
                 return;
             }
-
             const rule = await dispatchRulesClient.getDispatchRule(record.originalRuleId);
             setCurrentRuleForRecord(rule);
         } catch (error) {
@@ -100,14 +98,13 @@ const DailyDetailBalanceView = () => {
         if (monthIndex === undefined) {
             return "-";
         }
-
         const lang = i18n.language;
         const date = new Date(Date.UTC(2020, monthIndex));
         return new Intl.DateTimeFormat(lang, { month: 'long' }).format(date);
     }
 
     const goBackToMonthlyDetails = (month: number) => {
-        navigate(`/merchant/${merchantId}/balance/${year}/categories/${categoryId}/items/${itemId}/months/${month}/days`);
+        navigate(`/merchant/${merchantId}/stores/${store?.id}/balance/${year}/categories/${categoryId}/items/${itemId}/months/${month}/days`);
     }
 
     const openRuleModal = (record: DailyTransactionRecord) => {
@@ -147,13 +144,13 @@ const DailyDetailBalanceView = () => {
         try {
             const rules = await dispatchRulesClient.getDispatchRules();
             const existingRule = rules.find(rule => isCounterpartRule(rule) && rule.counterpartName === transaction.Counterpart?.Name);
-            if (existingRule) {
+            if (existingRule && client) {
                 const targetItems = existingRule.statementItemIDs.find(() => true);
                 if (!targetItems) {
                     throw new Error("No target items found");
                 }
 
-                await statementItemsClient.moveStatementItemRecord(record.id, targetItems, existingRule.id);
+                await client.moveStatementItemRecord(record.id, targetItems, existingRule.id);
                 await fetchData();
                 setSelectedTransaction(null);
                 setAddCounterpartRuleModalOpen(false);
@@ -176,13 +173,13 @@ const DailyDetailBalanceView = () => {
         if (Array.isArray(item)) {
             throw new Error("Moving multiple statement items is not supported");
         }
-        if (!selectedTransaction) {
+        if (!selectedTransaction || !client) {
             return;
         }
 
         try {
             setMoveOperationLoading(true);
-            await statementItemsClient.moveStatementItemRecord(selectedTransaction.record.id, item.id);
+            await client.moveStatementItemRecord(selectedTransaction.record.id, item.id);
             await fetchData();
             setSelectedTransaction(null);
             setSelectItemModalOpen(false);
@@ -200,7 +197,7 @@ const DailyDetailBalanceView = () => {
         }
 
         const trx = selectedTransaction?.transaction;
-        if (!trx || !isBankTransaction(trx) || !trx.Counterpart?.Name) {
+        if (!trx || !isBankTransaction(trx) || !trx.Counterpart?.Name || !client) {
             return;
         }
 
@@ -212,7 +209,7 @@ const DailyDetailBalanceView = () => {
             )
 
             const createdRule = await dispatchRulesClient.createDispatchRule(rule);
-            await statementItemsClient.moveStatementItemRecord(selectedTransaction.record.id, item.id, createdRule.id);
+            await client.moveStatementItemRecord(selectedTransaction.record.id, item.id, createdRule.id);
             await fetchData();
             setSelectedTransaction(null);
             setAddCounterpartRuleModalOpen(false);
