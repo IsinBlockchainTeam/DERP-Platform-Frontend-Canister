@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { statementItemsClient } from "../../../../api/icp";
 import GenericForm, { GenericFormField } from "../../../../components/Form/GenericForm";
 import LoadingSpinner from "../../../../components/Loading/LoadingSpinner";
 import { Modal } from "../../../../components/Modal/Modal"
+import { useStatementItemsClient } from '../../../Stores/StoreProvider';
 
 interface Props {
     isOpen: boolean
@@ -13,10 +13,11 @@ interface Props {
 const AddCategoryModal = ({ isOpen, onChangeOpen }: Props) => {
     const [loading, setLoading] = useState(false);
     const { t } = useTranslation(undefined, { keyPrefix: 'merchantBalance.balanceSettings.addCategoryModal' });
-
     const [formData, setFormData] = useState({
         name: '',
     });
+
+    const statementItemsClient = useStatementItemsClient();
 
     const fields: GenericFormField[] = [
         {
@@ -40,9 +41,13 @@ const AddCategoryModal = ({ isOpen, onChangeOpen }: Props) => {
     }
 
     const onSubmit = async (data: { name: string }) => {
+        if(statementItemsClient.client === null){
+            console.error("StatementItemsClient is not available.");
+            return;
+        }
         try {
             setLoading(true);
-            await statementItemsClient.storeStatementItemsCategory(data.name);
+            await statementItemsClient.client.storeStatementItemsCategory(data.name);
         } catch (error) {
             console.error(error);
         } finally {

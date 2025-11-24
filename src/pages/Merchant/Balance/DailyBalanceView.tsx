@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import {ArrowDown, ArrowUp, ChevronLeft, Download, Eye, TrendingUp} from 'lucide-react';
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { statementItemsClient } from '../../../api/icp';
 import { useStatementItemsClient, useStoreData } from '../../Stores/StoreProvider';
 
 interface DailyChartData {

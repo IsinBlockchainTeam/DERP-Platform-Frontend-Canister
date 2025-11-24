@@ -1,11 +1,5 @@
-import { StatementItem } from "@derp/company-canister";
 import {useState} from "react";
 import ReactDatePicker from "react-datepicker";
-import {statementItemsClient} from "../../api/icp";
-import {convertTransactionsToCSV, downloadCSVFromArray} from "../../utility/FileManagement";
-import {Download} from "lucide-react";
-
-
 
 type Props = {
     isOpen: boolean;

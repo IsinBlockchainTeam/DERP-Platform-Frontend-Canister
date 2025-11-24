@@ -3,17 +3,13 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
-import { statementItemsClient } from '../../../api/icp';
 import {
     StatementItem,
     StatementItemAggregate,
     StatementItemCategory,
-    StatementItemsClient,
 } from '@derp/company-canister';
 import ExportStatementItemsModal from "../../../components/ExportStatementItemModal/ExportStatementItemsModal";
-import { useStoreId } from '../../../utils';
-import { useStatementItemsClient, useStore, useStoreData } from '../../Stores/StoreProvider';
-import { useStatementItemsService } from '../../../hooks/icp-clients';
+import { useStatementItemsClient, useStoreData } from '../../Stores/StoreProvider';
 
 const CHART_COLORS = [
     '#d04b3d',  // primary
@@ -30,7 +26,7 @@ const CHART_COLORS = [
 const BalanceTab = () => {
     const { merchantId, year } = useParams();
     const navigate = useNavigate();
-    const { client } = useStatementItemsClient();
+    const statementItemsClient = useStatementItemsClient();
     const {store} = useStoreData();
     const [isLoading, setisLoading] = useState(true);
     const { t } = useTranslation(undefined, { keyPrefix: 'merchantBalance' })
@@ -41,14 +37,14 @@ const BalanceTab = () => {
     const [statementAggregatesByStatementItemMap, setStatementAggregatesByStatementItemMap] = useState<Map<number, StatementItemAggregate>>(new Map());
 
     const fetchData = async () => {
-        if (!client) {
+        if (!statementItemsClient.client) {
             console.log("StatementItemsClient is not initialized");
             return;
         }
         try {
             console.log('Fetching data for merchant:', merchantId, 'year:', year);
             setisLoading(true);
-            const categories = await client.getStatementItemsCategories();
+            const categories = await statementItemsClient.client.getStatementItemsCategories();
             const uncategorizedCategory = { id: undefined, name: t('uncategorized') }
             const allCategories = [...categories, uncategorizedCategory];
             setCategories(allCategories);
@@ -56,11 +52,11 @@ const BalanceTab = () => {
             const statementItemByCategoryMap = new Map<number | undefined, StatementItem[]>();
             await Promise.all(allCategories.map(async category => {
                 try {
-                    if (!client) {
+                    if (!statementItemsClient.client) {
                         console.log("StatementItemsClient is not initialized");
                         return;
                     }
-                    const items = await client.getStatementItems(category.id);
+                    const items = await statementItemsClient.client.getStatementItems(category.id);
                     statementItemByCategoryMap.set(category.id, items);
                 } catch (error) {
                     console.log(error);
@@ -80,7 +76,7 @@ const BalanceTab = () => {
 
     useEffect(() => {
         fetchData();
-    }, [merchantId, year, client]);
+    }, [merchantId, year, statementItemsClient.client]);
 
 
     const onChangeYear = (newYear: number) => {
@@ -125,7 +121,12 @@ const BalanceTab = () => {
         await Promise.all(
             statementItems.map(async (item) => {
                 try {
-                    const aggregateValue = await statementItemsClient.getAggregateStatement(item.id, { year: yearNumber });
+                    if(statementItemsClient.client === null){
+                        console.error("StatementItemsClient is not initialized");
+                        return new Map<number, StatementItemAggregate>();
+
+                    }
+                    const aggregateValue = await statementItemsClient.client.getAggregateStatement(item.id, { year: yearNumber });
                     aggregateValuesMap.set(item.id, aggregateValue);
                 } catch (error) {
                     console.error(`Error fetching aggregate value for statement item ${item.id}:`, error);

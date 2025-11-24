@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { dispatchRulesClient, statementItemsClient } from "../../../../api/icp";
 import {DispatchRule, StatementItem} from "@derp/company-canister";
 import { useTranslation } from "react-i18next";
 import { GenericTableAction, GenericTableColumn } from "../../../../components/Table/GenericTable";
@@ -8,6 +7,7 @@ import LoadingSpinner from "../../../../components/Loading/LoadingSpinner";
 import { EditIcon } from "lucide-react";
 import DispatchRuleForm from "../../../../components/DispatchRule/DispatchRuleForm";
 import { Modal } from "../../../../components/Modal/Modal";
+import { useDispatchRuleClient, useStatementItemsClient } from '../../../Stores/StoreProvider';
 
 export default function BalanceSettingsRules() {
     const { t } = useTranslation(undefined, { keyPrefix: "merchantBalance.balanceSettings" });
@@ -20,10 +20,18 @@ export default function BalanceSettingsRules() {
     const [rule, setRule] = useState<DispatchRule | null>(null);
     const [isEditing, setIsEditing] = useState(false);
 
+    const dispatchRulesClient = useDispatchRuleClient();
+    const statementItemsClient = useStatementItemsClient();
+
+
     const fetchRules = async () => {
+        if(dispatchRulesClient.client === null){
+            console.error("DispatchRulesClient is not available.");
+            return;
+        }
         setIsLoadingRules(true);
         try {
-            const rules = await dispatchRulesClient.getDispatchRules();
+            const rules = await dispatchRulesClient.client.getDispatchRules();
             setRules(rules);
         } catch (error) {
             console.error(error);
@@ -125,17 +133,21 @@ export default function BalanceSettingsRules() {
     ]
 
     const fetchStatementItems = async () => {
-        const categories = await statementItemsClient.getStatementItemsCategories();
+        if(statementItemsClient.client === null) {
+            console.error("StatementItemsClient is not available.");
+            return;
+        }
+        const categories = await statementItemsClient.client.getStatementItemsCategories();
         const itemsMap = new Map<number, StatementItem>();
 
         for (const category of categories) {
-            const items = await statementItemsClient.getStatementItems(category.id);
+            const items = await statementItemsClient.client.getStatementItems(category.id);
             items.forEach(item => {
                 itemsMap.set(item.id, item);
             });
         }
         
-        const itemsWithoutCategory = await statementItemsClient.getStatementItems();
+        const itemsWithoutCategory = await statementItemsClient.client.getStatementItems();
         itemsWithoutCategory.forEach(item => {
             itemsMap.set(item.id, item);
         });
@@ -144,12 +156,16 @@ export default function BalanceSettingsRules() {
     }
     
     const handleSubmit = async (rule: DispatchRule) => {
+        if(dispatchRulesClient.client === null){
+            console.error("DispatchRulesClient is not available.");
+            return;
+        }
         setIsSubmittingRule(true);
         try {
             if (isEditing) {
-                await dispatchRulesClient.updateDispatchRule(rule);
+                await dispatchRulesClient.client.updateDispatchRule(rule);
             } else {
-                await dispatchRulesClient.createDispatchRule(rule);
+                await dispatchRulesClient.client.createDispatchRule(rule);
             }
             fetchRules();
             setRuleModalOpen(false);

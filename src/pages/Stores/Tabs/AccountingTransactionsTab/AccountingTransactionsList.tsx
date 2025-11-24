@@ -4,7 +4,6 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import LoadingSpinner from "../../../../components/Loading/LoadingSpinner";
 import GenericTable, { GenericTableColumn, GenericTableAction } from "../../../../components/Table/GenericTable";
 import TabTitle from "../../../../components/Tabs/TabTitle";
-import { useStoreId } from "../../../../utils";
 import { EyeIcon } from "../../../../components/Icons/Icons";
 import { AccountingTransaction } from "@derp/company-canister";
 import PaginationIndicator from "../../../Pagination/PaginationIndicator";
@@ -12,16 +11,14 @@ import ReactDatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { storeService } from '../../../../api/services/Store';
 import { StoreDto } from '../../../../dto/stores/StoreDto';
-import { useAccountingTransactionService } from '../../../../hooks/icp-clients';
+import { useAccountingService, useStoreData } from '../../StoreProvider';
 
 const PAGE_SIZE = 20;
 
 const AccountingTransactionsList = () => {
     const navigate = useNavigate();
-    const storeId = useStoreId();
     const { t } = useTranslation(undefined, { keyPrefix: 'supplierTransactions' });
     const { t: paginationT } = useTranslation(undefined, { keyPrefix: 'pagination' });
-    const [store, setStore] = useState<StoreDto | null>(null);
     const [searchParams] = useSearchParams();
     const [loading, setLoading] = useState<boolean>(false);
     const [transactions, setTransactions] = useState<AccountingTransaction[]>([]);
@@ -29,8 +26,8 @@ const AccountingTransactionsList = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalFilteredTransactions, setTotalFilteredTransactions] = useState(0);
 
-    const {client}= useAccountingTransactionService(store?.canisterId);
-
+    const {store} = useStoreData();
+    const {client} = useAccountingService();
     // Date filtering state
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Set to midnight
@@ -92,11 +89,8 @@ const AccountingTransactionsList = () => {
     const refreshData = async () => {
         setLoading(true);
         try {
-            if(store === null || client === null) {
-                setLoading(false);
-                console.log(store)
-                console.log(client)
-                console.log("Store or client not loaded");
+            if(client===null || store===null) {
+                console.log("Client or store is null");
                 return;
             }
             // Ensure we're using midnight for both dates
@@ -107,7 +101,6 @@ const AccountingTransactionsList = () => {
             toDate.setHours(23, 59, 59, 999); // End of the day
 
             const ids = await client.listTransactionIDs({
-                storeId,
                 dateFrom: fromDate,
                 dateTo: toDate
             });
@@ -138,19 +131,6 @@ const AccountingTransactionsList = () => {
         setTransactions(pageTransactions);
     }
 
-    const initializePage = async () =>{
-        const store = await storeService.getStore(storeId);
-        console.log(store)
-        setStore(store);
-        // await refreshData();
-    }
-
-    useEffect(() => {
-        initializePage();
-        if(store !== null) {
-            console.log("refresh");
-        }
-    }, []);
 
     useEffect(() => {
         refreshData();

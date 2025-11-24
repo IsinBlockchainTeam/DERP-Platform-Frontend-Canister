@@ -1,10 +1,9 @@
 import { StatementItem } from "@derp/company-canister";
 import {useState} from "react";
-import ReactDatePicker from "react-datepicker";
-import {statementItemsClient} from "../../api/icp";
 import {convertTransactionsToCSV, downloadCSVFromArray} from "../../utility/FileManagement";
 import {Download} from "lucide-react";
 import DataRangeSelectionModal from '../DateRangeSelectionModal/DateRangeSelectionModal';
+import { useStatementItemsClient } from '../../pages/Stores/StoreProvider';
 
 
 
@@ -16,12 +15,19 @@ type Props = {
 const ExportStatementItemsCSV = (props:Props)=> {
     const [isDateRangeSelectionOpen, setIsDateRangeSelectionOpen] = useState(false);
 
+    const statementItemsClient = useStatementItemsClient();
+
     const toggleDateRangeSelectionModal = () => {
         setIsDateRangeSelectionOpen(!isDateRangeSelectionOpen);
     }
 
     const exportAllStatementItemsToCsv = async (fromDate:Date,toDate:Date) => {
         try {
+            if(statementItemsClient.client === null) {
+                console.error('StatementItemsClient is not available.');
+                return;
+            }
+
             if (props.statementItemByCategoryMap.size === 0) {
                 console.warn('No statement items available to export.');
                 return;
@@ -40,8 +46,8 @@ const ExportStatementItemsCSV = (props:Props)=> {
             const csvData = [];
             for(const statementItem of allStatementItems) {
                 for(let date = new Date(normalizedFromDate); date <= normalizedToDate; date.setDate(date.getDate() + 1)) {
-                    const recordsAndTransactions = await statementItemsClient.getStatementItemRecordsWithTransactions(statementItem.id,date);
-                    csvData.push(await convertTransactionsToCSV(recordsAndTransactions));
+                    const recordsAndTransactions = await statementItemsClient.client.getStatementItemRecordsWithTransactions(statementItem.id,date);
+                    csvData.push(await convertTransactionsToCSV(recordsAndTransactions,statementItem));
                 }
             }
             const csvDataWithoutUndefined:string[] = csvData.filter((data): data is string => data !== undefined && true &&  data !== '');

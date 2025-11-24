@@ -3,14 +3,13 @@ import { ChevronLeft, Eye, ScrollText, UserPlus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from 'react-router-dom';
-import { dispatchRulesClient } from '../../../api/icp';
 import AccountingTransactionDetails from '../../Stores/Tabs/AccountingTransactionsTab/AccountingTransactionDetails';
 import { Modal } from '../../../components/Modal/Modal';
 import LoadingSpinner from "../../../components/Loading/LoadingSpinner";
 import { ArrowsPointingOutIcon, DocumentCurrencyDollarIcon } from "@heroicons/react/24/outline";
 import SelectStatementItemModal from "../../../components/StatementItem/SelectStatementItemModal";
 import DispatchRuleView from "../../../components/DispatchRule/DispatchRuleView";
-import { useStatementItemsClient, useStoreData } from '../../Stores/StoreProvider';
+import { useDispatchRuleClient, useStatementItemsClient, useStoreData } from '../../Stores/StoreProvider';
 
 const DailyDetailBalanceView = () => {
     const { itemId, categoryId, merchantId, year, monthId, day } = useParams();
@@ -31,6 +30,7 @@ const DailyDetailBalanceView = () => {
 
     const { client } = useStatementItemsClient();
     const {store} = useStoreData();
+    const dispatchRulesClient = useDispatchRuleClient();
     const { i18n, t } = useTranslation(undefined, { keyPrefix: 'merchantBalance' });
     const navigate = useNavigate();
 
@@ -78,10 +78,10 @@ const DailyDetailBalanceView = () => {
     const fetchRuleForRecord = async (record: DailyTransactionRecord) => {
         setLoadingRuleForRecord(true);
         try {
-            if (!record.originalRuleId) {
+            if (!record.originalRuleId || dispatchRulesClient.client == null) {
                 return;
             }
-            const rule = await dispatchRulesClient.getDispatchRule(record.originalRuleId);
+            const rule = await dispatchRulesClient.client.getDispatchRule(record.originalRuleId);
             setCurrentRuleForRecord(rule);
         } catch (error) {
             console.error('Error fetching dispatch rule:', error);
@@ -130,7 +130,7 @@ const DailyDetailBalanceView = () => {
     }
 
     const handleOpenAddCounterpartRuleModal = async (record: DailyTransactionRecord, transaction: AccountingTransaction) => {
-        if (!isBankTransaction(transaction) || !transaction.Counterpart?.Name) {
+        if (!isBankTransaction(transaction) || !transaction.Counterpart?.Name || dispatchRulesClient.client == null) {
             return;
         }
 
@@ -142,7 +142,7 @@ const DailyDetailBalanceView = () => {
         setAddCounterpartRuleLoadingTransactionId(transactionId);
 
         try {
-            const rules = await dispatchRulesClient.getDispatchRules();
+            const rules = await dispatchRulesClient.client.getDispatchRules();
             const existingRule = rules.find(rule => isCounterpartRule(rule) && rule.counterpartName === transaction.Counterpart?.Name);
             if (existingRule && client) {
                 const targetItems = existingRule.statementItemIDs.find(() => true);
@@ -197,7 +197,7 @@ const DailyDetailBalanceView = () => {
         }
 
         const trx = selectedTransaction?.transaction;
-        if (!trx || !isBankTransaction(trx) || !trx.Counterpart?.Name || !client) {
+        if (!trx || !isBankTransaction(trx) || !trx.Counterpart?.Name || !client || dispatchRulesClient.client == null) {
             return;
         }
 
@@ -208,7 +208,7 @@ const DailyDetailBalanceView = () => {
                 trx.Counterpart.Name,
             )
 
-            const createdRule = await dispatchRulesClient.createDispatchRule(rule);
+            const createdRule = await dispatchRulesClient.client.createDispatchRule(rule);
             await client.moveStatementItemRecord(selectedTransaction.record.id, item.id, createdRule.id);
             await fetchData();
             setSelectedTransaction(null);

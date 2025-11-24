@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
-import { statementItemsClient } from "../../../api/icp";
 import { ChevronLeft, Eye, TrendingUp } from 'lucide-react';
 import { StatementItem, StatementItemAggregate } from "@derp/company-canister";
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';

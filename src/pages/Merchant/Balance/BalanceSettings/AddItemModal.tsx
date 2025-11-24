@@ -1,9 +1,9 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { statementItemsClient } from "../../../../api/icp"
 import { Modal } from "../../../../components/Modal/Modal"
 import StatementItemForm, { StatementItemData } from "../../../../components/StatementItem/StatementItemForm"
 import { StatementItem } from "@derp/company-canister"
+import { useStatementItemsClient } from '../../../Stores/StoreProvider';
 
 interface Props {
     isOpen: boolean
@@ -15,17 +15,22 @@ const AddItemModal = ({ isOpen, onChangeOpen, onItemCreated}: Props) => {
     const { t } = useTranslation(undefined, { keyPrefix: 'merchantBalance.balanceSettings.addItemModal' });
     const [loading, setLoading] = useState(false)
 
+    const statementItemsClient = useStatementItemsClient();
+
     const onSubmit = async (data: StatementItemData) => {
+        if (statementItemsClient.client === null){
+            console.error("StatementItemsClient is not available.");
+            return
+        }
         setLoading(true)
         try {
-            console.log(data)
             const statementItem = new StatementItem(
                 parseInt(data.id),
                 data.name,
                 data.currency,
                 data.category ? parseInt(data.category) : undefined,
             )
-            await statementItemsClient.storeStatementItem(statementItem)
+            await statementItemsClient.client.storeStatementItem(statementItem)
             
             // Only close modal and trigger callback after successful creation
             onItemCreated?.()

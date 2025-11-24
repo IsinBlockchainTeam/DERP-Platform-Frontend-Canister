@@ -1,9 +1,9 @@
 import { StatementItemCategory } from "@derp/company-canister"
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { statementItemsClient } from "../../api/icp"
 import GenericForm, { GenericFormField, GenericFormData } from "../Form/GenericForm"
 import LoadingSpinner from "../Loading/LoadingSpinner"
+import { useStatementItemsClient } from '../../pages/Stores/StoreProvider';
 
 export interface StatementItemData {
     category: string | undefined
@@ -41,11 +41,16 @@ const StatementItemForm = ({
     const [genericFormColumns, setGenericFormColumns] = useState<GenericFormField[]>([])
 
     const isLoading = externalLoading || internalLoading
+    const statementItemsClient = useStatementItemsClient();
 
     const fetchCategories = async () => {
+        if(statementItemsClient.client === null){
+            console.error("StatementItemsClient is not available.");
+            return;
+        }
         try {
             setInternalLoading(true)
-            const categories = await statementItemsClient.getStatementItemsCategories()
+            const categories = await statementItemsClient.client.getStatementItemsCategories()
             setCategories(categories)
 
             const initialFormData: GenericFormData = item ? {

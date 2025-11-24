@@ -125,6 +125,19 @@ export const interfacesService = {
         if (res.status !== 200)
             throw new Error('Error deleting association');
     },
+
+    generateBankLetter: async (interfaceId: number): Promise<Blob> => {
+        const res = await api.get(`/ebics-interfaces/${interfaceId}/bank-letter`, {
+            headers: await auth.authenticatedHeaders(),
+            responseType: 'blob'
+        });
+
+        console.log(res);
+        if (res.status !== 200)
+            throw new Error('Error generating EBICS bank letter');
+
+        return res.data;
+    },
     
     ebicsLetterUrl: (interfaceId: number) => {
         return `/ebics-interfaces/${interfaceId}/bank-letter`

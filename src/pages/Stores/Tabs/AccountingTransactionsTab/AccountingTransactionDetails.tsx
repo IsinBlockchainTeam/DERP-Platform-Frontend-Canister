@@ -1,13 +1,12 @@
 import { useTranslation } from 'react-i18next';
 import TabTitle from '../../../../components/Tabs/TabTitle';
-import { useStoreId } from '../../../../utils';
 import { useParams } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
-import { accountingTransactionService } from '../../../../api/services/AccountingTransactions';
 import LoadingSpinner from '../../../../components/Loading/LoadingSpinner';
 import { DownloadIcon } from '../../../../components/Icons/Icons';
 import { AccountingTransaction, AccountingTransactionType } from '@derp/company-canister';
 import CodeView from '../../../../components/CodeView';
+import { useAccountingService } from '../../StoreProvider';
 
 export interface AccountingTransactionDetailsProps {
     transactionId?: string;
@@ -20,6 +19,7 @@ const AccountingTransactionDetails = (props: AccountingTransactionDetailsProps) 
     const { transactionId, transactionType } = useParams<{ transactionId: string, transactionType: AccountingTransactionType }>();
     const [loading, setLoading] = useState<boolean>(false);
     const [transaction, setTransaction] = useState<AccountingTransaction | undefined>(undefined);
+    const {client} = useAccountingService();
 
     const fetchTransaction = async () => {
         let actualTransactionId = props.transactionId;
@@ -31,9 +31,12 @@ const AccountingTransactionDetails = (props: AccountingTransactionDetailsProps) 
         }
 
         if (!actualTransactionId || !actualTransactionType) throw new Error("Transaction id or type is missing");
-
+        if(client === null) {
+            console.log("AccountingTransactionClient is null");
+            return;
+        }
         setLoading(true);
-        const transaction = await accountingTransactionService.getAccountingTransaction({ type: actualTransactionType }, actualTransactionId);
+        const transaction = await client.getAccountingTransaction({ type: actualTransactionType }, actualTransactionId);
         console.log("Fetched transaction");
         console.log(transaction);
         setTransaction(transaction);
@@ -49,9 +52,12 @@ const AccountingTransactionDetails = (props: AccountingTransactionDetailsProps) 
         if (!actualTransactionId) {
             actualTransactionId = transactionId;
         }
-
+        if(client === null) {
+            console.log("AccountingTransactionClient is null");
+            return;
+        }
         if (!actualTransactionId) throw new Error("Transaction id is missing");
-        await accountingTransactionService.downloadOriginalXML(actualTransactionId);
+        await client.downloadOriginalXML(actualTransactionId);
     }
 
     const onDownloadJson = () => {

@@ -1,13 +1,13 @@
 import { StatementItemCategory } from "@derp/company-canister";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { statementItemsClient } from "../../../../api/icp";
 import LoadingSpinner from "../../../../components/Loading/LoadingSpinner";
 import GenericTable, { GenericTableColumn } from "../../../../components/Table/GenericTable";
 import AddCategoryModal from "./AddCategoryModal";
 import { Modal } from "../../../../components/Modal/Modal";
 import { statementService } from "../../../../api/services/Statement";
 import { useParams } from "react-router-dom";
+import { useStatementItemsClient } from '../../../Stores/StoreProvider';
 
 const BalanceSettingsCategories = () => {
     const { t } = useTranslation(undefined, { keyPrefix: 'merchantBalance.balanceSettings' });
@@ -18,10 +18,16 @@ const BalanceSettingsCategories = () => {
     const [setupDefaultCategoriesLoading, setSetupDefaultCategoriesLoading] = useState(false);
     const { merchantId } = useParams();
 
+    const statementItemsClient = useStatementItemsClient();
+
     const fetchData = async () => {
+        if (statementItemsClient.client === null) {
+            console.error("StatementItemsClient is not available.");
+            return;
+        }
         try {
             setLoading(true);
-            const categories = await statementItemsClient.getStatementItemsCategories();
+            const categories = await statementItemsClient.client.getStatementItemsCategories();
             setCategories(categories);
         } catch (error) {
             console.error(error);

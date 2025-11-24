@@ -1,11 +1,11 @@
 import { StatementItem, StatementItemCategory } from "@derp/company-canister";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { statementItemsClient } from "../../../../api/icp";
 import LoadingSpinner from "../../../../components/Loading/LoadingSpinner";
 import GenericTable, { GenericTableColumn } from "../../../../components/Table/GenericTable";
 import AddItemModal from "./AddItemModal";
 import EditItemModal from "./EditItemModal";
+import { useStatementItemsClient } from '../../../Stores/StoreProvider';
 
 const BalanceSettingsItems = () => {
     const { t } = useTranslation(undefined, { keyPrefix: "merchantBalance.balanceSettings" })
@@ -18,29 +18,39 @@ const BalanceSettingsItems = () => {
     const [editItemModalOpen, setEditItemModalOpen] = useState<boolean>(false);
     const [selectedItem, setSelectedItem] = useState<StatementItem | null>(null);
 
+    const statementItemsClient = useStatementItemsClient();
+
     const fetchCategories = async () => {
-        const categories = await statementItemsClient.getStatementItemsCategories();
+        if (statementItemsClient.client === null){
+            console.error("StatementItemsClient is not available.");
+            return;
+        }
+        const categories = await statementItemsClient.client.getStatementItemsCategories();
         setCategories(categories);
     }
 
     const fetchStatementItems = async () => {
+        if (statementItemsClient.client === null){
+            console.error("StatementItemsClient is not available.");
+            return;
+        }
         setLoading(true);
         try {
             let allStatementItems: StatementItem[] = [];
             if (selectedCategory === 0) {
                 for (const category of catgeories) {
-                    const statementItems = await statementItemsClient.getStatementItems(category.id);
+                    const statementItems = await statementItemsClient.client.getStatementItems(category.id);
                     allStatementItems = allStatementItems.concat(statementItems);
                 }
                 
-                const uncategorizedStatementItems = await statementItemsClient.getStatementItems();
+                const uncategorizedStatementItems = await statementItemsClient.client.getStatementItems();
                 allStatementItems = allStatementItems.concat(uncategorizedStatementItems);
 
             } else if (selectedCategory) {
-                const statementItems = await statementItemsClient.getStatementItems(selectedCategory);
+                const statementItems = await statementItemsClient.client.getStatementItems(selectedCategory);
                 allStatementItems = allStatementItems.concat(statementItems);
             } else {
-                const statementItems = await statementItemsClient.getStatementItems();
+                const statementItems = await statementItemsClient.client.getStatementItems();
                 allStatementItems = allStatementItems.concat(statementItems);
             }
 

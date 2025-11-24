@@ -1,9 +1,9 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { statementItemsClient } from "../../../../api/icp"
 import { Modal } from "../../../../components/Modal/Modal"
 import StatementItemForm, { StatementItemData } from "../../../../components/StatementItem/StatementItemForm"
 import { StatementItem } from "@derp/company-canister"
+import { useStatementItemsClient } from '../../../Stores/StoreProvider';
 
 interface Props {
     isOpen: boolean
@@ -16,9 +16,15 @@ const EditItemModal = ({ isOpen, onChangeOpen, item, onItemUpdated}: Props) => {
     const { t } = useTranslation(undefined, { keyPrefix: 'merchantBalance.balanceSettings.addItemModal' });
     const [loading, setLoading] = useState(false)
 
+    const statementItemsClient = useStatementItemsClient();
+
     const onSubmit = async (data: StatementItemData) => {
-        if (!item) return
-        
+        if (!item || statementItemsClient.client === null){
+            console.error("StatementItemsClient or item is not available.");
+            return
+        }
+
+
         setLoading(true)
         try {
             const updatedStatementItem = new StatementItem(
@@ -27,9 +33,7 @@ const EditItemModal = ({ isOpen, onChangeOpen, item, onItemUpdated}: Props) => {
                 data.currency,
                 data.category ? parseInt(data.category) : undefined,
             )
-
-            console.log(updatedStatementItem)
-            await statementItemsClient.updateStatementItem(item.id, updatedStatementItem)
+            await statementItemsClient.client.updateStatementItem(item.id, updatedStatementItem)
             
             // Only close modal and trigger callback after successful update
             onItemUpdated?.()

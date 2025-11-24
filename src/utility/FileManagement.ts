@@ -1,5 +1,4 @@
-import { AccountingTransaction, AccountingTransactionWithTotals, DailyTransactionRecord } from "@derp/company-canister";
-import {dispatchRulesClient, statementItemsClient} from "../api/icp";
+import { AccountingTransaction, DailyTransactionRecord, StatementItem } from '@derp/company-canister';
 
 
 export const downloadCSV = (csvContent: string, filename = 'transactions.csv'): void => {
@@ -70,17 +69,11 @@ interface TransactionCSVRow {
 // Builder per costruire una riga CSV da TransactionData
 class TransactionCSVRowBuilder {
 
-    static async build(data: TransactionData): Promise<TransactionCSVRow> {
+    static build(data: TransactionData,statementItem:StatementItem): TransactionCSVRow {
         const { record, transaction } = data;
         const header = transaction.Header;
-        const statementItem = await statementItemsClient.getStatementItem(record.parentStatementItemId);
-        let dispatchRule = null;
-        if(record.originalRuleId !== undefined && record.originalRuleId !== null) {
-            console.log(`Fetching dispatch rule for originalRuleId: ${record.originalRuleId}`);
-            dispatchRule = await dispatchRulesClient.getDispatchRule(Number(record.originalRuleId));
-        }
+        //TODO: Implement an efficient way to get Dispatch Rule details
         const row: TransactionCSVRow = {
-            // Campi da DailyTransactionRecord
             record_id: record.id,
             statement_item: statementItem.name,
             record_date: this.formatDate(record.date),
@@ -89,8 +82,8 @@ class TransactionCSVRowBuilder {
             total: record.total,
             dlterp_id: record.transactionId,
             txType: record.txType,
-            dispatch_rule_type: dispatchRule?.ruleType,
-            dispatch_rule_operation: dispatchRule?.accountingOperation,
+            dispatch_rule_type: undefined,
+            dispatch_rule_operation: undefined,
             currency: this.formatOptionalString(header.Currency),
             source: this.formatOptionalString(header.Source),
             storeId: header.StoreId,
@@ -154,22 +147,17 @@ export const CSV_COLUMNS: (keyof TransactionCSVRow)[] = [
     "description",
 ];
 
-export const convertTransactionsToCSV = async (data: TransactionData[]): Promise<string> => {
+export const convertTransactionsToCSV = async (data: TransactionData[],statementItem:StatementItem): Promise<string> => {
     if (data.length === 0) {
         return '';
     }
 
     // Costruisci le righe CSV usando il builder
-    const csvRows = await Promise.all(data.map(item => TransactionCSVRowBuilder.build(item)));
+    const csvRows = data.map(item => TransactionCSVRowBuilder.build(item,statementItem));
 
-    // Crea l'header del CSV
-    // const csvHeader = CSV_COLUMNS.map(column => escapeCsvValue(column)).join(',');
-
-    // Crea le righe dati del CSV
     const csvDataRows = csvRows.map(row => {
         return CSV_COLUMNS.map(column => escapeCsvValue(row[column])).join(',');
     });
 
-    // Combina header e righe
     return [...csvDataRows].join('\n');
 };

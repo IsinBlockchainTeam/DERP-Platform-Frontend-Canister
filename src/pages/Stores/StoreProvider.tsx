@@ -2,7 +2,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { StoreDto } from '../../dto/stores/StoreDto';
 import { storeService } from '../../api/services/Store';
-import { StatementItemCategory, StatementItemsClient } from '@derp/company-canister';
+import { DispatchRule, DispatchRulesClient, StatementItemCategory, StatementItemsClient } from '@derp/company-canister';
 import i18n from 'i18next';
 import AccountingTransactionService from '../../api/services/AccountingTransactions';
 
@@ -17,6 +17,7 @@ interface StoreContextType {
     setStore: (store: StoreDto | null) => void;
     accountingTransactionService: AccountingTransactionService | null;
     statementItemsClient: StatementItemsClient | null;
+    dispatchRuleClient: DispatchRulesClient | null;
 }
 
 // Tipo per le props del Provider
@@ -69,6 +70,7 @@ export const StoreProvider = ({ children, storeId }: StoreProviderProps) => {
     const [error, setError] = useState<Error | null>(null);
     const [accountingTransactionService, setAccountingTransactionService] = useState<AccountingTransactionService | null>(null);
     const [statementItemsClient, setStatementItemsClient] =  useState<StatementItemsClient | null>(null);
+    const [dispatchRuleClient, setDispatchRuleClient] = useState<DispatchRulesClient | null>(null);
 
     useEffect(() => {
         if (store?.canisterId && icpUrl) {
@@ -86,6 +88,9 @@ export const StoreProvider = ({ children, storeId }: StoreProviderProps) => {
                     store.canisterId
                 );
                 setStatementItemsClient(statementClient);
+
+                const dispatchRuleClient = new DispatchRulesClient(icpUrl, store.canisterId);
+                setDispatchRuleClient(dispatchRuleClient);
             } catch (err) {
                 console.error('Errore nell\'inizializzazione dei client ICP:', err);
                 setError(err instanceof Error ? err : new Error('Errore client ICP'));
@@ -130,7 +135,8 @@ export const StoreProvider = ({ children, storeId }: StoreProviderProps) => {
         refreshStore,
         setStore,
         accountingTransactionService,
-        statementItemsClient
+        statementItemsClient,
+        dispatchRuleClient
     };
 
     return (
@@ -163,6 +169,16 @@ export const useAccountingService = (): ClientHookReturn<AccountingTransactionSe
         error
     };
 };
+
+export const useDispatchRuleClient = (): ClientHookReturn<DispatchRulesClient> => {
+    const { dispatchRuleClient, loading, error } = useStore();
+    return {
+        client: dispatchRuleClient,
+        loading,
+        error
+    };
+};
+
 
 // Hook per StatementItemsClient
 export const useStatementItemsClient = (): ClientHookReturn<StatementItemsClient> => {

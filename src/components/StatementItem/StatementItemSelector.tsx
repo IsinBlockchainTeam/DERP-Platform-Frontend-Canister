@@ -1,9 +1,9 @@
 import { StatementItem, StatementItemCategory } from "@derp/company-canister";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { statementItemsClient } from "../../api/icp";
 import LoadingSpinner from "../Loading/LoadingSpinner";
 import StatementItemsDisplay from "./StatementItemsDisplay";
+import { useStatementItemsClient } from '../../pages/Stores/StoreProvider';
 
 /**
  * Custom hook to fetch statement items and categories
@@ -15,27 +15,33 @@ export const useStatementItems = () => {
     const [categories, setCategories] = useState<StatementItemCategory[]>([]);
     const [error, setError] = useState<string | null>(null);
 
+    const statementItemsClient = useStatementItemsClient();
+
     const fetchData = async () => {
+        if(statementItemsClient.client === null){
+            console.error("StatementItemsClient is not available.");
+            return;
+        }
         try {
             setLoading(true);
             setError(null);
             
             // First fetch all categories
-            const fetchedCategories = await statementItemsClient.getStatementItemsCategories();
+            const fetchedCategories = await statementItemsClient.client.getStatementItemsCategories();
             setCategories(fetchedCategories);
 
             // Then fetch all items for each category
             const allItems: StatementItem[] = [];
             for (const category of fetchedCategories) {
                 try {
-                    const categoryItems = await statementItemsClient.getStatementItems(category.id);
+                    const categoryItems = await statementItemsClient.client.getStatementItems(category.id);
                     allItems.push(...(categoryItems as StatementItem[]));
                 } catch (error) {
                     console.warn(`Failed to fetch items for category ${category.id}:`, error);
                 }
             }
             
-            const itemsWithoutCategory = await statementItemsClient.getStatementItems();
+            const itemsWithoutCategory = await statementItemsClient.client.getStatementItems();
             allItems.push(...(itemsWithoutCategory as StatementItem[]));
 
             setItems(allItems);

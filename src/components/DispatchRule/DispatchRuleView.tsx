@@ -1,10 +1,10 @@
-import { DispatchRule, DispatchRuleDto, StatementItem, StatementItemCategory } from "@derp/company-canister";
+import { DispatchRule, StatementItem, StatementItemCategory } from "@derp/company-canister";
 import { useTranslation } from "react-i18next";
 import { useEffect, useMemo, useState } from "react";
-import { statementItemsClient } from "../../api/icp";
 import StatementItemsDisplay from "../StatementItem/StatementItemsDisplay";
 import LoadingSpinner from "../Loading/LoadingSpinner";
 import { forms } from "./Types/forms";
+import { useStatementItemsClient } from '../../pages/Stores/StoreProvider';
 
 interface DispatchRuleViewProps {
     rule: DispatchRule;
@@ -19,13 +19,19 @@ export default function DispatchRuleView({ rule, className = "" }: DispatchRuleV
     const [categories, setCategories] = useState<StatementItemCategory[]>([]);
     const [loading, setLoading] = useState(true);
 
+    const statementItemsClient = useStatementItemsClient();
+
     useEffect(() => {
         const fetchStatementData = async () => {
+            if (statementItemsClient.client === null) {
+                console.error("StatementItemsClient is not available.");
+                return;
+            }
             try {
                 setLoading(true);
                 
                 // Fetch categories first
-                const categoriesData = await statementItemsClient.getStatementItemsCategories();
+                const categoriesData = await statementItemsClient.client.getStatementItemsCategories();
                 setCategories(categoriesData);
                 
                 // Fetch statement items that match the rule's statement item IDs
@@ -33,12 +39,12 @@ export default function DispatchRuleView({ rule, className = "" }: DispatchRuleV
                 
                 // Get items from all categories
                 for (const category of categoriesData) {
-                    const items = await statementItemsClient.getStatementItems(category.id);
+                    const items = await statementItemsClient.client.getStatementItems(category.id);
                     allItems.push(...items);
                 }
                 
                 // Get items without category
-                const itemsWithoutCategory = await statementItemsClient.getStatementItems();
+                const itemsWithoutCategory = await statementItemsClient.client.getStatementItems();
                 allItems.push(...itemsWithoutCategory);
                 
                 // Filter items that match the rule's statement item IDs

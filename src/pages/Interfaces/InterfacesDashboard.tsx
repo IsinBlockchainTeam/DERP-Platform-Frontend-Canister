@@ -164,6 +164,17 @@ export default function InterfacesDashboard() {
         }
     }
 
+    // const generateBankLetter = async () => {
+    //     try {
+    //         setLoadingFinalize(true);
+    //         await interfacesService.generateBankLetter(selectedInterface.id!);
+    //         setLoadingFinalize(false);
+    //     } catch (e) {
+    //         setErrors([t('form.bank.confirmation.error')]);
+    //         setLoadingFinalize(false);
+    //     }
+    // }
+
     return loading ?
         <LoadingSpinner />
         :

@@ -1,37 +1,37 @@
 import React, { useEffect, useState } from 'react';
-import { storeService } from '../../api/services/Store';
 import { StoreDto } from '../../dto/stores/StoreDto';
-import { useParams } from 'react-router-dom';
-import { useStoreId } from '../../utils';
-import StoreHeader from '../Stores/StoreHeader';
 import LoadingSpinner from '../../components/Loading/LoadingSpinner';
 import { InvoiceAccountingTransaction } from '@derp/company-canister';
-import { accountingTransactionService } from '../../api/services/AccountingTransactions';
 import { Eye } from 'lucide-react';
+import { useAccountingService, useStore } from '../Stores/StoreProvider';
 
 
 export const InvoiceOverview = () => {
-    const [store, setStore] = useState<StoreDto>();
-    const { merchantId } = useParams<{ merchantId: string }>();
-    const storeId = useStoreId();
     const [invoices, setInvoices] = useState<InvoiceAccountingTransaction[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
+    const {store} = useStore();
+    const accountingTransactionService = useAccountingService();
 
     useEffect(() => {
-        storeService.list(merchantId).then((stores) => {
-            const store = stores.find(s => s.id === storeId);
-            if (store){
-                setIsLoading(true);
-                setStore(store);
-                fetchInvoices(store).finally(() => setIsLoading(false));
-            }
+       init();
+    }, [store])
 
-        })
-    }, [storeId])
+    const init = async () => {
+        if(store){
+            setIsLoading(true);
+            await fetchInvoices(store);
+            setIsLoading(false);
+        }
+    }
+
 
     const fetchInvoices = async (store:StoreDto) => {
-        const invoices = await accountingTransactionService.listInvoicesByStore(store);
+        if(accountingTransactionService.client === null){
+            console.error("AccountingTransactionClient is null");
+            return;
+        }
+        const invoices = await accountingTransactionService.client.listInvoicesByStore(store);
         setInvoices(invoices);
     }
 

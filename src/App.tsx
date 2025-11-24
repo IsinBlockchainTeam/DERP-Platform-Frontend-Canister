@@ -111,6 +111,10 @@ function App() {
                             <Route path="items" element={<BalanceSettingsItems />} />
                             <Route path="rules" element={<BalanceSettingsRules />} />
                         </Route>
+                        <Route path="transactions" element={<AccountingTransactionsTab />}>
+                            <Route index element={<AccountingTransactionsList />}></Route>
+                            <Route path=":transactionType/:transactionId" element={<AccountingTransactionDetails />}></Route>
+                        </Route>
                         {/*<Route path="supplier-invoices" element={<SupplierInvoiceOverview />} />*/}
                         {/*<Route path="invoices" element={<InvoiceOverview />} />*/}
                         {/*<Route path="suppliers" element={<SuppliersTab />} />*/}
@@ -120,11 +124,6 @@ function App() {
                         {/*    <Route path={"accounting-transactions"} element={<DataSyncAccountingTransactions />}></Route>*/}
                         {/*    <Route path={"pos"} element={<DataSyncPosSync />}></Route>*/}
                         {/*</Route>*/}
-                        {/*<Route path="transactions" element={<AccountingTransactionsTab />}>*/}
-                        {/*    <Route index element={<AccountingTransactionsList />}></Route>*/}
-                        {/*    <Route path=":transactionType/:transactionId" element={<AccountingTransactionDetails />}></Route>*/}
-                        {/*</Route>*/}
-
                     </Route>
 
                     <Route path="interfaces" element={<InterfacesTab />}>
